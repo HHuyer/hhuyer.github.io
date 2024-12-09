@@ -20,9 +20,34 @@
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-        h1 {
+        .title {
+            position: relative;
+        }
+        .main-title {
             color: #333;
+            display: inline-block;
+            animation: dropDisappear 2s ease-in-out forwards;
+        }
+        .sub-title {
+            opacity: 0;
+            font-size: 2em;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: fadeIn 2s ease-in-out 2s forwards;
+        }
+        @keyframes dropDisappear {
+            0% { transform: translateY(0); opacity: 1; }
+            50% { transform: translateY(100px); opacity: 0.5; }
+            100% { transform: translateY(200px); opacity: 0; }
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
         }
         .button {
             background: #ff7e5f;
@@ -41,13 +66,20 @@
             margin-top: 20px;
             font-size: 1.5em;
         }
+        .slider-container {
+            margin: 20px 0;
+        }
+        .info {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
         .dice {
-            width: 50px;
-            height: 50px;
+            width: 100px;
+            height: 100px;
             margin: 20px auto;
             background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Dice-1-b.svg/1200px-Dice-1-b.svg.png') no-repeat center;
             background-size: cover;
-            animation: roll 1s ease-in-out;
+            animation: none;
         }
         @keyframes roll {
             0% { transform: rotate(0deg); }
@@ -56,44 +88,116 @@
             75% { transform: rotate(270deg); }
             100% { transform: rotate(360deg); }
         }
+        .message-box {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            z-index: 1000;
+        }
+        .message-box p {
+            margin: 0;
+            font-size: 1.2em;
+        }
+        .message-box .button {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Game Tài Xỉu</h1>
+        <div class="title">
+            <h1 class="main-title">Tài Xỉu</h1>
+            <div class="sub-title">Kiếm Kẹo</div>
+        </div>
+        <div class="info">Số kẹo hiện có: <span id="candy-count">0</span></div>
+        <div class="slider-container">
+            <input type="range" id="bet-slider" min="0" max="0" value="0" oninput="updateBetDisplay()">
+            <div>Cược: <span id="bet-amount">0</span> kẹo</div>
+            <button class="button" onclick="doubleBet()">x2</button>
+        </div>
+        <div class="dice" id="dice"></div>
         <button class="button" onclick="playGame('tai')">Tài</button>
         <button class="button" onclick="playGame('xiu')">Xỉu</button>
-        <div class="dice" id="dice"></div>
         <div class="result" id="result"></div>
-        <audio id="diceSound" src="https://www.soundjay.com/button/sounds/button-16.mp3"></audio>
-        <audio id="winSound" src="https://www.soundjay.com/button/sounds/button-4.mp3"></audio>
-        <audio id="loseSound" src="https://www.soundjay.com/button/sounds/button-10.mp3"></audio>
+    </div>
+
+    <div class="message-box" id="message-box">
+        <p id="message-text"></p>
+        <button class="button" onclick="closeMessageBox()">Đóng</button>
     </div>
 
     <script>
+        let candies = parseInt(localStorage.getItem('candies')) || 100; // Số kẹo ban đầu
+        document.getElementById('candy-count').textContent = candies;
+        const slider = document.getElementById('bet-slider');
+        slider.max = candies;
+
+        function updateBetDisplay() {
+            document.getElementById('bet-amount').textContent = slider.value;
+        }
+
+        function doubleBet() {
+            let currentBet = parseInt(slider.value);
+            let maxBet = parseInt(slider.max);
+            let newBet = Math.min(currentBet * 2, maxBet);
+            slider.value = newBet;
+            updateBetDisplay();
+        }
+
         function playGame(choice) {
-            const resultElement = document.getElementById('result');
-            const diceElement = document.getElementById('dice');
-            const diceSound = document.getElementById('diceSound');
-            const winSound = document.getElementById('winSound');
-            const loseSound = document.getElementById('loseSound');
-            
-            diceElement.style.animation = 'none';
-            diceSound.play();
-            
+            const bet = parseInt(slider.value);
+            if (bet === 0) {
+                showMessageBox("Bạn phải cược ít nhất 1 kẹo!");
+                return;
+            }
+
+            const dice = document.getElementById('dice');
+            dice.style.animation = 'roll 1s ease-in-out';
+
             setTimeout(() => {
-                diceElement.style.animation = '';
-                const randomNumber = Math.floor(Math.random() * 6) + 1;
-                diceElement.style.backgroundImage = `url('https://upload.wikimedia.org/wikipedia/commons/thumb/${randomNumber}/${randomNumber}-b.svg/1200px-${randomNumber}-b.svg.png')`;
-                const result = randomNumber > 3 ? 'Tài' : 'Xỉu';
-                resultElement.textContent = `Bạn chọn ${choice}. Kết quả là ${result}.`;
-                
-                if ((choice === 'tai' && result === 'Tài') || (choice === 'xiu' && result === 'Xỉu')) {
-                    winSound.play();
+                const randomNumber = Math.random() * 100;
+                const outcome = randomNumber < 45 ? choice : (choice === 'tai' ? 'xiu' : 'tai');
+
+                dice.style.animation = 'none';
+
+                const resultElement = document.getElementById('result');
+                resultElement.textContent = `Bạn chọn ${choice.toUpperCase()}. Kết quả là ${outcome.toUpperCase()}.`;
+
+                if (outcome === choice) {
+                    const winAmount = Math.floor(bet * 1.95);
+                    candies += winAmount;
+                    showMessageBox(`Bạn thắng! Nhận được ${winAmount} kẹo.`);
                 } else {
-                    loseSound.play();
+                    candies -= bet;
+                    showMessageBox(`Bạn thua! Mất ${bet} kẹo.`);
                 }
+
+                candies = Math.max(candies, 0);
+                localStorage.setItem('candies', candies);
+                document.getElementById('candy-count').textContent = candies;
+                slider.max = candies;
+                slider.value = Math.min(slider.value, candies);
+                updateBetDisplay();
             }, 1000);
+        }
+
+        function showMessageBox(message) {
+            const messageBox = document.getElementById('message-box');
+            const messageText = document.getElementById('message-text');
+            messageText.textContent = message;
+            messageBox.style.display = 'block';
+        }
+
+        function closeMessageBox() {
+            const messageBox = document.getElementById('message-box');
+            messageBox.style.display = 'none';
         }
     </script>
 </body>
