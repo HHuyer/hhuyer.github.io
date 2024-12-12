@@ -66,6 +66,37 @@
             background-color: #f9f9f9;
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
         }
+        .rainbow-button {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(90deg, #00C0FF, #FFCF00, #FC4F4F, #00C0FF);
+            background-size: 300% 300%;
+            color: #333;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            animation: rainbow-animation 4s linear infinite;
+        }
+
+        .rainbow-button:hover {
+            animation: rainbow-animation-hover 1.5s linear infinite;
+        }
+
+        .rainbow-text {
+            flex-grow: 1;
+            margin-right: 20px;
+            font-size: 1.1em;
+        }
+
+        .rainbow-image {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
         .link-text {
             flex-grow: 1;
             margin-right: 20px;
@@ -80,6 +111,29 @@
             height: 60px;
             object-fit: cover;
             border-radius: 8px;
+        }
+        @keyframes rainbow-animation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes rainbow-animation-hover {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
         }
     </style>
     <script>
@@ -133,14 +187,14 @@ const philosophies = [
     <div class="author"></div>
     <div class="container">
         <!-- Danh sách liên kết -->
-        <a href="indexgame.html" class="link-item" target="_blank">
-            <div class="link-text">
+        <a href="indexgame.html" class="rainbow-button" target="_blank">
+            <div class="rainbow-text">
                 Trò chơi trong phòng tin
                 <div class="link-description">Chơi đê:)</div>
             </div>
-            <img src="https://png.pngtree.com/png-vector/20191028/ourlarge/pngtree-game-control-line-icon-vector-png-image_1904129.jpg" class="link-image">
+            <img src="https://png.pngtree.com/png-vector/20191028/ourlarge/pngtree-game-control-line-icon-vector-png-image_1904129.jpg" class="rainbow-image">
         </a>
-<marquee>Cảm ơn anh Nam OK Dz đã Donate!</marquee>
+    <marquee>👆Cảm ơn anh Nam OK Dz đã Donate!👆</marquee>
         <a href="https://patorjk.com/software/taag/#p=display&f=Crawford2&t=%F0%9F%91%89hhuyer.github.io%F0%9F%91%88" class="link-item" target="_blank">
             <div class="link-text">
                 Chuyển chữ thành kí tự đẹp
