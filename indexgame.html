@@ -13,7 +13,6 @@
             padding: 0;
         }
 
-        /* Nút quay lại */
         .back-button {
             position: fixed;
             top: 15px;
@@ -115,7 +114,6 @@
             background-color: #45a049;
         }
 
-        /* Thông báo lỗi */
         .alert {
             display: none;
             background-color: #f8d7da;
@@ -125,55 +123,85 @@
             border: 1px solid #f5c6cb;
             border-radius: 5px;
         }
-    </style>
-    <script>
-        let coins = 0; // Số xu
-        let candies = parseInt(localStorage.getItem('candies')) || 0; // Số kẹo
 
-        // Hàm khởi động: Tải dữ liệu từ localStorage
-        function loadSavedData() {
-            coins = parseInt(localStorage.getItem('money')) || 0; // Đọc số xu
-            document.getElementById('coin-count').innerText = coins; // Hiển thị số xu
-            document.getElementById('candy-count').innerText = candies; // Hiển thị số kẹo
+        .multi-exchange {
+            display: none;
+            margin-top: 20px;
         }
 
-        // Hàm đổi 100 xu lấy 1 kẹo
-        function exchangeCandy() {
-            const alertBox = document.getElementById('alert-box'); // Thông báo lỗi
-            alertBox.style.display = 'none'; // Ẩn thông báo mặc định
+        .multi-exchange button {
+            margin-right: 10px;
+            padding: 10px 15px;
+            background-color: #ff5722;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
 
-            if (coins >= 100) {
-                coins -= 100;
-                candies += 1;
-                localStorage.setItem('money', coins); // Lưu lại số xu
-                localStorage.setItem('candies', candies); // Lưu lại số kẹo
+        .multi-exchange button:hover {
+            background-color: #e64a19;
+        }
+    </style>
+    <script>
+        let coins = parseInt(localStorage.getItem('money')) || 0;
+        let candies = parseInt(localStorage.getItem('candies')) || 0;
+        let candyExchanges = parseInt(localStorage.getItem('candyExchanges')) || 0;
+
+        function loadSavedData() {
+            updateUI();
+        }
+
+        function exchangeCandy(amount = 1) {
+            const alertBox = document.getElementById('alert-box');
+            alertBox.style.display = 'none';
+
+            const cost = amount * 100;
+            if (coins >= cost) {
+                coins -= cost;
+                candies += amount;
+                candyExchanges += amount;
+                saveData();
                 updateUI();
+                checkMultiExchange();
             } else {
                 alertBox.style.display = 'block';
-                alertBox.innerText = 'Bạn không đủ xu để đổi kẹo, hãy chơi Quay thú cưng ngẫu nhiên để kiếm thêm!';
+                alertBox.innerText = 'Bạn không đủ xu để đổi kẹo, hãy chơi thêm để kiếm xu!';
             }
         }
 
-        // Hàm cập nhật UI (số xu và số kẹo)
+        function checkMultiExchange() {
+            const multiExchange = document.getElementById('multi-exchange');
+            if (candyExchanges >= 5) {
+                multiExchange.style.display = 'block';
+            }
+        }
+
         function updateUI() {
             document.getElementById('coin-count').innerText = coins;
             document.getElementById('candy-count').innerText = candies;
         }
 
-        // Tự động cập nhật số xu mỗi giây
+        function saveData() {
+            localStorage.setItem('money', coins);
+            localStorage.setItem('candies', candies);
+            localStorage.setItem('candyExchanges', candyExchanges);
+        }
+
         setInterval(() => {
             coins = parseInt(localStorage.getItem('money')) || 0;
-            document.getElementById('coin-count').innerText = coins; // Hiển thị số xu mỗi giây
+            candies = parseInt(localStorage.getItem('candies')) || 0;
+            updateUI();
         }, 1000);
 
-        // Gọi hàm khởi động khi tải trang
-        window.onload = loadSavedData;
+        window.onload = () => {
+            loadSavedData();
+            checkMultiExchange();
+        };
     </script>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6138079895042375"
-     crossorigin="anonymous"></script>
 </head>
 <body>
-    <!-- Nút quay lại -->
     <a href="index.html" class="back-button">
         <i>🏠</i> Trang chính
     </a>
@@ -181,19 +209,22 @@
     <div class="container">
         <h1>Trung tâm trò chơi</h1>
 
-        <!-- Thông báo lỗi -->
         <div id="alert-box" class="alert"></div>
 
-        <!-- Phần kiếm xu và đổi kẹo -->
-        <div class="section">
-            <div class="currency-box">
-                <span>Số xu: <span id="coin-count">0</span></span>
-                <span>Số kẹo: <span id="candy-count">0</span></span>
-                <button onclick="exchangeCandy()">Đổi kẹo (100 xu = 1 kẹo)</button>
-            </div>
+        <div class="currency-box">
+            <span>Số xu: <span id="coin-count">0</span></span>
+            <span>Số kẹo: <span id="candy-count">0</span></span>
+            <button onclick="exchangeCandy()">Đổi kẹo (100 xu = 1 kẹo)</button>
         </div>
 
-        <!-- Danh sách trò chơi -->
+        <div id="multi-exchange" class="multi-exchange">
+            <button onclick="exchangeCandy(5)">Đổi x5</button>
+            <button onclick="exchangeCandy(10)">Đổi x10</button>
+            <button onclick="exchangeCandy(50)">Đổi x50</button>
+            <button onclick="exchangeCandy(100)">Đổi x100</button>
+            <button onclick="exchangeCandy(1000)">Đổi x1000</button>
+        </div>
+
         <div class="section">
             <h2>Danh sách trò chơi</h2>
 
