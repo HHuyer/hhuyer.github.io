@@ -916,10 +916,23 @@ function normalizeCode(input) {
 }
 
 function submitCode() {
-    const code = document.getElementById('code-input').value; // Lấy giá trị từ ô nhập mã
+    const code = document.getElementById('code-input').value.trim(); // Lấy giá trị từ ô nhập mã và loại bỏ khoảng trắng
 
-    // Kiểm tra mã hợp lệ và xử lý
-    if (code === "meobeothichmcdonald") {
+    // Kiểm tra mã "namoknha"
+    if (code === "namoknha") {
+        if (localStorage.getItem('usedCode_namoknha')) {
+            alert("Mã này đã được sử dụng trước đó!");
+        } else {
+            const reward = 2000000; // Số tiền thưởng
+            money += reward;
+            document.getElementById('money').innerText = money;
+            alert(`Bạn đã nhận được ${reward.toLocaleString()} tiền!`);
+            localStorage.setItem('usedCode_namoknha', true); // Đánh dấu mã đã sử dụng
+            saveData(); // Lưu dữ liệu sau khi đổi thưởng
+        }
+    }
+    // Các mã khác
+    else if (code === "meobeothichmcdonald") {
         const pet = "MeoBeo";
         const probability = 9999;
         document.getElementById('result').innerText = `Bạn nhận được: ${pet}`;
@@ -927,20 +940,11 @@ function submitCode() {
         document.getElementById('pet-image').src = 'https://phapluatxahoi.kinhtedothi.vn/stores/news_dataimages/2024/052024/10/19/in_article/ebd5c0ee2760fbb97936cb6b2baf9e6d.jpg?rt=20240510194835';
         addPetToHistory(pet, probability, 'https://phapluatxahoi.kinhtedothi.vn/stores/news_dataimages/2024/052024/10/19/in_article/ebd5c0ee2760fbb97936cb6b2baf9e6d.jpg?rt=20240510194835');
         addMoney(probability);
-        saveData(); // Lưu dữ liệu sau khi đổi thưởng
-    } else if (code === "godspeedrandom") {
-        applyGodspeedRandom();
-        alert("Thời gian hồi đã giảm xuống còn 0.2 giây!");
-    } else if (code === "test_mode") {
-        const multiplier = prompt("Nhập độ may mắn (x1 đến x100):");
-        if (multiplier && !isNaN(multiplier) && multiplier >= 1 && multiplier <= 100) {
-            luckMultiplier = multiplier;
-            alert(`Độ may mắn đã được đặt thành x${multiplier}`);
-        } else {
-            alert("Giá trị không hợp lệ. Vui lòng nhập số từ 1 đến 100.");
-        }
-    } else {
-        alert("Mã không hợp lệ");
+        saveData();
+    }
+    // Mã không hợp lệ
+    else {
+        alert("Mã không hợp lệ!");
     }
 }
 </script>
