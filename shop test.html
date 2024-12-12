@@ -71,6 +71,40 @@
         let randomCooldownTime = parseFloat(localStorage.getItem('randomCooldownTime')) || 2; // Thời gian hồi ban đầu
         let upgradeCooldownCost = parseInt(localStorage.getItem('cooldownUpgradeCost')) || 1000; // Giá nâng cấp tốc độ hồi
 
+let candies = parseInt(localStorage.getItem('candies')) || 0;  // Số kẹo ban đầu
+let coins = parseInt(localStorage.getItem('money')) || 0;      // Số tiền ban đầu
+
+// Cập nhật UI
+function updateUI() {
+    document.getElementById('money').innerText = coins;
+    document.getElementById('candy-count').innerText = candies;
+}
+
+// Lưu dữ liệu vào LocalStorage
+function saveData() {
+    localStorage.setItem('money', coins);
+    localStorage.setItem('candies', candies);
+}
+
+// Đổi kẹo lấy xu
+function exchangeCandyForCoins() {
+    if (candies >= 1) {
+        candies--;  // Giảm 1 kẹo
+        coins += 90;  // Thêm 90 xu
+        saveData();  // Lưu lại dữ liệu
+        updateUI();  // Cập nhật giao diện
+    } else {
+        alert("Không đủ kẹo để đổi!");
+    }
+}
+
+// Tải dữ liệu từ LocalStorage khi trang được tải
+setInterval(() => {
+    coins = parseInt(localStorage.getItem('money')) || 0;
+    candies = parseInt(localStorage.getItem('candies')) || 0;
+    updateUI();
+}, 1000);
+
         window.onload = function () {
             const savedMoney = parseInt(localStorage.getItem('money')) || 0;
             document.getElementById('money').innerText = savedMoney;
@@ -146,6 +180,14 @@
         <p id="cooldown-upgrade-cost">Giá nâng cấp tốc độ hồi: 1000 xu</p>
         <button class="button" onclick="upgradeCooldown()">Nâng cấp tốc độ hồi random</button>
     </div>
+
+<!-- Ô đổi kẹo lấy xu -->
+<div class="section">
+    <h2>Đổi kẹo lấy xu</h2>
+    <p>Số kẹo hiện tại: <span id="candy-count">0</span></p>
+    <p>1 kẹo = 90 xu</p>
+    <button class="button" onclick="exchangeCandyForCoins()">Đổi kẹo</button>
+</div>
 
     <button class="button" onclick="goBackToGacha()">Quay lại Gacha RNG</button>
 </body>
