@@ -315,7 +315,7 @@
             { name: 'Hamster', probability: 1/25, image: 'https://lolipet.net/wp-content/uploads/2023/11/z4857310072695_728959d9bec5acddc5a04e389c77c113.jpg' },
             { name: 'Fish', probability: 1/5, image: 'https://i.natgeofe.com/n/18708334-6fce-40b5-ade6-a7e2db7035f2/01-goldfish-nationalgeographic_1567132.jpg?wp=1&w=1084.125&h=721.875' },
             { name: 'Parrot', probability: 1/30, image: 'https://blog.nature.org/wp-content/uploads/2019/09/5466780476_47f0336213_o.jpg?w=1024' },
-            { name: 'ĐỖ PHÚ QUÍ (PICKLEBALL)', probability: 1/37, image: 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/5/d/a/7/5da7072eaf8a8cf3350ee91fb2544221.jpg'},
+            { name: 'ĐỖ PHÚ QUÍ (PICKLEBALL)', probability: 1/4100000, image: 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/5/d/a/7/5da7072eaf8a8cf3350ee91fb2544221.jpg'},
             { name: 'Turtle', probability: 1/50, image: 'https://ih1.redbubble.net/image.1123475296.4644/flat,750x,075,f-pad,750x1000,f8f8f8.jpg' },
             { name: 'MeoBeo', probability: 1/999, image: 'https://cdn.tuoitre.vn/thumb_w/480/471584752817336320/2024/5/20/meo-beo-1716184689176563233778.jpg' },
             { name: 'Guinea Pig', probability: 1/35, image: 'https://i.pinimg.com/736x/96/ae/9e/96ae9eab678fc1a50af63acd5e5ab2dd.jpg' },
@@ -330,6 +330,7 @@
             { name: 'Elephant', probability: 1/140, image: 'https://i.pinimg.com/474x/dd/51/d7/dd51d787de66c7fce0a7c84962491e84.jpg' },
             { name: 'Giraffe', probability: 1/160, image: 'https://i.pinimg.com/736x/ee/a6/91/eea691adc0698f0792d4efb40032771c.jpg' },
             { name: 'Chill Guy', probability: 1/420, image: 'https://static.toiimg.com/thumb/msid-115690235,width-400,resizemode-4/115690235.jpg' },
+            { name: ' uncHill gal', probability: 1/419, image: 'https://assets.coingecko.com/coins/images/51981/large/IMG_9410.jpeg?1732289439' },
     // Hoa quả phổ biến
     { name: 'Banana', probability: 1/31000, image: 'https://www.shutterstock.com/image-vector/banana-cat-isolated-on-white-260nw-2353794733.jpg' },
     { name: 'Apple', probability: 1/32000, image: 'https://assets.coingecko.com/coins/images/36349/large/acat.png?1711188328' },
@@ -641,6 +642,7 @@ function showDailyNotification() {
     notification.style.alignItems = 'center';
     notification.style.zIndex = '1000';
 
+
     const modal = document.createElement('div');
     modal.style.backgroundColor = 'white';
     modal.style.borderRadius = '10px';
@@ -650,8 +652,8 @@ function showDailyNotification() {
     modal.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
     modal.style.display = 'flex';
     modal.style.flexDirection = 'column';
-    modal.style.justifyContent = 'center';  // Căn giữa
-    modal.style.alignItems = 'center';  // Căn giữa
+    modal.style.alignItems = 'center';
+
 
     const title = document.createElement('h2');
     title.style.marginBottom = '10px';
@@ -661,12 +663,32 @@ function showDailyNotification() {
     const message = document.createElement('p');
     message.style.marginBottom = '20px';
     message.innerText = 'Hãy cùng quay hôm nay để nhận thú cưng giới hạn!';
+setTimeout(function(){ alert("Đừng nhập mã code 'pickleball'"); }, 3000);
 
-    const image = document.createElement('img');
-    image.src = 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/5/d/a/7/5da7072eaf8a8cf3350ee91fb2544221.jpg';
-    image.style.maxWidth = '100%';
-    image.style.borderRadius = '1px';
-    image.style.marginBottom = '1px';
+    // Hàm tạo và định dạng phần tử ảnh
+    function createImage(imageUrl) {
+        const image = document.createElement('img');
+        image.src = imageUrl;
+        image.style.maxWidth = 'calc(50% - 10px)'; // Giảm chiều rộng để trừ margin
+        image.style.maxHeight = '200px'; // Đặt chiều cao tối đa (tùy chọn)
+        image.style.borderRadius = '5px';
+        image.style.margin = '5px'; // Thêm margin để tạo khoảng cách
+        image.style.objectFit = "cover"; // Để ảnh không bị méo khi tỉ lệ khung hình khác nhau
+        return image;
+    }
+
+    // Thay thế bằng URL ảnh mong muốn (điều chỉnh số lượng nếu cần)
+    const imageUrls = [
+        'https://assets.coingecko.com/coins/images/51981/large/IMG_9410.jpeg?1732289439',
+        'https://static.toiimg.com/thumb/msid-115690235,width-400,resizemode-4/115690235.jpg',
+        // Có thể thêm nhiều URL ảnh hơn vào đây
+    ];
+
+    const imageContainer = document.createElement('div');
+    imageContainer.style.display = 'flex';
+    imageContainer.style.justifyContent = 'center'; // Căn giữa các ảnh
+    imageContainer.style.width = "100%"
+    imageUrls.forEach(imageUrl => imageContainer.appendChild(createImage(imageUrl)));
 
     const okButton = document.createElement('button');
     okButton.style.padding = '10px 20px';
@@ -683,7 +705,7 @@ function showDailyNotification() {
 
     modal.appendChild(title);
     modal.appendChild(message);
-    modal.appendChild(image);
+    modal.appendChild(imageContainer);
     modal.appendChild(okButton);
     notification.appendChild(modal);
     document.body.appendChild(notification);
@@ -918,19 +940,31 @@ function normalizeCode(input) {
 function submitCode() {
     const code = document.getElementById('code-input').value.trim(); // Lấy giá trị từ ô nhập mã và loại bỏ khoảng trắng
 
-    // Kiểm tra mã "namoknha"
-    if (code === "namoknha") {
-        if (localStorage.getItem('usedCode_namoknha')) {
-            alert("Mã này đã được sử dụng trước đó!");
+// Kiểm tra mã "pickleball"
+if (code === "pickleball") {
+    // Tạo số ngẫu nhiên từ 0 đến 99
+    const randomNumber = Math.floor(Math.random() * 100);
+
+    if (randomNumber < 90) { // 99% cơ hội
+        if (localStorage.getItem('usedCode_pickleball')) {
+            alert("Còn nhập lại lần nữa là Đỗ Phú Quí sẽ dẫn bạn đi vượt mức pickleball đấy 🌚 (99%)");
         } else {
-            const reward = 2000000; // Số tiền thưởng
-            money += reward;
-            document.getElementById('money').innerText = money;
-            alert(`Bạn đã nhận được ${reward.toLocaleString()} tiền!`);
-            localStorage.setItem('usedCode_namoknha', true); // Đánh dấu mã đã sử dụng
-            saveData(); // Lưu dữ liệu sau khi đổi thưởng
+            alert("Còn nhập lại lần nữa là Đỗ Phú Quí sẽ dẫn bạn đi vượt mức pickleball đấy 🌚 (99%)");
         }
+    } else { // 1% cơ hội
+    const pet = "Pickleball"; // Khai báo và gán giá trị cho biến pet
+        const reward = 100; // Số tiền thưởng (có thể giữ lại hoặc bỏ)
+        const probability = "Đỗ Phú Quí";
+        document.getElementById('result').innerText = `Bạn nhận được: Pickleball`; // Ghi rõ là nhận pet
+        document.getElementById('probability').innerText = `Xác suất: 1 trong Đỗ Phú Quí`;
+        document.getElementById('pet-image').src = 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/5/d/a/7/5da7072eaf8a8cf3350ee91fb2544221.jpg';
+        addPetToHistory(pet, probability, 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/5/d/a/7/5da7072eaf8a8cf3350ee91fb2544221.jpg');
+        money += reward;
+        document.getElementById('money').innerText = money;
+        alert(`Chúc mừng! Bạn đã nhận được Pet Pickleball! (1%)`);
+        saveData(); // Lưu dữ liệu sau khi đổi thưởng
     }
+}
     // Các mã khác
     else if (code === "meobeothichmcdonald") {
         const pet = "MeoBeo";
