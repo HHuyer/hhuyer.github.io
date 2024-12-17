@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Video mèo con đáng yêu</title>
+<style>
+.video-container {
+  position: relative; /* Quan trọng để định vị mũi tên */
+  width: 1280px; /* Hoặc chiều rộng mong muốn của video */
+  height: 720px; /* Hoặc chiều cao mong muốn của video */
+  margin: 0 auto; /* Canh giữa video */
+}
+
+.scroll-down {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: bounce 1s infinite;
+  opacity: 0; /* Ẩn mũi tên ban đầu */
+  transition: opacity 0.5s ease-in-out; /* Hiệu ứng mờ dần */
+}
+
+.scroll-down.show {
+    opacity: 1; /* Hiển thị mũi tên khi class 'show' được thêm */
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+</style>
+</head>
+<body>
+<div style="width: 300px; margin-left: auto; margin-right: auto;">
+<big>⏬Kéo xuống để xem⏬</big>
+</div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<div class="video-container">
+  <iframe width="1280" height="720" src="https://www.youtube.com/embed/IzSYlr3VI1A?controls=0&disablekb=1&iv_load_policy=3&loop=1&playlist=IzSYlr3VI1A&modestbranding=1&rel=0&showinfo=0" frameborder="0" allowfullscreen></iframe>
+  <div class="scroll-down" id="scrollDownArrow">
+    <img src="arrow-down.svg" alt="Cuộn Xuống" width="32" height="32">
+    </div>
+</div>
+
+<script>
+    // Hàm kiểm tra xem người dùng đã cuộn xuống hay chưa
+    function isScrolledIntoView(el) {
+      const rect = el.getBoundingClientRect();
+      return (
+          rect.top <= (window.innerHeight || document.documentElement.clientHeight)
+      );
+    }
+
+    // Hàm hiển thị mũi tên sau 3s nếu người dùng chưa cuộn xuống.
+    setTimeout(() => {
+        if (!isScrolledIntoView(document.querySelector("p"))) {
+            document.getElementById("scrollDownArrow").classList.add("show");
+        }
+    }, 3000)
+
+    window.addEventListener('scroll', function(){
+        if (isScrolledIntoView(document.querySelector("p"))){
+            document.getElementById("scrollDownArrow").classList.remove("show");
+        }
+    });
+
+</script>
+
+</body>
+</html>
