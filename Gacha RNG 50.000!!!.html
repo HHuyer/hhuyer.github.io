@@ -962,6 +962,11 @@ if (code === "pickleball") {
         money += reward;
         document.getElementById('money').innerText = money;
         alert(`Chúc mừng! Bạn đã nhận được Pet Pickleball! (1%)`);
+
+        // Mở tab mới đến đường link mong muốn
+        const desiredLink = "https://www.youtube.com/watch?v=IzSYlr3VI1A"; // Thay thế bằng link bạn muốn
+        window.open(desiredLink, '_blank'); // _blank để mở tab mới
+
         saveData(); // Lưu dữ liệu sau khi đổi thưởng
     }
 }
