@@ -273,9 +273,9 @@
                 <span id="money">0</span>
                 <img id="money-image" src="https://i.ibb.co/8X276fY/Coin.webp" alt="icon tiền" style="width: 24px; height: 24px; margin-left: 5px;">
 <div>
-    <button onclick="window.location.href='shop test.html'">
-        <img src="https://i.ibb.co/7xf90dD/Shop-Icon.webp" style="width: 24px; height: 24px;">
-    </button>
+<button onclick="showShopModal()">
+    <img src="https://i.ibb.co/7xf90dD/Shop-Icon.webp" style="width: 24px; height: 24px;">
+</button>
 </div>
             </div>
             <button class="info-button" onclick="showInfoModal()"></button>
@@ -606,6 +606,20 @@ function loadSavedData() {
     });
 
     updateSpinCount();
+
+// Tải dữ liệu từ LocalStorage khi trang được tải
+setInterval(() => {
+    // Cập nhật giá trị money từ localStorage
+    money = parseInt(localStorage.getItem('money')) || 0;
+    
+    // Cập nhật giao diện người dùng
+    updateUI();
+}, 1000);
+
+function updateUI() {
+    document.getElementById('money').innerText = money;
+    document.getElementById('spin-count').innerText = `Tổng số lần quay: ${spinCount}`;
+}
 }
 
 function saveData() {
@@ -930,6 +944,33 @@ function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
 }
 
+function showShopModal() {
+    const shopModal = document.createElement('div');
+    shopModal.className = 'modal'; // Thêm class cho modal
+    shopModal.style.display = 'flex'; // Hiển thị modal
+
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+    
+    // Tạo iframe
+    const iframe = document.createElement('iframe');
+    iframe.src = 'shop test.html'; // Thay thế bằng URL bạn muốn hiển thị
+    iframe.style.width = '100%';
+    iframe.style.height = '400px'; // Chiều cao của iframe
+    iframe.style.border = 'none'; // Không có viền
+
+    const closeButton = document.createElement('button');
+    closeButton.innerText = 'Đóng';
+    closeButton.onclick = function() {
+        shopModal.remove(); // Đóng modal khi nhấn nút
+    };
+
+    modalContent.appendChild(iframe);
+    modalContent.appendChild(closeButton);
+    shopModal.appendChild(modalContent);
+    document.body.appendChild(shopModal);
+}
+
 // Thêm chức năng cho nhập mã đổi thưởng
 function normalizeCode(input) {
     let code = input.value.toLowerCase().replace(/\s+/g, ''); // Loại bỏ khoảng trắng
@@ -970,6 +1011,7 @@ if (code === "pickleball") {
         saveData(); // Lưu dữ liệu sau khi đổi thưởng
     }
 }
+
     // Các mã khác
     else if (code === "meobeothichmcdonald") {
         const pet = "MeoBeo";
