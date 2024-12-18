@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop Test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      text-align: center;
+      background-color: #f5f5f5; /* Màu nền nhạt */
+      margin: 20px;
+      color: #333;
+    }
+
+    h1 {
+      color: #007bff; /* Màu xanh dương cho tiêu đề */
+    }
+
+    #money {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #28a745; /* Màu xanh lá cây cho tiền */
+    }
+
+    .button {
+      display: inline-block;
+      background: linear-gradient(to bottom, #28a745, #198754); /* Màu xanh dương gradient */
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      text-decoration: none;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      border: none; /* Loại bỏ viền mặc định */
+      transition: transform 0.1s, box-shadow 0.1s; /* Hiệu ứng chuyển động */
+    }
+
+    .button:hover {
+      transform: translateY(-2px); /* Nút nổi lên khi di chuột vào */
+      box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.25);
+    }
+
+    .button:active {
+      transform: translateY(0);
+      box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.15);
+    }
+
+    .section {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin: 20px auto; /* Căn giữa */
+      max-width: 500px; /* Giới hạn chiều rộng */
+    }
+
+    .section h2 {
+      color: #007bff;
+      margin-bottom: 10px;
+    }
+
+    #admin-controls input[type="number"] {
+      width: 80px;
+      padding: 8px;
+      margin: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box; /* Để padding không làm tăng chiều rộng */
+    }
+
+    label {
+      display: inline-block;
+      width: 80px;
+      text-align: right;
+      margin-right: 10px;
+    }
+  </style>
+  <script>
+    // ... (JavaScript code - giữ nguyên như phiên bản trước)
+    let luckMultiplier = parseFloat(localStorage.getItem('luckMultiplier')) || 1;
+    let upgradeLuckCost = parseInt(localStorage.getItem('luckUpgradeCost')) || 1000;
+    let randomCooldownTime = parseFloat(localStorage.getItem('randomCooldownTime')) || 2;
+    let upgradeCooldownCost = parseInt(localStorage.getItem('cooldownUpgradeCost')) || 1000;
+
+    let candies = parseInt(localStorage.getItem('candies')) || 0;
+    let coins = parseInt(localStorage.getItem('money')) || 0;
+
+    function updateUI() {
+document.getElementById('money').innerText = coins;
+      document.getElementById('candy-count').innerText = candies;
+    }
+
+    function saveData() {
+      localStorage.setItem('money', coins.toString());
+      localStorage.setItem('candies', candies.toString());
+    }
+
+    function exchangeCandyForCoins() {
+      if (candies >= 1) {
+        candies--;
+        coins += 90;
+        saveData();
+        updateUI();
+      } else {
+        alert("Không đủ kẹo để đổi!");
+      }
+    }
+
+    function addMoney() {
+      const amount = parseInt(document.getElementById('add-money').value) || 0;
+      coins += amount;
+      saveData();
+      updateUI();
+      document.getElementById('add-money').value = '';
+    }
+
+    function addCandies() {
+      const amount = parseInt(document.getElementById('add-candies').value) || 0;
+      candies += amount;
+      saveData();
+      updateUI();
+      document.getElementById('add-candies').value = '';
+    }
+
+    window.onload = function () {
+      updateUI();
+      updateLuckInfo();
+      updateCooldownInfo();
+    };
+
+    setInterval(() => {
+      coins = parseInt(localStorage.getItem('money')) || 0;
+      candies = parseInt(localStorage.getItem('candies')) || 0;
+      updateUI();
+    }, 1000);
+
+    function spendMoney(amount) {
+      let currentMoney = parseInt(localStorage.getItem('money')) || 0;
+      if (currentMoney >= amount) {
+        currentMoney -= amount;
+        localStorage.setItem('money', currentMoney);
+        document.getElementById('money').innerText = currentMoney;
+        return true;
+      } else {
+        alert("Không đủ tiền!");
+        return false;
+      }
+    }
+
+    function updateLuckInfo() {
+      document.getElementById('luck-multiplier').innerText = `Độ may mắn hiện tại: x${luckMultiplier.toFixed(1)}`;
+      document.getElementById('luck-upgrade-cost').innerText = `Giá nâng cấp may mắn: ${upgradeLuckCost} xu`;
+    }
+
+    function updateCooldownInfo() {
+      document.getElementById('cooldown-time').innerText = `Thời gian hồi random: ${randomCooldownTime.toFixed(2)} giây`;
+      document.getElementById('cooldown-upgrade-cost').innerText = `Giá nâng cấp tốc độ hồi: ${upgradeCooldownCost} xu`;
+    }
+
+    function upgradeLuck() {
+      if (spendMoney(upgradeLuckCost)) {
+        luckMultiplier *= 2;
+        upgradeLuckCost *= 2;
+        localStorage.setItem('luckMultiplier', luckMultiplier);
+        localStorage.setItem('luckUpgradeCost', upgradeLuckCost);
+        alert(`Độ may mắn đã tăng lên x${luckMultiplier.toFixed(1)}!`);
+        updateLuckInfo();
+      }
+    }
+
+    function upgradeCooldown() {
+      if (spendMoney(upgradeCooldownCost)) {
+        randomCooldownTime *= 0.95;
+        upgradeCooldownCost *= 2;
+        localStorage.setItem('randomCooldownTime', randomCooldownTime);
+        localStorage.setItem('cooldownUpgradeCost', upgradeCooldownCost);
+        alert(`Thời gian hồi random đã giảm xuống còn ${randomCooldownTime.toFixed(2)} giây!`);
+        updateCooldownInfo();
+      }
+    }
+
+    function goBackToGacha() {
+      window.location.href = "Gacha RNG 50.000!!!.html";
+    }
+
+    function resetStats() {
+        if (confirm("Bạn có chắc chắn muốn đặt lại tất cả các chỉ số?")) {
+            localStorage.removeItem('money');
+            localStorage.removeItem('candies');
+            localStorage.removeItem('luckMultiplier');
+            localStorage.removeItem('luckUpgradeCost');
+            localStorage.removeItem('randomCooldownTime');
+            localStorage.removeItem('cooldownUpgradeCost');
+
+            coins = 0;
+            candies = 0;
+            luckMultiplier = 1;
+            upgradeLuckCost = 1000;
+            randomCooldownTime = 2;
+            upgradeCooldownCost = 1000;
+
+            updateUI();
+            updateLuckInfo();
+            updateCooldownInfo();
+            alert("Tất cả các chỉ số đã được đặt lại!");
+        }
+    }
+
+  </script>
+</head>
+<body>
+  <h1>Số tiền hiện tại: <span id="money">0</span></h1>
+
+  <div id="admin-controls" class="section">
+    <h2>Admin Controls</h2>
+    <div>
+      <label for="add-money">Thêm tiền:</label>
+      <input type="number" id="add-money" value="0">
+      <button class="button" onclick="addMoney()">Thêm</button>
+    </div>
+    <div>
+      <label for="add-candies">Thêm kẹo:</label>
+      <input type="number" id="add-candies" value="0">
+      <button class="button" onclick="addCandies()">Thêm</button>
+    </div>
+  </div>
+
+  <div class="section upgrade-section">
+    <h2 id="luck-multiplier">Độ may mắn hiện tại: x1</h2>
+    <p id="luck-upgrade-cost">Giá nâng cấp may mắn: 1000 xu</p>
+    <button class="button" onclick="upgradeLuck()">Nâng cấp độ may mắn</button>
+  </div>
+
+  <div class="section">
+    <h2 id="cooldown-time">Thời gian hồi random: 2.00 giây</h2>
+    <p id="cooldown-upgrade-cost">Giá nâng cấp tốc độ hồi: 1000 xu</p>
+    <button class="button" onclick="upgradeCooldown()">Nâng cấp tốc độ hồi random(Test)</button>
+  </div>
+
+  <div class="section">
+    <h2>Đổi kẹo lấy xu</h2>
+    <p>Số kẹo hiện tại: <span id="candy-count">0</span></p>
+    <p>1 kẹo = 90 xu</p>
+    <button class="button" onclick="exchangeCandyForCoins()">Đổi kẹo</button>
+  </div>
+  <br>
+  <button class="button" onclick="goBackToGacha()">Quay lại Gacha RNG</button>
+    <button class="button" onclick="resetStats()">Đặt lại tất cả chỉ số</button> <--- Nút reset
+  <footer>
+    &copy; 2024 Admin Panel. All rights reserved.
+  </footer>
+</body>
+</html>
