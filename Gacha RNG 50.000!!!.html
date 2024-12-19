@@ -728,37 +728,6 @@ setTimeout(function(){ alert("Đừng nhập mã code 'pickleball'"); }, 3000);
     localStorage.setItem('lastVisit', new Date().toDateString());
 }
 
-// Lưu lại khi tạo thú cưng
-function generateRandomPet() {
-    if (isGenerating) return;
-    isGenerating = true;
-
-    document.getElementById('result').innerText = 'Đang tạo...';
-    document.getElementById('probability').innerText = '';
-
-    const countdownBar = document.getElementById('countdown-bar');
-    countdownBar.style.transition = 'none';
-    countdownBar.style.width = '100%';
-    setTimeout(() => {
-        countdownBar.style.transition = 'width 2s linear';
-        countdownBar.style.width = '0%';
-    }, 10);
-
-    let countdown = 2;
-    let intervalTime = 100;
-    const interval = setInterval(() => {
-        const randomPet = pets[Math.floor(Math.random() * pets.length)];
-        document.getElementById('result').innerText = `Đang ngẫu nhiên: ${randomPet.name}`;
-        countdown -= 0.1;
-        intervalTime += 50;
-        if (countdown <= 0) {
-            clearInterval(interval);
-            showFinalPet();
-            isGenerating = false;
-        }
-    }, intervalTime);
-}
-
 // Khai báo và lấy giá trị may mắn từ localStorage, mặc định là 1 nếu không có giá trị
 let luckMultiplier = parseFloat(localStorage.getItem('luckMultiplier')) || 1;
 
@@ -819,6 +788,32 @@ function generateRandomPet() {
             isGenerating = false;
         }
     }, intervalTime);
+
+    // Gọi hàm để tạo icon bay lên
+    createFlyingIcon();
+}
+
+// Hàm tạo icon bay lên
+function createFlyingIcon() {
+    const coin = document.createElement('div');
+    coin.className = 'coin';
+    coin.innerText = '🍀'; // Thay thế bằng icon tiền của bạn
+    document.body.appendChild(coin);
+    coin.style.left = `${Math.random() * 100}%`;
+    coin.style.position = 'absolute'; // Đặt vị trí tuyệt đối để icon bay lên
+    coin.style.bottom = '0'; // Bắt đầu từ dưới cùng của màn hình
+
+    // Animation bay lên
+    setTimeout(() => {
+        coin.style.transition = 'transform 1s ease-out, opacity 1s ease-out';
+        coin.style.transform = `translateY(-100px)`; // Di chuyển lên 100px
+        coin.style.opacity = '0'; // Giảm độ mờ
+    }, 10);
+
+    // Xóa icon sau khi hoàn thành animation
+    setTimeout(() => {
+        coin.remove();
+    }, 2000);
 }
 
 // Hàm để chọn thú cưng và tính xác suất trúng thưởng
