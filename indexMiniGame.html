@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .currency-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: #eef2ff;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .currency-box span {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .currency-box button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .currency-box button:hover {
+            background-color: #0056b3;
+        }
+
+        .game-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f9fafb;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .game-item:hover {
+            transform: scale(1.02);
+        }
+
+        .game-item button {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .game-item button:hover {
+            background-color: #45a049;
+        }
+
+        .alert {
+            display: none;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+        }
+
+        .multi-exchange {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .multi-exchange button {
+            margin-right: 10px;
+            padding: 10px 15px;
+            background-color: #ff5722;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .multi-exchange button:hover {
+            background-color: #e64a19;
+        }
+    </style>
+    <script>
+        let coins = parseInt(localStorage.getItem('money')) || 0;
+        let candies = parseInt(localStorage.getItem('candies')) || 0;
+        let candyExchanges = parseInt(localStorage.getItem('candyExchanges')) || 0;
+
+        function loadSavedData() {
+            updateUI();
+        }
+
+        function exchangeCandy(amount = 1) {
+            const alertBox = document.getElementById('alert-box');
+            alertBox.style.display = 'none';
+
+            const cost = amount * 100;
+            if (coins >= cost) {
+                coins -= cost;
+                candies += amount;
+                candyExchanges += amount;
+                saveData();
+                updateUI();
+                checkMultiExchange();
+            } else {
+                alertBox.style.display = 'block';
+                alertBox.innerText = 'Bạn không đủ xu để đổi kẹo, vui lòng chơi để kiếm thêm xu!';
+            }
+        }
+
+        function checkMultiExchange() {
+            const multiExchange = document.getElementById('multi-exchange');
+            if (candyExchanges >= 5) {
+                multiExchange.style.display = 'block';
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('coin-count').innerText = coins;
+            document.getElementById('candy-count').innerText = candies;
+        }
+
+        function saveData() {
+            localStorage.setItem('money', coins);
+            localStorage.setItem('candies', candies);
+            localStorage.setItem('candyExchanges', candyExchanges);
+        }
+
+        setInterval(() => {
+            coins = parseInt(localStorage.getItem('money')) || 0;
+            candies = parseInt(localStorage.getItem('candies')) || 0;
+            updateUI();
+        }, 1000);
+
+        window.onload = () => {
+            loadSavedData();
+            checkMultiExchange();
+        };
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Mini Game</h1>
+
+        <div id="alert-box" class="alert"></div>
+
+        <div class="currency-box">
+            <span>Số xu: <span id="coin-count">0</span></span>
+            <span>Số kẹo: <span id="candy-count">0</span></span>
+            <button onclick="exchangeCandy()">Đổi kẹo (100 xu = 1 kẹo)</button>
+        </div>
+
+        <div id="multi-exchange" class="multi-exchange">
+            <button onclick="exchangeCandy(5)">Đổi x5</button>
+            <button onclick="exchangeCandy(10)">Đổi x10</button>
+            <button onclick="exchangeCandy(50)">Đổi x50</button>
+            <button onclick="exchangeCandy(100)">Đổi x100</button>
+            <button onclick="exchangeCandy(1000)">Đổi x1000</button>
+        </div>
+
+        <div class="section">
+            <h2>Danh sách trò chơi</h2>
+
+<div class="game-item">
+    <span>Trò chơi 1: Tài Xỉu (Kiếm Kẹo)</span>
+    <button onclick="window.open('txiu.html', '_self')">Chơi ngay</button>
+</div>
+<div class="game-item">
+    <span>Trò chơi 2: Đào mìn may rủi (Miễn phí)</span>
+    <button onclick="window.open('đào kim cương.html', '_self')">Chơi ngay</button>
+</div>
+<div class="game-item">
+    <span>Trò chơi 3: Thả bóng! (Miễn phí)</span>
+    <button onclick="window.open('Plinko.html', '_self')">Chơi ngay</button>
+</div>
+<div class="game-item">
+    <span>Trò chơi 4: Vẽ hình tròn hoàn hảo (Miễn phí)</span>
+    <button onclick="window.open('dafc.html', '_self')">Chơi ngay</button>
+</div>
+        </div>
+    </div>
+<small>Donate Đê</small>
+</body>
+</html>
