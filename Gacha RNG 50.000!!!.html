@@ -276,6 +276,9 @@
 <button onclick="showShopModal()">
     <img src="https://i.ibb.co/7xf90dD/Shop-Icon.webp" style="width: 24px; height: 24px;">
 </button>
+<button onclick="showMiniGameModal()">
+    <img src="https://png.pngtree.com/png-vector/20191028/ourlarge/pngtree-game-control-line-icon-vector-png-image_1904129.jpg" style="width: 24px; height: 24px;">
+</button>
 </div>
             </div>
             <button class="info-button" onclick="showInfoModal()"></button>
@@ -997,6 +1000,81 @@ function showShopModal() {
         
         const iframe = document.createElement('iframe');
         iframe.src = 'shop test.html'; // Thay thế bằng URL bạn muốn hiển thị
+        iframe.style.width = '100%';
+        iframe.style.height = '400px'; // Chiều cao của iframe
+        iframe.style.border = 'none'; // Không có viền
+
+        const closeButton = document.createElement('button');
+        closeButton.innerText = 'Đóng';
+        closeButton.onclick = function() {
+            shopModal.remove(); // Đóng modal khi nhấn nút
+        };
+
+        modalContent.appendChild(iframe);
+        modalContent.appendChild(closeButton);
+        shopModal.appendChild(modalContent);
+        document.body.appendChild(shopModal);
+    }
+}
+
+function showMiniGameModal() {
+    const isMobile = window.innerWidth < 600; // Kiểm tra xem có phải là thiết bị di động không
+    if (isMobile) {
+        // Hiển thị modal như thông báo hàng ngày
+        const notification = document.createElement('div');
+        notification.style.position = 'fixed';
+        notification.style.top = '0';
+        notification.style.left = '0';
+        notification.style.width = '100%';
+        notification.style.height = '100%';
+        notification.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        notification.style.display = 'flex';
+        notification.style.justifyContent = 'center';
+        notification.style.alignItems = 'center';
+        notification.style.zIndex = '1000';
+
+        const modal = document.createElement('div');
+        modal.style.backgroundColor = 'white';
+        modal.style.borderRadius = '10px';
+        modal.style.padding = '20px';
+        modal.style.textAlign = 'center';
+        modal.style.maxWidth = '80%';
+        modal.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+        modal.style.display = 'flex';
+        modal.style.flexDirection = 'column';
+        modal.style.alignItems = 'center';
+
+        const title = document.createElement('h2');
+        title.innerText = 'Mini Game';
+        
+        const iframe = document.createElement('iframe');
+        iframe.src = 'indexgMiniGame.html'; // Thay thế bằng URL bạn muốn hiển thị
+        iframe.style.width = '100%';
+        iframe.style.height = '400px'; // Chiều cao của iframe
+        iframe.style.border = 'none'; // Không có viền
+
+        const closeButton = document.createElement('button');
+        closeButton.innerText = 'Đóng';
+        closeButton.onclick = function() {
+            notification.remove(); // Đóng modal khi nhấn nút
+        };
+
+        modal.appendChild(title);
+        modal.appendChild(iframe);
+        modal.appendChild(closeButton);
+        notification.appendChild(modal);
+        document.body.appendChild(notification);
+    } else {
+        // Hiển thị modal như hiện tại
+        const shopModal = document.createElement('div');
+        shopModal.className = 'modal'; // Thêm class cho modal
+        shopModal.style.display = 'flex'; // Hiển thị modal
+
+        const modalContent = document.createElement('div');
+        modalContent.className = 'modal-content';
+        
+        const iframe = document.createElement('iframe');
+        iframe.src = 'indexMiniGame.html'; // Thay thế bằng URL bạn muốn hiển thị
         iframe.style.width = '100%';
         iframe.style.height = '400px'; // Chiều cao của iframe
         iframe.style.border = 'none'; // Không có viền
