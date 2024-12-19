@@ -28,7 +28,7 @@
 
     .button {
       display: inline-block;
-      background: linear-gradient(to bottom, #28a745, #198754); /* Màu xanh dương gradient */
+      background: linear-gradient(to bottom, #66FF33, #00FF00); /* Màu xanh lá */
       color: #fff;
       padding: 12px 24px;
       border-radius: 8px;
@@ -190,6 +190,10 @@ document.getElementById('money').innerText = coins;
       window.location.href = "Gacha RNG 50.000!!!.html";
     }
 
+    function goBackToIndex() {
+      window.location.href = "index.html";
+    }
+
     function resetStats() {
         if (confirm("Bạn có chắc chắn muốn đặt lại tất cả các chỉ số?")) {
             localStorage.removeItem('money');
@@ -253,6 +257,9 @@ document.getElementById('money').innerText = coins;
   <br>
   <button class="button" onclick="goBackToGacha()">Quay lại Gacha RNG</button>
     <button class="button" onclick="resetStats()">Đặt lại tất cả chỉ số</button> <--- Nút reset
+<br>
+<br>
+  <button class="button" onclick="goBackToIndex()">Trang chính</button>
   <footer>
     &copy; 2024 Admin Panel. All rights reserved.
   </footer>
