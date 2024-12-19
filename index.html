@@ -135,6 +135,50 @@
                 background-position: 0% 50%;
             }
         }
+
+.update-history-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    display: none; /* Ẩn modal mặc định */
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 90%;
+}
+
+.info-button {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: white; /* Màu nền trắng */
+    color: #333; /* Màu chữ tối để dễ đọc */
+    border: 2px solid #ccc; /* Đường viền màu xám nhạt */
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s, border-color 0.3s;
+    font-size: 1em;
+}
+
+.info-button:hover {
+    background-color: #f0f0f0; /* Màu nền sáng hơn khi hover */
+    border-color: #888; /* Đường viền tối hơn khi hover */
+}
+
+.button-text {
+    margin-left: 10px; /* Khoảng cách giữa biểu tượng và văn bản */
+}
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -186,6 +230,12 @@ const philosophies = [
     <div class="philosophy"></div>
     <div class="author"></div>
     <div class="container">
+<div>
+<button class="info-button" onclick="showUpdateHistoryModal()">
+    <img src="https://media.lordicon.com/icons/system/regular/162-update.svg" alt="Update History" style="width: 30px; height: 30px;">
+    <span class="button-text">Lịch Sử Cập Nhật</span>
+</button>
+</div>
         <!-- Danh sách liên kết -->
         <a href="indexgame.html" class="rainbow-button" target="_blank">
             <div class="rainbow-text">
@@ -223,6 +273,57 @@ const philosophies = [
             </div>
             <img src="https://suthatthuvi.com/files/2024/02/html.webp" class="link-image">
         </a>
+        <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="link-item" target="_blank">
+            <div class="link-text">
+                Bạn gái học sinh lộ hàng
+                <div class="link-description">Ảnh gái 18* cực mup</div>
+            </div>
+            <img src="https://suthatthuvi.com/files/2024/02/html.webp" class="link-image">
+        </a>
     </div>
+<div class="update-history-modal" id="update-history-modal" onclick="closeModal('update-history-modal')">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h2>Lịch Sử Cập Nhật</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ngày</th>
+                    <th>Nội Dung</th>
+                </tr>
+            </thead>
+            <tbody id="update-history-body">
+                <!-- Các bản cập nhật sẽ được thêm vào đây -->
+            </tbody>
+        </table>
+        <button onclick="closeModal('update-history-modal')">Đóng</button>
+    </div>
+</div>
+<script>
+function showUpdateHistoryModal() {
+    const updateHistoryBody = document.getElementById('update-history-body');
+    updateHistoryBody.innerHTML = ''; // Xóa nội dung cũ
+
+    // Thêm các bản cập nhật vào bảng
+    const updates = [
+        { date: '19/12/2024', content: 'Thêm nút Lịch sử cập nhật, update shop và minigame' },
+        { date: '69/96/SayGex', content: 'Mấy cái Update cũ thằng Admin không ghi chép lại nên không có đâu' },
+        // Thêm nhiều bản cập nhật hơn nếu cần
+    ];
+
+    updates.forEach(update => {
+        const row = updateHistoryBody.insertRow();
+        const dateCell = row.insertCell(0);
+        const contentCell = row.insertCell(1);
+        dateCell.innerText = update.date;
+        contentCell.innerText = update.content;
+    });
+
+    document.getElementById('update-history-modal').style.display = 'flex';
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+</script>
 </body>
 </html>
