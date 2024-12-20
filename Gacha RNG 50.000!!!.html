@@ -53,7 +53,7 @@
     .countdown-bar {
         width: 100%;
         height: 10px;
-        background-color: #4caf50;
+        background-color: #00ee00;
         position: absolute;
         bottom: 0;
         left: 0;
@@ -128,7 +128,7 @@
         padding: 10px 20px;
         margin-top: 10px;
         font-size: 16px;
-        background-color: #4caf50;
+        background-color: #00ee00;
         color: white;
         border: none;
         border-radius: 5px;
@@ -136,7 +136,7 @@
         transition: background 0.3s;
     }
     button:hover {
-        background-color: #45a049;
+        background-color: #00ee00;
     }
     #money-container {
         font-size: 24px;
@@ -235,7 +235,7 @@
 
     .modal button {
         padding: 10px 20px;
-        background-color: #4caf50;
+        background-color: #00ee00;
         color: white;
         border: none;
         border-radius: 5px;
@@ -244,7 +244,7 @@
     }
 
     .modal button:hover {
-        background-color: #45a049;
+        background-color: #00ee00;
     }
 </style>
 </head>
@@ -255,6 +255,7 @@
         <div class="generate-button" onclick="generateRandomPet()">
             <img src="https://pbs.twimg.com/media/GUmOAlVWkAEyiRC.png" alt="Dice Icon" class="dice-icon">
         </div>
+<button class="auto-generate-button" onclick="startAutoGenerate()">Tự động quay</button>
         <p id="result"></p>
         <img id="pet-image" class="pet-image" src="" alt="Pet Image">
         <p id="probability"></p>
@@ -737,31 +738,6 @@ let luckMultiplier = parseFloat(localStorage.getItem('luckMultiplier')) || 1;
 // Kiểm tra xem giá trị luckMultiplier có được khởi tạo đúng không (in ra console)
 console.log(luckMultiplier);
 
-// Hàm để nâng cấp may mắn
-// Nâng cấp may mắn
-function upgradeLuck() {
-    if (spendMoney(upgradeLuckCost)) {
-        luckMultiplier += 0.1; // Tăng thêm x0.1
-        upgradeLuckCost *= 2; // Giá nâng cấp tăng gấp đôi
-        localStorage.setItem('luckMultiplier', luckMultiplier);
-        localStorage.setItem('luckUpgradeCost', upgradeLuckCost);
-        alert(`Độ may mắn đã tăng lên x${luckMultiplier.toFixed(1)}!`);
-        updateLuckInfo();
-    }
-}
-
-// Nâng cấp tốc độ hồi random
-function upgradeCooldown() {
-    if (spendMoney(upgradeCooldownCost)) {
-        randomCooldownTime *= 0.95; // Giảm thời gian hồi random 5%
-        upgradeCooldownCost *= 2; // Giá nâng cấp tăng gấp đôi
-        localStorage.setItem('randomCooldownTime', randomCooldownTime);
-        localStorage.setItem('cooldownUpgradeCost', upgradeCooldownCost);
-        alert(`Thời gian hồi random đã giảm xuống còn ${randomCooldownTime.toFixed(2)} giây!`);
-        updateCooldownInfo();
-    }
-}
-
 // Hàm quay thú cưng
 function generateRandomPet() {
     if (isGenerating) return;
@@ -1148,6 +1124,22 @@ if (code === "pickleball") {
     else {
         alert("Mã không hợp lệ!");
     }
+}
+
+let autoGenerateInterval;
+
+function startAutoGenerate() {
+    if (autoGenerateInterval) {
+        clearInterval(autoGenerateInterval); // Dừng tự động quay nếu đang chạy
+        autoGenerateInterval = null;
+        document.querySelector('.auto-generate-button').innerText = 'Tự động quay'; // Đổi lại tên nút
+        return;
+    }
+
+    document.querySelector('.auto-generate-button').innerText = 'Dừng tự động quay'; // Đổi tên nút khi đang quay
+    autoGenerateInterval = setInterval(() => {
+        generateRandomPet(); // Gọi hàm quay thú cưng
+    }, 1000); // Thay đổi 1000 thành khoảng thời gian bạn muốn (tính bằng ms)
 }
 </script>
 </body>
