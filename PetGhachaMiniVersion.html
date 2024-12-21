@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trình Tạo Thú Cưng Ngẫu Nhiên</title>
+<style>
+    body {
+        font-family: 'Roboto', sans-serif; /* Đặt font chữ cho toàn bộ trang */
+        display: flex; /* Sử dụng flexbox để căn giữa nội dung */
+        justify-content: center; /* Căn giữa theo chiều ngang */
+        align-items: center; /* Căn giữa theo chiều dọc */
+        height: 100vh; /* Chiều cao bằng 100% viewport */
+        background: linear-gradient(135deg, #f5f7fa, #c3cfe2); /* Nền gradient */
+        margin: 0; /* Xóa margin mặc định */
+    }
+    .container {
+        text-align: center; /* Căn giữa nội dung trong container */
+        background: white; /* Nền trắng cho container */
+        padding: 30px; /* Padding cho container */
+        border-radius: 15px; /* Bo tròn góc */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bóng đổ cho container */
+        position: relative; /* Đặt vị trí tương đối cho container */
+        margin: 20px; /* Margin cho container */
+        display: flex; /* Sử dụng flexbox cho container */
+        flex-direction: column; /* Sắp xếp theo chiều dọc */
+        align-items: center; /* Căn giữa các phần tử con */
+        max-width: 90%; /* Đặt chiều rộng tối đa */
+    }
+    .generate-button {
+        position: relative; /* Đặt vị trí tương đối cho nút tạo */
+        margin-top: 20px; /* Margin trên cho nút */
+        cursor: pointer; /* Hiển thị con trỏ khi hover */
+        background: #00ff00; /* Màu nền xanh lá cây */
+        border: none; /* Không viền */
+        border-radius: 50%; /* Bo tròn thành hình tròn */
+        width: 100px; /* Chiều rộng nút */
+        height: 100px; /* Chiều cao nút */
+        display: flex; /* Sử dụng flexbox cho nút */
+        justify-content: center; /* Căn giữa nội dung trong nút */
+        align-items: center; /* Căn giữa nội dung trong nút */
+        transition: background 0.3s, box-shadow 0.3s; /* Hiệu ứng chuyển đổi */
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); /* Bóng đổ cho nút */
+    }
+    .generate-button:hover {
+        background: #00cc00; /* Màu nền khi hover */
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.7); /* Tăng bóng khi hover */
+    }
+    .dice-icon {
+        width: 50px; /* Chiều rộng biểu tượng xúc xắc */
+        height: 50px; /* Chiều cao biểu tượng xúc xắc */
+    }
+    .countdown-bar {
+        width: 100%; /* Chiều rộng thanh đếm ngược */
+        height: 10px; /* Chiều cao thanh đếm ngược */
+        background-color: #00ee00; /* Màu nền thanh đếm ngược */
+        position: absolute; /* Đặt vị trí tuyệt đối cho thanh */
+        bottom: 0; /* Đặt ở dưới cùng */
+        left: 0; /* Đặt ở bên trái */
+        transition: width 2s linear; /* Hiệu ứng chuyển đổi chiều rộng */
+    }
+    .info-modal, .pet-modal {
+        position: fixed; /* Đặt vị trí cố định cho modal */
+        top: 0; /* Đặt ở trên cùng */
+        left: 0; /* Đặt ở bên trái */
+        width: 100%; /* Chiều rộng 100% */
+        height: 100%; /* Chiều cao 100% */
+        background: rgba(0, 0, 0, 0.8); /* Nền mờ cho modal */
+        display: flex; /* Sử dụng flexbox cho modal */
+        justify-content: center; /* Căn giữa nội dung trong modal */
+        align-items: center; /* Căn giữa nội dung trong modal */
+        z-index: 1000; /* Đặt z-index cao để hiển thị trên các phần tử khác */
+        display: none; /* Ẩn modal mặc định */
+    }
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        max-width: 90%;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 12px;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    input[type="text"] {
+        padding: 10px;
+        margin-top: 20px;
+        font-size: 16px;
+        width: calc(100% - 22px);
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+    button {
+        padding: 10px 20px;
+        margin-top: 10px;
+        font-size: 16px;
+        background-color: #00ee00;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    button:hover {
+        background-color: #00ee00;
+    }
+    @keyframes fly {
+        0% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        100% {
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+    }
+    .pet-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        margin-top: 10px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Media Query cho thiết bị nhỏ */
+    @media (max-width: 600px) {
+        .container {
+            padding: 10px;
+            margin: 10px;
+        }
+        .pet-image {
+            width: 60px;
+            height: 60px;
+        }
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="generate-button" onclick="generateRandomPet()">
+            <img src="https://pbs.twimg.com/media/GUmOAlVWkAEyiRC.png" alt="Dice Icon" class="dice-icon">
+        </div>
+        <button class="auto-generate-button" onclick="startAutoGenerate()">Tự động quay</button>
+        <p id="result"></p>
+        <img id="pet-image" class="pet-image" src="" alt="Pet Image">
+        <p id="probability"></p>
+        <p id="spin-count">0</p> <!-- Đảm bảo phần tử này tồn tại -->
+        <div class="countdown-bar" id="countdown-bar"></div>
+    </div>
+      <script>
+        const pets = [
+            { name: 'Cat', probability: 1/20, image: 'https://ih1.redbubble.net/image.5524686591.1356/raf,360x360,075,t,fafafa:ca443f4786.jpg' },
+            { name: 'Dog', probability: 1/10, image: 'https://fagopet.vn/storage/dq/36/dq365u8lutu3hcfnfzyrck2lamjm_cho-poodle-nau.webp' },
+            { name: 'Rabbit', probability: 1/15, image: 'https://images.ctfassets.net/rt5zmd3ipxai/189GnSsegQkBWUqGJGED6E/c0108e32656d5f4714187a9a58f75295/AdobeStock_247330858.jpeg?fit=fill&fm=webp&h=480&w=782&q=72,%20https://images.ctfassets.net/rt5zmd3ipxai/189GnSsegQkBWUqGJGED6E/c0108e32656d5f4714187a9a58f75295/AdobeStock_247330858.jpeg?fit=fill&fm=webp&h=960&w=1564&q=72' },
+            { name: 'Hamster', probability: 1/25, image: 'https://lolipet.net/wp-content/uploads/2023/11/z4857310072695_728959d9bec5acddc5a04e389c77c113.jpg' },
+            { name: 'Fish', probability: 1/5, image: 'https://i.natgeofe.com/n/18708334-6fce-40b5-ade6-a7e2db7035f2/01-goldfish-nationalgeographic_1567132.jpg?wp=1&w=1084.125&h=721.875' },
+            { name: 'Parrot', probability: 1/30, image: 'https://blog.nature.org/wp-content/uploads/2019/09/5466780476_47f0336213_o.jpg?w=1024' },
+            { name: 'ĐỖ PHÚ QUÍ (PICKLEBALL)', probability: 1/4100000, image: 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/5/d/a/7/5da7072eaf8a8cf3350ee91fb2544221.jpg'},
+            { name: 'Turtle', probability: 1/50, image: 'https://ih1.redbubble.net/image.1123475296.4644/flat,750x,075,f-pad,750x1000,f8f8f8.jpg' },
+            { name: 'MeoBeo', probability: 1/999, image: 'https://cdn.tuoitre.vn/thumb_w/480/471584752817336320/2024/5/20/meo-beo-1716184689176563233778.jpg' },
+            { name: 'Guinea Pig', probability: 1/35, image: 'https://i.pinimg.com/736x/96/ae/9e/96ae9eab678fc1a50af63acd5e5ab2dd.jpg' },
+            { name: 'Chinchilla', probability: 1/45, image: 'https://cdn1.tedsby.com/storage/1/1/5/1159559/mouse-chinchilla-by-ekaterina-usenko.jpg' },
+            { name: 'Horse', probability: 1/100, image: 'https://i.redd.it/cz32nm0l7i771.jpg' },
+            { name: 'Panda', probability: 1/200, image: 'https://ih1.redbubble.net/image.907812001.1782/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.jpg' },
+            { name: 'Koala', probability: 1/150, image: 'https://i.pinimg.com/236x/90/de/ac/90deaced0f9448c83c4f7fd0ffdacdcd.jpg' },
+            { name: 'Penguin', probability: 1/120, image: 'https://images.twinkl.co.uk/tw1n/image/private/t_630/u/ux/emperor-penguin-facts-for-kids-cute_ver_3.jpg' },
+            { name: 'Fox', probability: 1/80, image: 'https://s.abcnews.com/images/Lifestyle/ht_pudding_the_fox_03_mt_140821_16x9_992.jpg' },
+            { name: 'Lion', probability: 1/110, image: 'https://preview.redd.it/what-does-the-lion-say-meow-meow-v0-5u9et6m5rrac1.jpg?width=640&crop=smart&auto=webp&s=2827ce8acdb2968df56233a9acbbc2b1e7cb0d84' },
+            { name: 'Tiger', probability: 1/130, image: 'https://www.lionstigersandbears.org/wp-content/uploads/2024/03/Exposing-the-Cruel-Reality-of-White-Tigers-in-Captivity-2024.jpg' },
+            { name: 'Elephant', probability: 1/140, image: 'https://i.pinimg.com/474x/dd/51/d7/dd51d787de66c7fce0a7c84962491e84.jpg' },
+            { name: 'Giraffe', probability: 1/160, image: 'https://i.pinimg.com/736x/ee/a6/91/eea691adc0698f0792d4efb40032771c.jpg' },
+            { name: 'Chill Guy', probability: 1/420, image: 'https://static.toiimg.com/thumb/msid-115690235,width-400,resizemode-4/115690235.jpg' },
+            { name: ' uncHill gal', probability: 1/419, image: 'https://assets.coingecko.com/coins/images/51981/large/IMG_9410.jpeg?1732289439' },
+    // Hoa quả phổ biến
+    { name: 'Banana', probability: 1/31000, image: 'https://www.shutterstock.com/image-vector/banana-cat-isolated-on-white-260nw-2353794733.jpg' },
+    { name: 'Apple', probability: 1/32000, image: 'https://assets.coingecko.com/coins/images/36349/large/acat.png?1711188328' },
+    { name: 'Orange', probability: 1/33000, image: 'https://images-handler.kamereo.vn/eyJidWNrZXQiOiJpbWFnZS1oYW5kbGVyLXByb2QiLCJrZXkiOiJzdXBwbGllci82NTQvUFJPRFVDVF9JTUFHRS8zMzBkYWQwYi01M2U0LTQ0MGItYjNlMC1kMjYxOTJjMTE1YzYucG5nIn0=' },
+    { name: 'Strawberry', probability: 1/34000, image: 'https://www.calgiant.com/wp-content/uploads/2021/08/berry-iso-straw-1-878x1024.png' },
+    { name: 'Watermelon', probability: 1/35000, image: 'https://ih1.redbubble.net/image.1320803020.3540/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.u2.jpg' },
+    { name: 'Pineapple', probability: 1/36000, image: 'https://img.wattpad.com/daaae6be9230e3457ff7b3a5be356cbf60814bc5/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f443239554d707536766a364d51513d3d2d3536333930323332332e313532373364356533626166383761333837383439383036393338392e6a7067?s=fit&w=720&h=720' },
+    { name: 'Mango', probability: 1/37000, image: 'https://i.pinimg.com/originals/13/35/64/1335641b1ea07ba362d09e941fad28c9.jpg' },
+    { name: 'Grapes', probability: 1/38000, image: 'https://static.vecteezy.com/system/resources/previews/027/254/790/non_2x/grapes-isolated-on-transparent-background-file-cut-out-ai-generated-png.png' },
+    { name: 'Cherry', probability: 1/39000, image: 'https://images3.memedroid.com/images/UPLOADED390/598851c34322d.jpeg' },
+    { name: 'Peach', probability: 1/40000, image: 'https://i.chzbgr.com/full/9102040832/h1E529CE6/a-cigarette-supposed-to-be-princess-peach-saying-she-hasnt-heard-the-names-mario-and-luigi-in-years' },
+    { name: 'Avocado', probability: 1/41000, image: 'https://i.chzbgr.com/full/9196866816/h46E2A6DC/did-you-knowthe-aztec-word-for-avocado-means-testicle-tree' },
+    { name: 'Coconut', probability: 1/42000, image: 'https://i.pinimg.com/736x/d5/be/56/d5be56bdff6f7e88bb8ac80a8d924baf.jpg' },
+    { name: 'Kiwi', probability: 1/43000, image: 'https://ih1.redbubble.net/image.5047482046.3553/raf,360x360,075,t,fafafa:ca443f4786.jpg' },
+    { name: 'Lemon', probability: 1/44000, image: 'https://i.redd.it/42558pgcj7zc1.png' },
+    { name: 'Lime', probability: 1/45000, image: 'https://m.media-amazon.com/images/I/81KoXfeCD1L.jpg' },
+    { name: 'Blueberry', probability: 1/46000, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRT7A9xxm3GXrCTjqrkepIR0V_W86gfQXh0-A&s' },
+    { name: 'Raspberry', probability: 1/47000, image: 'https://i.pinimg.com/736x/d4/4b/69/d44b697d1b0da0f857364f71db2d08bd.jpg' },
+    { name: 'Blackberry', probability: 1/48000, image: 'https://i.pinimg.com/736x/d0/56/a9/d056a9870343c8e4e7e9e794b9abbce8.jpg' },
+    { name: 'Dragon Fruit', probability: 1/49000, image: 'https://img.ifunny.co/images/551dc2c59732ebfc75838dc5ec997ccf56d33e2337cf2fa4dffb6a8761f4bcbf_1.jpg' },
+    { name: 'Papaya', probability: 1/50000, image: 'https://ih1.redbubble.net/image.2657849200.5846/raf,360x360,075,t,fafafa:ca443f4786.jpg' },
+    // Meme
+    { name: 'Doge', probability: 1/500, image: 'https://kenh14cdn.com/zoom/594_371/203336854389633024/2024/5/26/photo1716706342049-17167063421621541902854.jpg' },
+    { name: 'Pepe', probability: 1/1000, image: 'https://static01.nyt.com/images/2016/09/28/us/28xp-pepefrog/28xp-pepefrog-superJumbo.jpg' },
+    { name: 'Grumpy Cat', probability: 1/2000, image: 'https://ew.com/thmb/0_PyYU_Nym5fWeedIxPb6WHiuRQ=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/b31-92532f841b9349638d226a6c62aa9e85.jpg' },
+    { name: 'Nyan Cat', probability: 1/3000, image: 'https://upload.wikimedia.org/wikipedia/vi/b/b7/Nyan_Cat_250px.png' },
+    { name: 'Trollface', probability: 1/4000, image: 'https://upload.wikimedia.org/wikipedia/en/7/73/Trollface.png' },
+    { name: 'Success Kid', probability: 1/5000, image: 'https://upload.wikimedia.org/wikipedia/en/f/ff/SuccessKid.jpg' },
+    { name: 'Bad Luck Brian', probability: 1/6000, image: 'https://www-s3-live.kent.edu/s3fs-root/s3fs-public/styles/fixed_width_1200/public/syiviojoq72a1_0.jpg?VersionId=DM4DX1t4FsSOHDesXvmUlI52c_TFW9iR&itok=YAqV2OUS' },
+    { name: 'Dancing Baby', probability: 1/7000, image: 'https://i.pinimg.com/originals/a4/27/98/a42798da3846ddfc1a8a13e3d114e696.gif' },
+    { name: 'Salt Bae', probability: 1/8000, image: 'https://media-cldnry.s-nbcnews.com/image/upload/t_fit-760w,f_auto,q_auto:best/newscms/2017_05/1890591/170203-salt-bae-mn-1530.jpg' },
+    { name: 'Distracted Boyfriend', probability: 1/9000, image: 'https://media.wired.com/photos/59a459d3b345f64511c5e3d4/master/pass/MemeLoveTriangle_297886754.jpg' },
+    // Nhân vật nổi tiếng
+    { name: 'Elon Musk', probability: 1/10000, image: 'https://cdn-images.vtv.vn/zoom/640_400/66349b6076cb4dee98746cf1/2024/11/12/elon-musk-97432930993441922212990-05400702350001787647929.webp' },
+    { name: 'Albert Einstein', probability: 1/11000, image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Albert_Einstein_sticks_his_tongue_1951.jpg/189px-Albert_Einstein_sticks_his_tongue_1951.jpg' },
+    { name: 'Isaac Newton', probability: 1/12000, image: 'https://upload.wikimedia.org/wikipedia/commons/3/3b/Portrait_of_Sir_Isaac_Newton%2C_1689.jpg' },
+    { name: 'Nikola Tesla', probability: 1/13000, image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Tesla_circa_1890.jpeg/800px-Tesla_circa_1890.jpeg' },
+    { name: 'Marie Curie', probability: 1/14000, image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Marie_Curie_c._1920s.jpg/800px-Marie_Curie_c._1920s.jpg' },
+    { name: 'Leonardo da Vinci', probability: 1/15000, image: 'https://www.misa.vn/wp-content/uploads/2020/06/MISA_bai_hoc_nghe_nghiep.jpg' },
+    { name: 'Steve Jobs', probability: 1/16000, image: 'https://vcdn1-sohoa.vnecdn.net/2021/02/16/v2-4f48da9ef042a1915ebfedd0682-6733-6243-1613447924.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=IMz9OQIgjN-kBBfTL-MJFQ' },
+    { name: 'Bill Gates', probability: 1/17000, image: 'https://yt3.googleusercontent.com/WuPodYLA22bumFSAnf654wJ8cE7n2Zb8M2KEF5B3RiyziqLTXQpp6JXBYOSH8zifY_jihWVq=s900-c-k-c0x00ffffff-no-rj' },
+    { name: 'Mark Zuckerberg', probability: 1/18000, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRG9OyOlAU8bvwAbAYiegM42OYvOI6m5yaKA&s' },
+    { name: 'Oprah Winfrey', probability: 1/19000, image: 'https://hips.hearstapps.com/hmg-prod/images/oprah-winfrey-arrives-at-the-premiere-of-owns-david-makes-news-photo-1678107564.jpg?crop=0.989xw:0.851xh;0.00489xw,0.0112xh&resize=1200:*' },
+    // Phim
+    { name: 'Shrek', probability: 1/20000, image: 'https://m.media-amazon.com/images/M/MV5BZDE2ZjIxYzUtZTJjYS00OWQ0LTk2NGEtMDliYmI3MzMwYjhkXkEyXkFqcGdeQWFsZWxvZw@@._V1_.jpg' },
+    { name: 'SpongeBob', probability: 1/21000, image: 'https://upload.wikimedia.org/wikipedia/en/thumb/3/3b/SpongeBob_SquarePants_character.svg/800px-SpongeBob_SquarePants_character.svg.png' },
+    { name: 'Minion', probability: 1/22000, image: 'https://i.ytimg.com/vi/IGJVbIHTTqs/maxresdefault.jpg' },
+    { name: 'Pikachu', probability: 1/23000, image: 'https://media.wired.com/photos/5f87340d114b38fa1f8339f9/master/w_1600%2Cc_limit/Ideas_Surprised_Pikachu_HD.jpg' },
+    { name: 'Iron Man', probability: 1/24000, image: 'https://media.pinatafarm.com/protected/9CB33540-63CA-4013-AD4C-17771C92EDC4/4300f891-6628-4b9c-af27-766d8e8adbe1-1720020684038-pfarm-with-png-watermarked.webp' },
+    { name: 'Batman', probability: 1/25000, image: 'https://static1.cbrimages.com/wordpress/wp-content/uploads/2019/02/Batman-slapping-Robin-Meme-Blank.jpg' },
+    { name: 'Superman', probability: 1/26000, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRizsNvFaMGhKbGOIT4urkyg-QOdam7FH7S6A&s' },
+    { name: 'Goku', probability: 1/27000, image: 'https://i.kym-cdn.com/photos/images/newsfeed/001/975/756/46f.jpg' },
+    { name: 'Naruto', probability: 1/28000, image: 'https://preview.redd.it/what-scene-character-or-arc-did-you-cringe-the-most-about-v0-qi84d684eohb1.png?auto=webp&s=92c344acfce0c621001a3f60818bf9b205b4c5d3' },
+    { name: 'Mario', probability: 1/29000, image: 'https://media.tenor.com/aQQT2lV_XcsAAAAe/mario.png' },
+    { name: 'Luigi', probability: 1/30000, image: 'https://a.pinatafarm.com/640x562/7ed117e72b/luigi-dance.jpg' },
+    { name: 'Yoda', probability: 1/31000, image: 'https://ae01.alicdn.com/kf/S2c36fb9be2944a3fa2bafa087462ebadJ.jpg_960x960.jpg' },
+    { name: 'Darth Vader', probability: 1/32000, image: 'https://lumiere-a.akamaihd.net/v1/images/darth-vader-main_4560aff7.jpeg?region=71%2C0%2C1139%2C854' },
+    { name: 'Harry Potter', probability: 1/33000, image: 'https://cdn-images.vtv.vn/zoom/640_400/2019/9/3/17988102-7420621-the8bookpotterseriesandotherrelatedstoriesaudiorecordi-a-61567460030727-15674958768921527956477.jpg' },
+    { name: 'Hermione', probability: 1/34000, image: 'https://wizardmagazines.wordpress.com/wp-content/uploads/2020/08/hermionegranger.jpg?w=1400' },
+    { name: 'Ron Weasley', probability: 1/35000, image: 'https://upload.wikimedia.org/wikipedia/vi/thumb/5/5e/Ron_Weasley_poster.jpg/250px-Ron_Weasley_poster.jpg' },
+    { name: 'Frodo', probability: 1/36000, image: 'https://www.looper.com/img/gallery/frodo-baggins-12-best-moments-in-the-lord-of-the-rings-franchise-ranked/intro-1663422318.jpg' },
+    { name: 'Gandalf', probability: 1/37000, image: 'https://example.com/gandalf.png' },
+    { name: 'Legolas', probability: 1/38000, image: 'https://example.com/legolas.png' },
+    { name: 'Aragorn', probability: 1/39000, image: 'https://example.com/aragorn.png' },
+    { name: 'Thanos', probability: 1/40000, image: 'https://example.com/thanos.png' },
+    { name: 'Captain America', probability: 1/41000, image: 'https://example.com/captainamerica.png' },
+    { name: 'Thor', probability: 1/42000, image: 'https://example.com/thor.png' },
+    { name: 'Hulk', probability: 1/43000, image: 'https://example.com/hulk.png' },
+    { name: 'Black Widow', probability: 1/44000, image: 'https://example.com/blackwidow.png' },
+    { name: 'Spider-Man', probability: 1/45000, image: 'https://example.com/spiderman.png' },
+    { name: 'Wolverine', probability: 1/46000, image: 'https://example.com/wolverine.png' },
+    { name: 'Deadpool', probability: 1/47000, image: 'https://example.com/deadpool.png' },
+    { name: 'Joker', probability: 1/48000, image: 'https://example.com/joker.png' },
+    { name: 'Shrek', probability: 1/49000, image: 'https://example.com/shrek.png' },
+    { name: 'SpongeBob', probability: 1/50000, image: 'https://example.com/spongebob.png' },
+    { name: 'Minion', probability: 1/51000, image: 'https://example.com/minion.png' },
+    { name: 'Pikachu', probability: 1/52000, image: 'https://example.com/pikachu.png' },
+    { name: 'Iron Man', probability: 1/53000, image: 'https://example.com/ironman.png' },
+    { name: 'Batman', probability: 1/54000, image: 'https://example.com/batman.png' },
+    { name: 'Superman', probability: 1/55000, image: 'https://example.com/superman.png' },
+    { name: 'Goku', probability: 1/56000, image: 'https://example.com/goku.png' },
+    { name: 'Naruto', probability: 1/57000, image: 'https://example.com/naruto.png' },
+    { name: 'Mario', probability: 1/58000, image: 'https://example.com/mario.png' },
+    { name: 'Luigi', probability: 1/59000, image: 'https://example.com/luigi.png' },
+    { name: 'Yoda', probability: 1/60000, image: 'https://example.com/yoda.png' },
+    { name: 'Darth Vader', probability: 1/61000, image: 'https://example.com/darthvader.png' },
+    { name: 'Harry Potter', probability: 1/62000, image: 'https://example.com/harrypotter.png' },
+    { name: 'Hermione', probability: 1/63000, image: 'https://example.com/hermione.png' },
+    { name: 'Ron Weasley', probability: 1/64000, image: 'https://example.com/ronweasley.png' },
+    { name: 'Frodo', probability: 1/65000, image: 'https://example.com/frodo.png' },
+    { name: 'Gandalf', probability: 1/66000, image: 'https://example.com/gandalf.png' },
+    { name: 'Legolas', probability: 1/67000, image: 'https://example.com/legolas.png' },
+    { name: 'Aragorn', probability: 1/68000, image: 'https://example.com/aragorn.png' },
+    { name: 'Thanos', probability: 1/69000, image: 'https://example.com/thanos.png' },
+    { name: 'Captain America', probability: 1/70000, image: 'https://example.com/captainamerica.png' },
+    { name: 'Thor', probability: 1/71000, image: 'https://example.com/thor.png' },
+    { name: 'Hulk', probability: 1/72000, image: 'https://example.com/hulk.png' },
+    { name: 'Black Widow', probability: 1/73000, image: 'https://example.com/blackwidow.png' },
+    { name: 'Spider-Man', probability: 1/74000, image: 'https://example.com/spiderman.png' },
+    { name: 'Wolverine', probability: 1/75000, image: 'https://example.com/wolverine.png' },
+    { name: 'Deadpool', probability: 1/76000, image: 'https://example.com/deadpool.png' },
+    { name: 'Joker', probability: 1/77000, image: 'https://example.com/joker.png' },
+    // Easter egg
+    { name: 'Golden Snitch', probability: 1/78000, image: 'https://example.com/goldensnitch.png' },
+    { name: 'Infinity Gauntlet', probability: 1/79000, image: 'https://example.com/infinitygauntlet.png' },
+    { name: 'One Ring', probability: 1/80000, image: 'https://example.com/onering.png' },
+    { name: 'Lightsaber', probability: 1/81000, image: 'https://example.com/lightsaber.png' },
+    { name: 'Triforce', probability: 1/82000, image: 'https://example.com/triforce.png' },
+    { name: 'Master Sword', probability: 1/83000, image: 'https://example.com/mastersword.png' },
+    { name: 'Portal Gun', probability: 1/84000, image: 'https://example.com/portalgun.png' },
+    { name: 'Hoverboard', probability: 1/85000, image: 'https://example.com/hoverboard.png' },
+    { name: 'DeLorean', probability: 1/86000, image: 'https://example.com/delorean.png' },
+    { name: 'Flux Capacitor', probability: 1/87000, image: 'https://example.com/fluxcapacitor.png' },
+    { name: 'TARDIS', probability: 1/88000, image: 'https://example.com/tardis.png' },
+    { name: 'Sonic Screwdriver', probability: 1/89000, image: 'https://example.com/sonicscrewdriver.png' },
+    { name: 'Phaser', probability: 1/90000, image: 'https://example.com/phaser.png' },
+    { name: 'Batmobile', probability: 1/91000, image: 'https://example.com/batmobile.png' },
+    { name: 'Mjolnir', probability: 1/92000, image: 'https://example.com/mjolnir.png' },
+    { name: 'Stormbreaker', probability: 1/93000, image: 'https://example.com/stormbreaker.png' },
+    { name: 'Vibranium Shield', probability: 1/94000, image: 'https://example.com/vibraniumshield.png' },
+    { name: 'Arc Reactor', probability: 1/95000, image: 'https://example.com/arcreactor.png' },
+    { name: 'Web Shooters', probability: 1/96000, image: 'https://example.com/webshooters.png' },
+    { name: 'Adamantium Claws', probability: 1/97000, image: 'https://example.com/adamantiumclaws.png' },
+    { name: 'Chimichanga', probability: 1/98000, image: 'https://example.com/chimichanga.png' },
+    { name: 'Batarang', probability: 1/99000, image: 'https://example.com/batarang.png' },
+    { name: 'Utility Belt', probability: 1/100000, image: 'https://example.com/utilitybelt.png' },
+    { name: 'Bat Signal', probability: 1/110000, image: 'https://example.com/batsignal.png' },
+    { name: 'Kryptonite', probability: 1/120000, image: 'https://example.com/kryptonite.png' },
+    { name: 'Daily Planet', probability: 1/130000, image: 'https://example.com/dailyplanet.png' },
+    { name: 'Fortress of Solitude', probability: 1/140000, image: 'https://example.com/fortressofsolitude.png' },
+    { name: 'Bat Cave', probability: 1/150000, image: 'https://example.com/batcave.png' },
+    { name: 'Wayne Manor', probability: 1/160000, image: 'https://example.com/waynemanor.png' },
+    { name: 'Hall of Justice', probability: 1/170000, image: 'https://example.com/hallofjustice.png' },
+    { name: 'Watchtower', probability: 1/180000, image: 'https://example.com/watchtower.png' },
+    { name: 'Invisible Jet', probability: 1/190000, image: 'https://example.com/invisiblejet.png' },
+    { name: 'Lasso of Truth', probability: 1/200000, image: 'https://example.com/lassooftruth.png' },
+    { name: 'Bracelets of Submission', probability: 1/210000, image: 'https://example.com/braceletsofsubmission.png' },
+    { name: 'Wonder Woman\'s Tiara', probability: 1/220000, image: 'https://example.com/wonderwomanstiara.png' },
+    { name: 'Green Lantern Ring', probability: 1/230000, image: 'https://example.com/greenlanternring.png' },
+    { name: 'Power Ring', probability: 1/240000, image: 'https://example.com/powerring.png' },
+    { name: 'Mother Box', probability: 1/250000, image: 'https://example.com/motherbox.png' },
+    { name: 'Boom Tube', probability: 1/260000, image: 'https://example.com/boomtube.png' },
+    { name: 'Omega Beam', probability: 1/270000, image: 'https://example.com/omegabeam.png' },
+    { name: 'Bat Signal', probability: 1/280000, image: 'https://example.com/batsignal.png' },
+    { name: 'Kryptonite', probability: 1/290000, image: 'https://example.com/kryptonite.png' },
+    { name: 'Daily Planet', probability: 1/300000, image: 'https://example.com/dailyplanet.png' },
+    { name: 'Fortress of Solitude', probability: 1/310000, image: 'https://example.com/fortressofsolitude.png' },
+    { name: 'Bat Cave', probability: 1/320000, image: 'https://example.com/batcave.png' },
+    { name: 'Wayne Manor', probability: 1/330000, image: 'https://example.com/waynemanor.png' },
+    { name: 'Hall of Justice', probability: 1/340000, image: 'https://example.com/hallofjustice.png' },
+    { name: 'Watchtower', probability: 1/350000, image: 'https://example.com/watchtower.png' },
+    { name: 'Invisible Jet', probability: 1/360000, image: 'https://example.com/invisiblejet.png' },
+    { name: 'Lasso of Truth', probability: 1/370000, image: 'https://example.com/lassooftruth.png' },
+    { name: 'Bracelets of Submission', probability: 1/380000, image: 'https://example.com/braceletsofsubmission.png' },
+    { name: 'Wonder Woman\'s Tiara', probability: 1/390000, image: 'https://example.com/wonderwomanstiara.png' },
+    { name: 'Green Lantern Ring', probability: 1/400000, image: 'https://example.com/greenlanternring.png' },
+    { name: 'Power Ring', probability: 1/410000, image: 'https://example.com/powerring.png' },
+    { name: 'Mother Box', probability: 1/420000, image: 'https://example.com/motherbox.png' },
+    { name: 'Boom Tube', probability: 1/430000, image: 'https://example.com/boomtube.png' },
+    { name: 'Omega Beam', probability: 1/440000, image: 'https://example.com/omegabeam.png' },
+    { name: 'Bat Signal', probability: 1/450000, image: 'https://example.com/batsignal.png' },
+    { name: 'Kryptonite', probability: 1/460000, image: 'https://example.com/kryptonite.png' },
+    { name: 'Daily Planet', probability: 1/470000, image: 'https://example.com/dailyplanet.png' },
+    { name: 'Fortress of Solitude', probability: 1/480000, image: 'https://example.com/fortressofsolitude.png' },
+    { name: 'Bat Cave', probability: 1/490000, image: 'https://example.com/batcave.png' },
+    { name: 'Wayne Manor', probability: 1/500000, image: 'https://example.com/waynemanor.png' },
+    { name: 'Hall of Justice', probability: 1/510000, image: 'https://example.com/hallofjustice.png' },
+    { name: 'Watchtower', probability: 1/520000, image: 'https://example.com/watchtower.png' },
+    { name: 'Invisible Jet', probability: 1/530000, image: 'https://example.com/invisiblejet.png' },
+    { name: 'Lasso of Truth', probability: 1/540000, image: 'https://example.com/lassooftruth.png' },
+    { name: 'Bracelets of Submission', probability: 1/550000, image: 'https://example.com/braceletsofsubmission.png' },
+    { name: 'Wonder Woman\'s Tiara', probability: 1/560000, image: 'https://example.com/wonderwomanstiara.png' },
+    { name: 'Green Lantern Ring', probability: 1/570000, image: 'https://example.com/greenlanternring.png' },
+    { name: 'Power Ring', probability: 1/580000, image: 'https://example.com/powerring.png' },
+    { name: 'Mother Box', probability: 1/590000, image: 'https://example.com/motherbox.png' },
+    { name: 'Boom Tube', probability: 1/600000, image: 'https://example.com/boomtube.png' },
+    { name: 'Omega Beam', probability: 1/610000, image: 'https://example.com/omegabeam.png' },
+    { name: 'Bat Signal', probability: 1/620000, image: 'https://example.com/batsignal.png' },
+    { name: 'Kryptonite', probability: 1/630000, image: 'https://example.com/kryptonite.png' },
+    { name: 'Daily Planet', probability: 1/640000, image: 'https://example.com/dailyplanet.png' },
+    { name: 'Fortress of Solitude', probability: 1/650000, image: 'https://example.com/fortressofsolitude.png' },
+    { name: 'Bat Cave', probability: 1/660000, image: 'https://example.com/batcave.png' },
+    { name: 'Wayne Manor', probability: 1/670000, image: 'https://example.com/waynemanor.png' },
+    { name: 'Hall of Justice', probability: 1/680000, image: 'https://example.com/hallofjustice.png' },
+    { name: 'Watchtower', probability: 1/690000, image: 'https://example.com/watchtower.png' },
+    { name: 'Invisible Jet', probability: 1/700000, image: 'https://example.com/invisiblejet.png' },
+    { name: 'Lasso of Truth', probability: 1/710000, image: 'https://example.com/lassooftruth.png' },
+    { name: 'Bracelets of Submission', probability: 1/720000, image: 'https://example.com/braceletsofsubmission.png' },
+    { name: 'Wonder Woman\'s Tiara', probability: 1/730000, image: 'https://example.com/wonderwomanstiara.png' },
+    { name: 'Green Lantern Ring', probability: 1/740000, image: 'https://example.com/greenlanternring.png' },
+    { name: 'Power Ring', probability: 1/750000, image: 'https://example.com/powerring.png' },
+    { name: 'Mother Box', probability: 1/760000, image: 'https://example.com/motherbox.png' },
+    { name: 'Boom Tube', probability: 1/770000, image: 'https://example.com/boomtube.png' },
+    { name: 'Omega Beam', probability: 1/780000, image: 'https://example.com/omegabeam.png' },
+    { name: 'Bat Signal', probability: 1/790000, image: 'https://example.com/batsignal.png' },
+    { name: 'Kryptonite', probability: 1/800000, image: 'https://example.com/kryptonite.png' },
+    { name: 'Daily Planet', probability: 1/810000, image: 'https://example.com/dailyplanet.png' },
+    { name: 'Fortress of Solitude', probability: 1/820000, image: 'https://example.com/fortressofsolitude.png' },
+    { name: 'Bat Cave', probability: 1/830000, image: 'https://example.com/batcave.png' },
+    { name: 'Wayne Manor', probability: 1/840000, image: 'https://example.com/waynemanor.png' },
+    { name: 'Hall of Justice', probability: 1/850000, image: 'https://example.com/hallofjustice.png' },
+    { name: 'Watchtower', probability: 1/860000, image: 'https://example.com/watchtower.png' },
+    { name: 'Invisible Jet', probability: 1/870000, image: 'https://example.com/invisiblejet.png' },
+    //meme shiny
+    { name: 'Doge shiny', probability: 1/999999, image: 'https://example.com/doge.png' },
+    { name: 'Pepe shiny', probability: 1/2000000, image: 'https://example.com/pepe.png' },
+    { name: 'Grumpy Cat shiny', probability: 1/3000000, image: 'https://example.com/grumpycat.png' },
+    { name: 'Nyan Cat shiny', probability: 1/4000000, image: 'https://example.com/nyancat.png' },
+    { name: 'Trollface shiny', probability: 1/5000000, image: 'https://example.com/trollface.png' },
+    { name: 'Success Kid shiny', probability: 1/6000000, image: 'https://example.com/successkid.png' },
+    { name: 'Bad Luck Brian shiny', probability: 1/7000000, image: 'https://example.com/badluckbrian.png' },
+    { name: 'Dancing Baby shiny', probability: 1/8000000, image: 'https://example.com/dancingbaby.png' },
+    { name: 'Salt Bae shiny', probability: 1/9000000, image: 'https://example.com/saltbae.png' },
+    { name: 'Distracted Boyfriend shiny', probability: 1/10000000, image: 'https://example.com/distractedboyfriend.png' },
+    { name: 'Hide the Pain Harold shiny', probability: 1/11000000, image: 'https://example.com/hidethepainharold.png' },
+    { name: 'Philosoraptor shiny', probability: 1/12000000, image: 'https://example.com/philosoraptor.png' },
+    { name: 'Overly Attached Girlfriend shiny', probability: 1/13000000, image: 'https://example.com/overlyattachedgirlfriend.png' },
+    { name: 'Scumbag Steve shiny', probability: 1/14000000, image: 'https://example.com/scumbagsteve.png' },
+    { name: 'Y U No Guy shiny', probability: 1/15000000, image: 'https://example.com/yunoguy.png' },
+    { name: 'Condescending Wonka shiny', probability: 1/16000000, image: 'https://example.com/condescendingwonka.png' },
+    { name: 'Ermahgerd Girl shiny', probability: 1/17000000, image: 'https://example.com/ermahgerdgirl.png' },
+    { name: 'First World Problems shiny', probability: 1/18000000, image: 'https://example.com/firstworldproblems.png' },
+    { name: 'Futurama Fry shiny', probability: 1/19000000, image: 'https://example.com/futuramafry.png' },
+    { name: 'Good Guy Greg shiny', probability: 1/20000000, image: 'https://example.com/goodguygreg.png' },
+    { name: 'Roll Safe shiny', probability: 1/21000000, image: 'https://example.com/rollsafe.png' },
+    { name: 'Mocking SpongeBob shiny', probability: 1/22000000, image: 'https://example.com/mockingspongebob.png' },
+    { name: 'Arthur Fist shiny', probability: 1/23000000, image: 'https://example.com/arthurfist.png' },
+    { name: 'Expanding Brain shiny', probability: 1/24000000, image: 'https://example.com/expandingbrain.png' },
+    { name: 'Is This a Pigeon? shiny', probability: 1/25000000, image: 'https://example.com/isthisapigeon.png' },
+    { name: 'Surprised Pikachu shiny', probability: 1/26000000, image: 'https://example.com/surprisedpikachu.png' },
+    { name: 'Epic Sax Guy shiny', probability: 1/27000000, image: 'https://example.com/epicsaxguy.png' },
+    { name: 'Disaster Girl shiny', probability: 1/28000000, image: 'https://example.com/disastergirl.png' },
+    { name: 'Ancient Aliens shiny', probability: 1/29000000, image: 'https://example.com/ancientaliens.png' },
+    { name: 'Hide the Pain Harold shiny', probability: 1/30000000, image: 'https://example.com/hidethepainharold.png' },
+    { name: 'Philosoraptor shiny', probability: 1/31000000, image: 'https://example.com/philosoraptor.png' }
+        ];
+let spinCount = 0;
+let isGenerating = false;
+let money = 0;
+let totalCoins = 0; // Tổng số coin đã có từ trước đến nay
+let bestRandom = 0; // Lần random may nhất
+let totalTimePlayed = 0; // Tổng thời gian đã chơi từ trước đến nay
+let startTime = Date.now(); // Thời gian bắt đầu chơi
+
+// Load data from localStorage
+window.onload = function() {
+    loadSavedData();
+};
+
+function loadSavedData() {
+    const savedMoney = parseInt(localStorage.getItem('money')) || 0;
+    const savedSpinCount = parseInt(localStorage.getItem('spinCount')) || 0;
+    
+    money = savedMoney; // Tải số tiền từ localStorage
+    spinCount = savedSpinCount;
+
+    // Không hiển thị số tiền
+    // document.getElementById('money').innerText = money; // Xóa hoặc bình luận dòng này
+    document.getElementById('spin-count').innerText = `${spinCount}`; // Cập nhật số lần quay hiển thị
+}
+
+function saveData() {
+    const petsHistory = JSON.parse(localStorage.getItem('petsHistory')) || [];
+    
+    // Lưu số tiền và số lần quay
+    localStorage.setItem('money', money); // Vẫn lưu số tiền
+    localStorage.setItem('spinCount', spinCount);
+    
+    // Lưu lịch sử thú cưng
+    localStorage.setItem('petsHistory', JSON.stringify(petsHistory));
+}
+
+// Hàm quay thú cưng
+function generateRandomPet() {
+    if (isGenerating) return;
+    isGenerating = true;
+
+    document.getElementById('result').innerText = 'Đang tạo...';
+    document.getElementById('probability').innerText = '';
+
+    const countdownBar = document.getElementById('countdown-bar');
+    countdownBar.style.transition = 'none';
+    countdownBar.style.width = '100%';
+    setTimeout(() => {
+        countdownBar.style.transition = 'width 2s linear';
+        countdownBar.style.width = '0%';
+    }, 10);
+
+    let countdown = 2;
+    let intervalTime = 100;
+    const interval = setInterval(() => {
+        const randomPet = pets[Math.floor(Math.random() * pets.length)];
+        document.getElementById('result').innerText = `Đang ngẫu nhiên: ${randomPet.name}`;
+        countdown -= 0.1;
+        intervalTime += 50;
+        if (countdown <= 0) {
+            clearInterval(interval);
+            showFinalPet();
+            isGenerating = false;
+        }
+    }, intervalTime);
+}
+
+// Hàm để chọn thú cưng và tính xác suất trúng thưởng
+function showFinalPet() {
+    spinCount++;
+    let selectedPet = '';
+    let selectedProbability = 0;
+    let selectedImage = '';
+
+    while (!selectedPet) {
+        const random = Math.random();
+        let cumulativeProbability = 0;
+
+        for (const pet of pets) {
+            cumulativeProbability += pet.probability;
+            if (random < cumulativeProbability) {
+                selectedPet = pet.name;
+                selectedProbability = Math.round(1 / pet.probability);
+                selectedImage = pet.image;
+                break;
+            }
+        }
+    }
+
+    document.getElementById('result').innerText = `${selectedPet}`;
+    document.getElementById('probability').innerText = `1 trong ${selectedProbability}`;
+    document.getElementById('pet-image').src = selectedImage;
+
+    addPetToHistory(selectedPet, selectedProbability, selectedImage);
+    updateSpinCount();
+    addMoney(selectedProbability);
+    saveData();
+
+    // Cập nhật lần random may nhất
+    if (bestRandom === 0 || selectedProbability > bestRandom) {
+        bestRandom = selectedProbability;
+    }
+}
+
+// Thêm thú cưng vào lịch sử
+function addPetToHistory(pet, probability, image) {
+    const petsHistory = JSON.parse(localStorage.getItem('petsHistory')) || [];
+    petsHistory.push({ name: pet, probability: probability, image: image });
+    localStorage.setItem('petsHistory', JSON.stringify(petsHistory));
+}
+
+// Cập nhật số lần quay
+function updateSpinCount() {
+    document.getElementById('spin-count').innerText = `${spinCount}`;
+}
+
+// Thêm tiền vào tài khoản người chơi
+function addMoney(probability) {
+    const coins = probability; // Số xu nhận được bằng với độ hiếm của pet
+    money += coins; // Cập nhật số tiền
+    // Không cần cập nhật hiển thị số tiền
+    saveData(); // Lưu dữ liệu sau khi thêm tiền
+}
+
+let autoGenerateInterval;
+
+function startAutoGenerate() {
+    if (autoGenerateInterval) {
+        clearInterval(autoGenerateInterval); // Dừng tự động quay nếu đang chạy
+        autoGenerateInterval = null;
+        document.querySelector('.auto-generate-button').innerText = 'Tự động quay'; // Đ ổi lại tên nút
+        return;
+    }
+
+    document.querySelector('.auto-generate-button').innerText = 'Dừng tự động quay'; // Đổi tên nút khi đang quay
+    autoGenerateInterval = setInterval(() => {
+        generateRandomPet(); // Gọi hàm quay thú cưng
+    }, 1); // Thay đổi 1 thành khoảng thời gian bạn muốn (tính bằng ms)
+}
+</script>
+</body>
+</html>
