@@ -11,23 +11,12 @@
         justify-content: center; /* Căn giữa theo chiều ngang */
         align-items: center; /* Căn giữa theo chiều dọc */
         height: 100vh; /* Chiều cao bằng 100% viewport */
+        text-align: center;
         background: linear-gradient(135deg, #f5f7fa, #c3cfe2); /* Nền gradient */
         margin: 0; /* Xóa margin mặc định */
     }
-    .container {
-        text-align: center; /* Căn giữa nội dung trong container */
-        background: white; /* Nền trắng cho container */
-        padding: 30px; /* Padding cho container */
-        border-radius: 15px; /* Bo tròn góc */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bóng đổ cho container */
-        position: relative; /* Đặt vị trí tương đối cho container */
-        margin: 20px; /* Margin cho container */
-        display: flex; /* Sử dụng flexbox cho container */
-        flex-direction: column; /* Sắp xếp theo chiều dọc */
-        align-items: center; /* Căn giữa các phần tử con */
-        max-width: 90%; /* Đặt chiều rộng tối đa */
-    }
     .generate-button {
+	margin: auto;
         position: relative; /* Đặt vị trí tương đối cho nút tạo */
         margin-top: 20px; /* Margin trên cho nút */
         cursor: pointer; /* Hiển thị con trỏ khi hover */
@@ -58,19 +47,6 @@
         bottom: 0; /* Đặt ở dưới cùng */
         left: 0; /* Đặt ở bên trái */
         transition: width 2s linear; /* Hiệu ứng chuyển đổi chiều rộng */
-    }
-    .info-modal, .pet-modal {
-        position: fixed; /* Đặt vị trí cố định cho modal */
-        top: 0; /* Đặt ở trên cùng */
-        left: 0; /* Đặt ở bên trái */
-        width: 100%; /* Chiều rộng 100% */
-        height: 100%; /* Chiều cao 100% */
-        background: rgba(0, 0, 0, 0.8); /* Nền mờ cho modal */
-        display: flex; /* Sử dụng flexbox cho modal */
-        justify-content: center; /* Căn giữa nội dung trong modal */
-        align-items: center; /* Căn giữa nội dung trong modal */
-        z-index: 1000; /* Đặt z-index cao để hiển thị trên các phần tử khác */
-        display: none; /* Ẩn modal mặc định */
     }
     .modal-content {
         background: white;
@@ -105,19 +81,6 @@
         cursor: pointer;
         transition: background 0.3s;
     }
-    button:hover {
-        background-color: #00ee00;
-    }
-    @keyframes fly {
-        0% {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        100% {
-            opacity: 0;
-            transform: translateY(-50px);
-        }
-    }
     .pet-image {
         width: 80px;
         height: 80px;
@@ -125,18 +88,6 @@
         margin-top: 10px;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Media Query cho thiết bị nhỏ */
-    @media (max-width: 600px) {
-        .container {
-            padding: 10px;
-            margin: 10px;
-        }
-        .pet-image {
-            width: 60px;
-            height: 60px;
-        }
     }
 </style>
 </head>
@@ -454,7 +405,10 @@ function generateRandomPet() {
     isGenerating = true;
 
     document.getElementById('result').innerText = 'Đang tạo...';
-    document.getElementById('probability').innerText = '';
+
+    // Hiển thị độ hiếm của thú cưng ngẫu nhiên đầu tiên
+    const randomPet = pets[Math.floor(Math.random() * pets.length)];
+    document.getElementById('probability').innerText = `1 trong ${Math.round(1 / randomPet.probability)}`; // Hiển thị độ hiếm
 
     const countdownBar = document.getElementById('countdown-bar');
     countdownBar.style.transition = 'none';
@@ -468,7 +422,7 @@ function generateRandomPet() {
     let intervalTime = 100;
     const interval = setInterval(() => {
         const randomPet = pets[Math.floor(Math.random() * pets.length)];
-        document.getElementById('result').innerText = `Đang ngẫu nhiên: ${randomPet.name}`;
+        document.getElementById('result').innerText = `${randomPet.name}`;
         countdown -= 0.1;
         intervalTime += 50;
         if (countdown <= 0) {
@@ -479,7 +433,6 @@ function generateRandomPet() {
     }, intervalTime);
 }
 
-// Hàm để chọn thú cưng và tính xác suất trúng thưởng
 function showFinalPet() {
     spinCount++;
     let selectedPet = '';
@@ -502,7 +455,7 @@ function showFinalPet() {
     }
 
     document.getElementById('result').innerText = `${selectedPet}`;
-    document.getElementById('probability').innerText = `1 trong ${selectedProbability}`;
+    document.getElementById('probability').innerText = `1 trong ${selectedProbability}`; // Cập nhật độ hiếm thực tế
     document.getElementById('pet-image').src = selectedImage;
 
     addPetToHistory(selectedPet, selectedProbability, selectedImage);
