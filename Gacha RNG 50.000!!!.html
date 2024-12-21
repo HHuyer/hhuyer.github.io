@@ -138,14 +138,16 @@
     button:hover {
         background-color: #00ee00;
     }
-    #money-container {
-        font-size: 24px;
-        display: flex;
-        align-items: center;
-    }
-    .coin {
+#money-container {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    flex-direction: column; /* Thay đổi chiều sắp xếp thành cột */
+    position: static; /* Thay đổi vị trí thành static */
+}
+   .coin {
         position: absolute;
-        font-size: 20px;
+        font-size: 25px;
         animation: fly 1s ease-out forwards;
     }
     @keyframes fly {
@@ -185,9 +187,10 @@
         input[type="text"] {
             font-size: 14px;
         }
-        #money-container {
-            font-size: 20px;
-        }
+    #money-container {
+        font-size: 18px; /* Giảm kích thước chữ nếu cần */
+        align-items: flex-start; /* Căn trái cho phần tử bên trong */
+    }
     }
 
     /* CSS cho bảng thông báo */
@@ -246,6 +249,7 @@
     .modal button:hover {
         background-color: #00ee00;
     }
+
 </style>
 </head>
 <body>
@@ -257,6 +261,7 @@
         </div>
 <button class="auto-generate-button" onclick="startAutoGenerate()">Tự động quay</button>
         <p id="result"></p>
+<br>
         <img id="pet-image" class="pet-image" src="" alt="Pet Image">
         <p id="probability"></p>
         <p id="spin-count"></p>
@@ -270,9 +275,9 @@
     <div class="history">
         <div class="history-header">
             <h2>Thú Cưng Đã Nhận</h2>
-            <div id="money-container">
-                <span id="money">0</span>
-                <img id="money-image" src="https://i.ibb.co/8X276fY/Coin.webp" alt="icon tiền" style="width: 24px; height: 24px; margin-left: 5px;">
+            <div id="money-container" style="position: relative;">
+    <img id="money-image" src="https://i.ibb.co/7khs8rR/Screenshot-2024-12-21-12-15-07-10-db6c32ae4bfb64518b0ba7966d8bb512-Photoroom.jpg" alt="icon tiền" style="width: 175px; height: 75px;">
+    <span id="money" style="position: absolute; top: 31px; right: 45px; color: white; font-size: 20px;">0</span>
 <div>
 <button onclick="showShopModal()">
     <img src="https://i.ibb.co/7xf90dD/Shop-Icon.webp" style="width: 24px; height: 24px;">
@@ -281,7 +286,7 @@
     <img src="https://png.pngtree.com/png-vector/20191028/ourlarge/pngtree-game-control-line-icon-vector-png-image_1904129.jpg" style="width: 24px; height: 24px;">
 </button>
 </div>
-            </div>
+</div>
             <button class="info-button" onclick="showInfoModal()"></button>
         </div>
         <table id="history-table">
