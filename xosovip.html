@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Sổ Số</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #218838;
+        }
+
+        .result {
+            margin-top: 20px;
+        }
+
+        .ticket-list {
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Game Sổ Số</h1>
+        <div class="lottery">
+            <p id="ticket">Vé số: Chưa chọn</p>
+            <select id="ticketType">
+                <option value="1">Vé số 1 phút</option>
+                <option value="60">Vé số 1 giờ</option>
+                <option value="1440">Vé số ngày</option>
+                <option value="10080">Vé số tuần</option>
+            </select>
+            <button id="randomTicketBtn">Chọn Vé Ngẫu Nhiên</button>
+            <button id="buyTicketBtn" disabled>Mua Vé</button>
+        </div>
+        <div class="result">
+            <h2>Kết Quả:</h2>
+            <p id="resultMessage">Chưa có kết quả</p>
+            <p id="resultTime">Thời gian có kết quả: <span id="timeResult"></span></p>
+        </div>
+        <div class="ticket-list">
+            <h3>Vé đã mua:</h3>
+            <ul id="purchasedTickets"></ul>
+        </div>
+    </div>
+    <script>
+        const tickets = Array.from({ length: 100 }, (_, i) => i + 1); // Tạo vé số từ 1 đến 100
+        let selectedTicket = null;
+        const winningTickets = {
+            daily: 42, // Vé trúng thưởng cho xổ số ngày
+            weekly: 7   // Vé trúng thưởng cho xổ số tuần
+        };
+        const purchasedTickets = JSON.parse(localStorage.getItem('purchasedTickets')) || [];
+        const results = JSON.parse(localStorage.getItem('results')) || [];
+
+        // Hiển thị vé đã mua từ localStorage
+        updatePurchasedTickets();
+        displayPreviousResults();
+
+        document.getElementById('randomTicketBtn').addEventListener('click', () => {
+            selectedTicket = tickets[Math.floor(Math.random() * tickets.length)];
+            document.getElementById('ticket').innerText = `Vé số: ${selectedTicket}`;
+            document.getElementById('buyTicketBtn').disabled = false; // Kích hoạt nút mua vé
+        });
+
+        document.getElementById('buyTicketBtn').addEventListener('click', () => {
+            const ticketType = document.getElementById('ticketType').value;
+            const resultTime = calculateResultTime(ticketType);
+            purchasedTickets.push({ ticket: selectedTicket, type: ticketType, resultTime: resultTime });
+            localStorage.setItem('purchasedTickets', JSON.stringify(purchasedTickets)); // Lưu vào localStorage
+            alert(`Bạn đã mua vé số: ${selectedTicket} cho ${ticketType} phút.`);
+            updatePurchasedTickets();
+            scheduleResultAnnouncement(ticketType, resultTime );
+        });
+
+        function updatePurchasedTickets() {
+            const ticketList = document.getElementById('purchasedTickets');
+            ticketList.innerHTML = '';
+            purchasedTickets.forEach(item => {
+                const li = document.createElement('li');
+                li.innerText = `Vé số: ${item.ticket} - Thời gian có kết quả: ${item.resultTime}`;
+                ticketList.appendChild(li);
+            });
+        }
+
+        function calculateResultTime(ticketType) {
+            const now = new Date();
+            let resultTime;
+
+            if (ticketType == 1) {
+                resultTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes() + 1, 0); // Kết thúc ngay khi bước qua phút mới
+            } else if (ticketType == 60) {
+                resultTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 1, 0, 0); // Kết thúc ngay khi bước qua giờ mới
+            } else if (ticketType == 1440) {
+                resultTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0); // Kết quả lúc 9h hàng ngày
+            } else if (ticketType == 10080) {
+                resultTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + (6 - now.getDay()), 9, 0, 0); // Kết quả vào 9h thứ 7
+            }
+
+            return resultTime;
+        }
+
+        function scheduleResultAnnouncement(ticketType, resultTime) {
+            const now = new Date();
+            const timeUntilResult = resultTime - now;
+
+            setTimeout(() => {
+                displayResult(ticketType);
+            }, timeUntilResult);
+        }
+
+        function displayResult(ticketType) {
+            let resultMessage;
+            if (ticketType == 1 || ticketType == 60) {
+                const winningTicket = Math.floor(Math.random() * 100) + 1; // Vé trúng thưởng ngẫu nhiên cho xổ số 1 phút và 1 giờ
+                resultMessage = selectedTicket === winningTicket ? 
+                    `Chúc mừng! Vé số ${selectedTicket} của bạn đã trúng thưởng!` : 
+                    `Rất tiếc! Vé số ${selectedTicket} của bạn không trúng thưởng. Vé trúng là ${winningTicket}.`;
+            } else {
+                resultMessage = selectedTicket === winningTickets[ticketType == 1440 ? 'daily' : 'weekly'] ? 
+                    `Chúc mừng! Vé số ${selectedTicket} của bạn đã trúng thưởng!` : 
+                    `Rất tiếc! Vé số ${selectedTicket} của bạn không trúng thưởng. Vé trúng là ${winningTickets[ticketType == 1440 ? 'daily' : 'weekly']}.`;
+            }
+
+            document.getElementById('resultMessage').innerText = resultMessage;
+            saveResultToLocalStorage(resultMessage, ticketType);
+        }
+
+        function saveResultToLocalStorage(resultMessage, ticketType) {
+            const resultEntry = {
+                message: resultMessage,
+                time: new Date().toLocaleString(),
+                type: ticketType
+            };
+            results.push(resultEntry);
+            localStorage.setItem('results', JSON.stringify(results)); // Lưu kết quả vào localStorage
+            displayPreviousResults();
+        }
+
+        function displayPreviousResults() {
+            const resultList = document.getElementById('resultMessage');
+            if (results.length > 0) {
+                resultList.innerHTML += '<h3>Kết quả trước đó:</h3>';
+                results.forEach(result => {
+                    const p = document.createElement('p');
+                    p.innerText = `${result.time}: ${result.message}`;
+                    resultList.appendChild(p);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
