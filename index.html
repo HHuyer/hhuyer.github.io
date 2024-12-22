@@ -244,8 +244,13 @@ const philosophies = [
     { quote: "Hãy luôn là phiên bản tốt nhất của chính mình.", author: "Khuyết danh" },
     { quote: "Đừng bao giờ từ bỏ ước mơ của bạn chỉ vì thời gian cần để đạt được nó. Thời gian sẽ trôi qua dù bạn có làm hay không.", author: "Earl Nightingale" },
     { quote: "Hãy làm những điều bạn sợ nhất và sự sợ hãi sẽ biến mất.", author: "Ralph Waldo Emerson" },
-    { quote: "Thành công không phải là cuối cùng, thất bại không phải là chết người: lòng can đảm tiếp tục mới quan trọng.", author: "Winston Churchill" }
-];            const randomIndex = Math.floor(Math.random() * philosophies.length);
+    { quote: "Thành công không phải là cuối cùng, thất bại không phải là chết người: lòng can đảm tiếp tục mới quan trọng.", author: "Winston Churchill" },
+    { quote: "Hẹn em Pickleball, vờn nhau Pickleball...", author: "Anh Trai Pickleball" },
+    { quote: "Thứ không thể giết chết mình sẽ làm mình mạnh hơn", author: "ACN - Anh Công Nhân" },
+    { quote: "Donate đi donate đi donate đi", author: "Donate đi" },
+    { quote: "Cứ Chill đi", author: "Chill Guys" },
+];
+            const randomIndex = Math.floor(Math.random() * philosophies.length);
             document.querySelector('.philosophy').textContent = philosophies[randomIndex].quote;
             document.querySelector('.author').textContent = `- ${philosophies[randomIndex].author}`;
         });
