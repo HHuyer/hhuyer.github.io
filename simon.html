@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trò Chơi Simon</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #282c34;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #game {
+            display: grid;
+            grid-template-columns: repeat(2, 150px);
+            grid-template-rows: repeat(2, 150px);
+            gap: 10px;
+        }
+        .button {
+            width: 150px;
+            height: 150px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+        .green { background-color: #4CAF50; }
+        .red { background-color: #F44336; }
+        .yellow { background-color: #FFEB3B; }
+        .blue { background-color: #2196F3; }
+        .active { opacity: 0.7; transform: scale(1.1); }
+        #start {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #61dafb;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        #start:hover {
+            background-color: #21a1f1;
+        }
+        #instructions {
+            margin-bottom: 20px;
+            font-size: 18px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Trò Chơi Simon</h1>
+<div id="instructions">Nhấn nút "Bắt đầu" để chơi. Nhớ theo thứ tự màu sắc!</div>
+<div id="game">
+    <button class="button green" data-color="green">Green</button>
+    <button class="button red" data-color="red">Red</button>
+    <button class="button yellow" data-color="yellow">Yellow</button>
+    <button class="button blue" data-color="blue">Blue</button>
+</div>
+<button id="start">Bắt đầu</button>
+
+<script>
+    const buttons = document.querySelectorAll('.button');
+    const startButton = document.getElementById('start');
+    let sequence = [];
+    let userInput = [];
+    let level = 0;
+
+    function startGame() {
+        sequence = [];
+        userInput = [];
+        level = 0;
+        nextSequence();
+    }
+
+    function nextSequence() {
+        userInput = [];
+        level++;
+        document.querySelector('h1').innerText = `Level ${level}`;
+        const randomIndex = Math.floor(Math.random() * 4);
+        const color = buttons[randomIndex].dataset.color;
+        sequence.push(color);
+        playSequence();
+    }
+
+    function playSequence() {
+        let i = 0;
+        const interval = setInterval(() => {
+            if (i >= sequence.length) {
+                clearInterval(interval);
+                return;
+            }
+            const color = sequence[i];
+            const button = Array.from(buttons).find(btn => btn.dataset.color === color);
+            button.classList.add('active');
+            setTimeout(() => {
+                button.classList.remove('active');
+            }, 500);
+            i++;
+        }, 1000);
+    }
+
+    buttons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            const color = e.target.dataset.color;
+            userInput.push(color);
+            checkInput();
+        });
+    });
+
+    function checkInput() {
+        const lastInput = userInput[userInput.length - 1];
+        const lastSequence = sequence[userInput.length - 1];
+
+        if (lastInput !== lastSequence) {
+            alert('Sai! Trò chơi kết thúc.');
+            startGame();
+        } else if (userInput.length === sequence.length) {
+            setTimeout(nextSequence, 1000);
+        }
+    }
+
+    startButton.addEventListener('click', startGame);
+</script>
+
+</body>
+</html>
