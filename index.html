@@ -370,7 +370,7 @@ function claimCandy() {
 
     // Kiểm tra xem thời gian có nằm trong tháng 1 năm 2025 không
     if (currentDate < startDate || currentDate > endDate) {
-        alert("Bạn chỉ có thể nhận trong tháng 1 năm 2025. Hãy đăng nhập vào 1/1 để nhận quà khủng nhé!");
+        alert("Bạn chỉ có thể nhận trong tháng 1 năm 2025. Hãy đăng nhập vào 1/1 để nhận quà khủng nhé! 💥");
         return;
     }
 
@@ -414,7 +414,7 @@ function claimCandy() {
             candiesToClaim *= 2; // Nhận gấp đôi nếu là ngày tiếp theo
             coinsToClaim *= 2; // Nhận gấp đôi xu nếu là ngày tiếp theo
         } else if (daysDiff > 1) {
-            alert("Bạn đã bỏ lỡ ngày nhận kẹo!"); // Thông báo khi bỏ lỡ ngày
+            alert("Bạn đã bỏ lỡ ngày nhận kẹo. Còn bỏ nữa là tớ phạt đấy 😢"); // Thông báo khi bỏ lỡ ngày
         }
     }
 
@@ -428,7 +428,7 @@ function claimCandy() {
     localStorage.setItem('candies', candies); // Lưu số kẹo vào localStorage
     localStorage.setItem('money', coins); // Lưu số xu vào localStorage
 
-    alert(`Bạn đã nhận được ${candiesToClaim} kẹo và ${coinsToClaim} xu! Hãy tiếp tục đăng nhập vào ngày mai để không mất chuỗi nhé!`);
+    alert(`Bạn đã nhận được ${candiesToClaim} kẹo và ${coinsToClaim} xu! Hãy tiếp tục đăng nhập vào ngày mai để không mất chuỗi bạn nhé! 😄`);
     updateUI(); // Cập nhật giao diện
 }
 </script>
