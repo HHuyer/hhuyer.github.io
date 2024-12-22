@@ -184,13 +184,20 @@ function playGame(choice) {
             const winAmount = Math.floor(bet * 1.95);
             candies += winAmount;
             showMessageBox(`Bạn thắng! Nhận được ${winAmount} kẹo.`);
-            
-            // Giảm tỷ lệ thắng đi 1% khi thắng
-            winRate = Math.max(winRate - 1, 0); // Đảm bảo tỷ lệ không âm
+
+                    // Giảm tỷ lệ thắng đi 1%
+        winRate = Math.max(winRate - 1, 0); // Đảm bảo tỷ lệ không âm
+
+    console.log(`${winRate}`); // Hiển thị thời gian chờ trong giây
+
+            // Kiểm tra số kẹo và thiết lập thông báo
+            if (candies > 100 && !messageShown) {
+                messageShown = true; // Đánh dấu thông báo đã hiển thị
+                setRandomMessage(); // Gọi hàm thiết lập thông báo ngẫu nhiên
+            }
         } else {
             candies -= bet;
             showMessageBox(`Bạn thua! Mất ${bet} kẹo.`);
-            // Giữ nguyên tỷ lệ thắng khi thua
         }
 
         candies = Math.max(candies, 0);
