@@ -179,6 +179,28 @@
 .button-text {
     margin-left: 10px; /* Khoảng cách giữa biểu tượng và văn bản */
 }
+
+.candy-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: #FF6F61; /* Màu nền */
+    color: white; /* Màu chữ */
+    border-radius: 50%; /* Hình tròn */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+}
+
+.candy-button:hover {
+    background-color: #FF4C3B; /* Màu nền khi hover */
+}
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -227,10 +249,14 @@ const philosophies = [
      crossorigin="anonymous"></script>
 </head>
 <body>
+<div class="candy-button" onclick="claimCandy()">
+    <img src="https://png.pngtree.com/png-vector/20230111/ourmid/pngtree-lucky-money-new-year-png-image_6559428.png" style="width: 30px; height: 30px;">
+</div>
     <div class="philosophy"></div>
     <div class="author"></div>
     <div class="container">
 <div>
+<marquee>🎉Tết 2025 Chúc Bạn Và Gia Đình Luôn Mạnh Khỏe Giàu Có Và Không Quên Quay Lại Donate Cho Chúng Tớ Nhé!🇻🇳</marquee>
 <button class="info-button" onclick="showUpdateHistoryModal()">
     <img src="https://media.lordicon.com/icons/system/regular/162-update.svg" alt="Update History" style="width: 30px; height: 30px;">
     <span class="button-text">Lịch Sử Cập Nhật</span>
@@ -244,7 +270,6 @@ const philosophies = [
             </div>
             <img src="https://png.pngtree.com/png-vector/20191028/ourlarge/pngtree-game-control-line-icon-vector-png-image_1904129.jpg" class="rainbow-image">
         </a>
-    <marquee>👆Cảm ơn anh Nam OK Dz đã Donate!👆</marquee>
         <a href="https://patorjk.com/software/taag/#p=display&f=Crawford2&t=%F0%9F%91%89hhuyer.github.io%F0%9F%91%88" class="link-item" target="_blank">
             <div class="link-text">
                 Chuyển chữ thành kí tự đẹp
@@ -325,6 +350,81 @@ function showUpdateHistoryModal() {
 
 function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
+}
+
+    let candies = parseInt(localStorage.getItem('candies')) || 0;
+    let coins = parseInt(localStorage.getItem('money')) || 0; // Thêm biến xu
+    let lastClaimDate = localStorage.getItem('lastClaimDate'); // Lấy ngày từ localStorage
+
+function claimCandy() {
+    const currentDate = new Date();
+    const today = currentDate.toDateString();
+    const lastClaimDateStored = lastClaimDate ? new Date(lastClaimDate).toDateString() : null; // Chuyển đổi lastClaimDate thành chuỗi ngày
+    const startDate = new Date('2025-01-01');
+    const endDate = new Date('2025-01-31');
+
+    // Kiểm tra xem thời gian có nằm trong tháng 1 năm 2025 không
+    if (currentDate < startDate || currentDate > endDate) {
+        alert("Bạn chỉ có thể nhận trong tháng 1 năm 2025. Hãy đăng nhập vào 1/1 để nhận quà khủng nhé!");
+        return;
+    }
+
+    // Kiểm tra xem đã qua ngày mới chưa
+    if (lastClaimDateStored === today) {
+        alert("Bạn đã nhận kẹo hôm nay rồi! Nếu bạn đã qua hôm sau thì bạn hãy thử tắt trang đi bật lại xem.");
+        return;
+    }
+
+    // Kiểm tra xem có phải là ngày 1/1/2025 không
+    if (currentDate.toDateString() === startDate.toDateString()) {
+        // Tính số kẹo và xu nhận được cho ngày 1/1/2025
+        let candiesToClaim = Math.floor(Math.random() * 1000) + 1; // Số kẹo ngẫu nhiên từ 1-1000
+        let coinsToClaim = Math.floor(Math.random() * 1000000) + 1; // Số xu ngẫu nhiên từ 1-1000000
+
+        // Cập nhật số kẹo và xu
+        candies += candiesToClaim;
+        coins += coinsToClaim; // Cập nhật xu
+        lastClaimDate = today;
+
+        // Lưu trữ lại vào localStorage
+        localStorage.setItem('lastClaimDate', lastClaimDate); // Lưu ngày nhận kẹo
+        localStorage.setItem('candies', candies); // Lưu số kẹo vào localStorage
+        localStorage.setItem('money', coins); // Lưu số xu vào localStorage
+
+        alert(`Bạn đã nhận được ${candiesToClaim} kẹo và ${coinsToClaim} xu!`);
+        updateUI(); // Cập nhật giao diện
+        return; // Kết thúc hàm
+    }
+
+    // Tính số kẹo và xu nhận được cho các ngày khác
+    let candiesToClaim = Math.floor(Math.random() * 10) + 1; // Số kẹo ngẫu nhiên từ 1-10
+    let coinsToClaim = Math.floor(Math.random() * 1000) + 1; // Số xu ngẫu nhiên từ 1-50
+
+    // Kiểm tra xem có phải là ngày tiếp theo không
+    if (lastClaimDate) {
+        const lastDate = new Date(lastClaimDate);
+        const daysDiff = Math.floor((currentDate - lastDate) / (1000 * 60 * 60 * 24));
+
+        if (daysDiff === 1) {
+            candiesToClaim *= 2; // Nhận gấp đôi nếu là ngày tiếp theo
+            coinsToClaim *= 2; // Nhận gấp đôi xu nếu là ngày tiếp theo
+        } else if (daysDiff > 1) {
+            alert("Bạn đã bỏ lỡ ngày nhận kẹo!"); // Thông báo khi bỏ lỡ ngày
+        }
+    }
+
+    // Cập nhật số kẹo và xu
+    candies += candiesToClaim;
+    coins += coinsToClaim; // Cập nhật xu
+    lastClaimDate = today;
+
+    // Lưu trữ lại vào localStorage
+    localStorage.setItem('lastClaimDate', lastClaimDate); // Lưu ngày nhận kẹo
+    localStorage.setItem('candies', candies); // Lưu số kẹo vào localStorage
+    localStorage.setItem('money', coins); // Lưu số xu vào localStorage
+
+    alert(`Bạn đã nhận được ${candiesToClaim} kẹo và ${coinsToClaim} xu! Hãy tiếp tục đăng nhập vào ngày mai để không mất chuỗi nhé!`);
+    updateUI(); // Cập nhật giao diện
 }
 </script>
 </body>
