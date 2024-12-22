@@ -184,22 +184,27 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
-    width: 60px;
-    height: 60px;
-    background-color: #FF6F61; /* Màu nền */
+    width: 70px; /* Tăng kích thước */
+    height: 70px; /* Tăng kích thước */
+    background: linear-gradient(45deg, #FF6F61, #FF4C3B); /* Màu gradient */
     color: white; /* Màu chữ */
     border-radius: 50%; /* Hình tròn */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 28px; /* Tăng kích thước chữ */
     cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Đổ bóng */
+    transition: background 0.3s, transform 0.3s; /* Hiệu ứng chuyển đổi */
 }
 
 .candy-button:hover {
-    background-color: #FF4C3B; /* Màu nền khi hover */
+    background: linear-gradient(45deg, #FF4C3B, #FF6F61); /* Đổi màu khi hover */
+    transform: scale(1.1); /* Phóng to khi hover */
+}
+
+.candy-button:active {
+    transform: scale(0.95); /* Co lại khi nhấn */
 }
     </style>
     <script>
@@ -250,7 +255,7 @@ const philosophies = [
 </head>
 <body>
 <div class="candy-button" onclick="claimCandy()">
-    <img src="https://png.pngtree.com/png-vector/20230111/ourmid/pngtree-lucky-money-new-year-png-image_6559428.png" style="width: 30px; height: 30px;">
+    <img src="https://png.pngtree.com/png-vector/20230111/ourmid/pngtree-lucky-money-new-year-png-image_6559428.png" style="width: 50px; height: 50px;">
 </div>
     <div class="philosophy"></div>
     <div class="author"></div>
