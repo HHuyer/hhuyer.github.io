@@ -88,8 +88,8 @@
     </div>
     <button onclick="createBall()">Thả bóng</button>
     <div id="scoreboard">Score: 0</div>
-    <audio id="collision-sound" src="collision.mp3"></audio>
-    <audio id="slot-sound" src="slot.mp3"></audio>
+    <audio id="collision-sound" src="am_thanh_bong_nay.mp3"></audio>
+    <audio id="slot-sound" src="am_thanh_bong_baymau.mp3"></audio>
     <script>
         const canvas = document.getElementById('plinko-canvas');
         const ctx = canvas.getContext('2d');
@@ -102,10 +102,10 @@
 
         const pegs = [];
         const balls = [];
-        const rows = 8; // Giảm số hàng để có ít chấm trắng hơn
-        const cols = 7; // Giảm số cột để có ít chấm trắng hơn
-        const pegRadius = 5;
-        const ballRadius = 8;
+        const rows = 15; // Giảm số hàng để có ít chấm trắng hơn
+        const cols = 13; // Giảm số cột để có ít chấm trắng hơn
+        const pegRadius = 8;
+        const ballRadius = 7;
         let totalScore = 0;
 
         function createPegs() {
@@ -161,7 +161,7 @@
                 document.querySelectorAll('.slot').forEach(slot => {
                     const slotLeft = slot.offsetLeft;
                     const slotRight = slotLeft + slot.clientWidth;
-                    if (ball.y + ballRadius > canvas.height - slot.clientHeight && ball.x > slotLeft && ball.x < slotRight) {
+                    if (ball.y + 0 > canvas.height - slot.clientHeight && ball.x > slotLeft && ball.x < slotRight) {
                         // Xóa bóng và cập nhật điểm
                         balls.splice(index, 1);
                         updateScore(slot.dataset.value);
