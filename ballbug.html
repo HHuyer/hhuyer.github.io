@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plinko Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #282c34;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        #game-container {
+            position: relative;
+            width: 80%;
+            max-width: 600px;
+            height: 80%;
+            max-height: 800px;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 85%; /* Giảm chiều cao canvas để tăng chiều cao các ô "x" */
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #61dafb;
+            color: #282c34;
+        }
+
+        .slot {
+            position: absolute;
+            bottom: 0;
+            width: calc(100% / 13);
+            height: 60px; /* Tăng chiều cao các ô "x" */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-top: 2px solid #fff;
+        }
+
+        .slot[data-value="0.25"] { background-color: #ffeb3b; }
+        .slot[data-value="0.5"] { background-color: #ffc107; }
+        .slot[data-value="0.75"] { background-color: #ff9800; }
+        .slot[data-value="1"] { background-color: #ff5722; }
+        .slot[data-value="3"] { background-color: #f44336; }
+        .slot[data-value="5"] { background-color: #e91e63; }
+        .slot[data-value="10"] { background-color: #9c27b0; }
+
+        #scoreboard {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="plinko-canvas"></canvas>
+        <div class="slot" style="left: 0%;" data-value="10">x10</div>
+        <div class="slot" style="left: calc(100% / 13 * 1);" data-value="5">x5</div>
+        <div class="slot" style="left: calc(100% / 13 * 2);" data-value="3">x3</div>
+        <div class="slot" style="left: calc(100% / 13 * 3);" data-value="1">x1</div>
+        <div class="slot" style="left: calc(100% / 13 * 4);" data-value="0.75">x0.75</div>
+        <div class="slot" style="left: calc(100% / 13 * 5);" data-value="0.5">x0.5</div>
+        <div class="slot" style="left: calc(100% / 13 * 6);" data-value="0.25">x0.25</div>
+        <div class="slot" style="left: calc(100% / 13 * 7);" data-value="0.5">x0.5</div>
+        <div class="slot" style="left: calc(100% / 13 * 8);" data-value="0.75">x0.75</div>
+        <div class="slot" style="left: calc(100% / 13 * 9);" data-value="1">x1</div>
+        <div class="slot" style="left: calc(100% / 13 * 10);" data-value="3">x3</div>
+        <div class="slot" style="left: calc(100% / 13 * 11);" data-value="5">x5</div>
+        <div class="slot" style="left: calc(100% / 13 * 12);" data-value="10">x10</div>
+    </div>
+    </div>
+    <div id="chil" style="position: absolute; left: 35px; top: 33px; color: white;">
+<center>
+<big>
+    <img id="left-image" src="https://app.gak.vn/storage/uploads/VPuo8OZmYjBpuM7KKkWTbHUZcSwoGm8E3duTBTcS.png" alt="Left Image" style="position: absolute; left: 10px; top: 10px; width: 400px; height: 400px">
+<b>Health: 1</b>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<b>You Can Subscribe Or Not, As Long As You're</b>
+<br>
+<b>Happy, I'm Happy Too :)</b>
+</big></b>
+</center>
+</div>
+<b><big><div id="message" style="text-align: center; color: white; margin-top: 10px;">1 Sub = 1 Drop</div></b></big>
+    <button onclick="createBall()">Drop</button>
+    <div id="scoreboard">Score: 0</div>
+<center>
+    <div id="boss-container" style="position: absolute; right: 35px; top: 33px; color: white;">
+        <img id="boss-image" src="https://assets.coingecko.com/coins/images/51981/large/IMG_9410.jpeg?1732289439" alt="Boss" style="width: 400px; height: 400px;"><b>
+<big><div id="boss-health">Health: 100</div></big></b>
+</center>
+    </div>
+    <audio id="collision-sound" src="am_thanh_bong_nay.mp3"></audio>
+    <audio id="slot-sound" src="am_thanh_bong_baymau.mp3"></audio>
+    <script>
+        const canvas = document.getElementById('plinko-canvas');
+        const ctx = canvas.getContext('2d');
+        const collisionSound = document.getElementById('collision-sound');
+        const slotSound = document.getElementById('slot-sound');
+        const scoreboard = document.getElementById('scoreboard');
+
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+
+        const pegs = [];
+        const balls = [];
+        const rows = 15; // Giảm số hàng để có ít chấm trắng hơn
+        const cols = 13; // Giảm số cột để có ít chấm trắng hơn
+        const pegRadius = 8;
+        const ballRadius = 7;
+        let totalScore = 0;
+
+        function createPegs() {
+            for (let row = 1; row < rows; row++) { // Bắt đầu từ hàng thứ 2 để loại bỏ 3 chấm trên cùng
+                for (let col = 0; col <= row; col++) {
+                    const x = (canvas.width / 2) + (col - row / 2) * (canvas.width / cols);
+                    const y = (row + 1) * (canvas.height / (rows + 1));
+                    pegs.push({ x, y });
+                }
+            }
+        }
+
+        function drawPegs() {
+            ctx.fillStyle = 'white';
+            pegs.forEach(peg => {
+                ctx.beginPath();
+                ctx.arc(peg.x, peg.y, pegRadius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        function createBall() {
+            const x = canvas.width / 2;
+            const y = 0;
+            balls.push({ x, y, vx: Math.random() * 2 - 1, vy: 4 }); // Tăng tốc độ rơi của bóng
+        }
+
+function updateBalls() {
+    balls.forEach((ball, index) => {
+        ball.vy += 0.1; // gravity
+        ball.x += ball.vx;
+        ball.y += ball.vy;
+
+        // Cập nhật góc quay dựa trên tốc độ rơi
+        rotationAngle += Math.abs(ball.vx) * 0.1; // Điều chỉnh hệ số để kiểm soát tốc độ quay
+
+                pegs.forEach(peg => {
+                    const dx = ball.x - peg.x;
+                    const dy = ball.y - peg.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < pegRadius + ballRadius) {
+                        const angle = Math.atan2(dy, dx);
+                        ball.vx = Math.cos(angle) * 2;
+                        ball.vy = Math.sin(angle) * 2;
+
+                        // Tạo hiệu ứng sóng khi bóng chạm vào chấm trắng
+                        createWaveEffect(peg.x, peg.y);
+
+                        // Phát âm thanh va chạm
+                        collisionSound.currentTime = 0;
+                        collisionSound.play();
+                    }
+                });
+
+                // Kiểm tra va chạm với các ô "x"
+                document.querySelectorAll('.slot').forEach(slot => {
+                    const slotLeft = slot.offsetLeft;
+                    const slotRight = slotLeft + slot.clientWidth;
+                    if (ball.y + 0 > canvas.height - slot.clientHeight && ball.x > slotLeft && ball.x < slotRight) {
+                        // Xóa bóng và cập nhật điểm
+                        balls.splice(index, 1);
+                        updateScore(slot.dataset.value);
+
+                        // Phát âm thanh khi bóng rơi vào ô "x"
+                        slotSound.currentTime = 0;
+                        slotSound.play();
+
+                        // Tạo hiệu ứng nổ khi bóng rơi vào ô "x"
+                        createExplosionEffect(ball.x, canvas.height - slot.clientHeight / 2);
+                    }
+                });
+
+                if (ball.y > canvas.height) {
+                    ball.y = 0;
+                    ball.vy = 2;
+                }
+            });
+        }
+
+const ballImage = new Image();
+ballImage.src = 'https://app.gak.vn/storage/uploads/VPuo8OZmYjBpuM7KKkWTbHUZcSwoGm8E3duTBTcS.png'; // Thay đổi đường dẫn tới ảnh của bạn
+
+// Thêm biến cho góc quay
+let rotationAngle = 0;
+
+function drawBalls() {
+    balls.forEach(ball => {
+        ctx.save(); // Lưu trạng thái canvas
+        ctx.translate(ball.x, ball.y); // Di chuyển đến vị trí của bóng
+        ctx.rotate(rotationAngle); // Quay canvas theo góc
+        ctx.drawImage(ballImage, -ballRadius * 1.5, -ballRadius * 1.5, ballRadius * 3, ballRadius * 3); // Vẽ ảnh bóng lớn hơn
+        ctx.restore(); // Khôi phục trạng thái canvas
+    });
+}
+
+        function createWaveEffect(x, y) {
+            const maxRadius = 20;
+            const waveDuration = 500;
+            const startTime = Date.now();
+
+            function drawWave() {
+                const currentTime = Date.now();
+                const elapsedTime = currentTime - startTime;
+                const progress = elapsedTime / waveDuration;
+
+                if (progress < 1) {
+                    const currentRadius = maxRadius * progress;
+                    ctx.beginPath();
+                    ctx.arc(x, y, currentRadius, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(255, 255, 255, ${1 - progress})`;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    requestAnimationFrame(drawWave);
+                }
+            }
+
+            drawWave();
+        }
+
+        function createExplosionEffect(x, y) {
+            const particles = [];
+            const particleCount = 20;
+            const particleSpeed = 2;
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.random() * particleSpeed * 2 - particleSpeed,
+                    vy: Math.random() * particleSpeed * 2 - particleSpeed,
+                    alpha: 1
+                });
+            }
+
+            function drawParticles() {
+                particles.forEach((particle, index) => {
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    particle.alpha -= 0.02;
+
+                    if (particle.alpha <= 0) {
+                        particles.splice(index, 1);
+                    } else {
+                        ctx.beginPath();
+                        ctx.arc(particle.x, particle.y, 3, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(255, 255, 255, ${particle.alpha})`;
+                        ctx.fill();
+                    }
+                });
+
+                if (particles.length > 0) {
+                    requestAnimationFrame(drawParticles);
+                }
+            }
+
+            drawParticles();
+        }
+
+const bossImage = new Image();
+let bh = 100;
+let bossHealth = 100; // Máu của boss
+
+function updateScore(value) {
+    totalScore += parseFloat(value);
+    scoreboard.textContent = `Score: ${totalScore}`;
+    
+    // Cập nhật máu của boss
+    bossHealth -= parseFloat(value); // Giảm máu boss tương ứng với điểm
+    if (bossHealth < 0) bossHealth = 0; // Đảm bảo máu không âm
+    document.getElementById('boss-health').textContent = `Health: ${bossHealth}`;
+}
+
+function drawBoss() {
+    ctx.drawImage(bossImage, canvas.width - 120, 10, 100, 100); // Vẽ boss ở bên phải
+}
+
+// Trong hàm animate, gọi drawBoss
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawPegs();
+    updateBalls();
+    drawBalls();
+    drawBoss(); // Vẽ boss
+    requestAnimationFrame(animate);
+}
+
+        createPegs();
+        animate();
+
+   if (bossHealth = 0) {
+bossHealth = bh * 10;
+bh = bossHealth;
+                }
+    </script>
+</body>
+</html>
