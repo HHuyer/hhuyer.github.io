@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhận Lương</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .currency-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: #eef2ff;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .currency-box span {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .currency-box button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .currency-box button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        let coins = parseInt(localStorage.getItem('money')) || 0;
+        let candies = parseInt(localStorage.getItem('candies')) || 0;
+        let lastClaimTime = localStorage.getItem('lastClaimTime') ? parseInt(localStorage.getItem('lastClaimTime')) : 0;
+
+        function loadSavedData() {
+            updateUI();
+        }
+
+        function updateUI() {
+            const coinCountElement = document.getElementById('coin-count');
+            const candyCountElement = document.getElementById('candy-count');
+
+            // Kiểm tra xem các phần tử có tồn tại không
+            if (coinCountElement && candyCountElement) {
+                coinCountElement.innerText = coins;
+                candyCountElement.innerText = candies;
+            } else {
+                console.error("Các phần tử không tồn tại trong DOM.");
+            }
+        }
+
+        function claimReward() {
+            const currentTime = Date.now();
+
+            // Kiểm tra thời gian chờ
+            if (currentTime < lastClaimTime) {
+                const remainingTime = Math.ceil((lastClaimTime - currentTime) / (1000 * 60)); // thời gian còn lại tính bằng phút
+                alert(`Bạn cần đợi thêm ${remainingTime} phút để nhận lương!`);
+                return;
+            }
+
+            // Nhận kẹo và xu ngẫu nhiên
+            const newCandies = Math.floor(Math.random() * 100) + 1; // Nhận từ 1 đến 100 kẹo
+            const newCoins = Math.floor(Math.random() * 1000) + 1; // Nhận từ 1 đến 1000 xu
+
+            candies += newCandies;
+            coins += newCoins;
+
+            // Cập nhật thời gian nhận lương
+            const waitTime = Math.floor(Math.random() * (720 - 5)) + 5; // từ 5 phút đến 12 tiếng
+            lastClaimTime = currentTime + (waitTime * 60 * 1000); // chuyển đổi phút thành mili giây
+
+            // Lưu dữ liệu vào localStorage
+            localStorage.setItem('money', coins);
+            localStorage.setItem('candies', candies);
+            localStorage.setItem('lastClaimTime', lastClaimTime);
+
+            // Cập nhật giao diện
+            updateUI();
+            alert(`Bạn nhận được ${newCandies} kẹo và ${newCoins} xu!`);
+        }
+
+        // Kiểm tra thời gian chờ khi tải trang
+        window.onload = function() {
+            loadSavedData();
+            const currentTime = Date.now();
+            if (currentTime < lastClaimTime) {
+                const remainingTime = Math.ceil((lastClaimTime - currentTime) / (1000 * 60)); // thời gian còn lại tính bằng phút
+                alert(`Bạn cần đợi thêm ${remainingTime} phút để nhận lương!`);
+            }
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Nhận Lương</h1>
+        <div class="currency-box">
+            <span>Số xu: <span id="coin-count">0</span></span>
+            <span>Số kẹo: <span id="candy-count">0</span></span>
+            <button onclick="claimReward()">Nhận lương</button>
+        </div>
+    </div>
+</body>
+</html>
