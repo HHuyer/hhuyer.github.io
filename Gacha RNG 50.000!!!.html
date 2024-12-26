@@ -31,7 +31,7 @@
         position: relative;
         margin-top: 20px;
         cursor: pointer;
-        background: #00ff00; /* Màu xanh lá cây tươi để tăng độ tương phản */
+        background: #EE0000; 
         border: none;
         border-radius: 50%;
         width: 100px;
@@ -40,15 +40,15 @@
         justify-content: center;
         align-items: center;
         transition: background 0.3s, box-shadow 0.3s;
-        box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); /* Thêm bóng để tăng sự nổi bật */
+        box-shadow: 0 0 10px rgba(255, 20, 20, 0.8); /* Thêm bóng để tăng sự nổi bật */
     }
     .generate-button:hover {
-        background: #00cc00; /* Màu xanh lá cây đậm hơn khi hover */
-        box-shadow: 0 0 20px rgba(0, 255, 0, 0.7); /* Tăng bóng khi hover */
+        background: #FF0000; /* Màu xanh lá cây đậm hơn khi hover */
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.8); /* Tăng bóng khi hover */
     }
     .dice-icon {
-        width: 50px;
-        height: 50px;
+        width: 175px;
+        height: 175px;
     }
     .countdown-bar {
         width: 100%;
@@ -257,7 +257,7 @@
         <h1>Trình Tạo Thú Cưng Ngẫu Nhiên</h1>
         <p>Nhấn nút để nhận thú cưng ngẫu nhiên:</p>
         <div class="generate-button" onclick="generateRandomPet()">
-            <img src="https://pbs.twimg.com/media/GUmOAlVWkAEyiRC.png" alt="Dice Icon" class="dice-icon">
+            <img src="nút quay tết.png" alt="Dice Icon" class="dice-icon">
         </div>
 <button class="auto-generate-button" onclick="startAutoGenerate()">Tự động quay</button>
         <p id="result"></p>
