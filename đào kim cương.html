@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mines Gambling Game</title>
+    <title>Mở Quà Lì Xì</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+    font-family: 'Comic Sans MS', cursive, sans-serif; /* Ví dụ về font chữ vui tươi */
             display: flex;
             flex-direction: column;
             align-items: center;
             height: 100vh;
-            background-color: #f0f0f0;
             transition: background-color 0.3s;
+    background-image: url('https://i.pinimg.com/originals/b4/77/e0/b477e0eed08653996a28df1325b27278.png'); /* Thay đổi đường dẫn tới ảnh của bạn */
         }
         .controls {
             display: flex;
@@ -44,9 +44,11 @@
             cursor: pointer;
             transition: background-color 0.3s, transform 0.3s;
         }
-        .cell:hover {
-            transform: scale(1.5);
-        }
+.cell:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s, background-color 0.3s;
+    background-color: #ff6666; /* Màu đỏ cho ô khi hover */
+}
         .cell img {
             width: 100%;
             height: 100%;
@@ -94,6 +96,8 @@
             font-size: 16px;
             cursor: pointer;
             transition: background-color 0.3s;
+    background-color: #ffcc00; /* Màu vàng cho nút */
+    color: #fff; /* Chữ trắng */
         }
         .modal button:hover {
             background-color: #ddd;
@@ -123,32 +127,62 @@
             background-color: #ddd;
             transform: scale(1.1);
         }
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.spin {
+    animation: spin 1s ease-in-out forwards;
+}
+.cell.received {
+    background-color: red; /* Màu đỏ cho ô đã nhận */
+}
+
+.cell.unreceived {
+    background-color: green; /* Màu xanh lá cho ô chưa nhận */
+}
+#floatingMessages {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #fff;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.5s;
+    max-height: 300px; /* Giới hạn chiều cao */
+    overflow-y: auto; /* Cuộn nếu quá nhiều thông báo */
+}
+.message-item {
+    margin: 5px 0; /* Khoảng cách giữa các thông báo */
+}
     </style>
 </head>
 <body>
+<audio id="audio" src="nhạc xổ số.mp3" type="audio/mpeg" autoplay muted></audio>
+<button onclick="playAudio()">Phát nhạc</button>
     <div class="controls">
         <img id="themeToggle" src="https://www.vmcdn.ca/f/files/stalberttoday/0624-scistalsunmoon-sup.jpg" alt="Toggle Theme">
         <img id="homeButton" src="https://www.freeiconspng.com/thumbs/exit-icon/exit-icon-png-close-0.png" alt="Home">
     </div>
     <div class="bet-controls">
-        <label for="betAmount">Đặt (Kẹo):</label>
-        <input type="number" id="betAmount" min="1" value="10">
-        <label for="minesCount">Chọn số lượng mìn:</label>
-        <select id="minesCount">
-            <option value="random">Ngẫu nhiên</option>
-            ${Array.from({ length: 24 }, (_, i) => `<option value="${i + 1}">lỗi cần sửa</option>`).join('')}
-        </select>
-        <button id="startGameButton">Bắt đầu trò chơi</button>
-    </div>
-    <div class="game-board" id="gameBoard"></div>
-    <div class="message" id="message">Số lượng mìn: ?</div>
-    <div class="overlay" id="overlay">
-        <div class="modal">
-            <div id="resultMessage"></div>
-            <button id="playAgainButton">Chơi lại</button>
+        <button id="startGameButton">Quay thưởng(50 Kẹo)</button>
+        <div id="candyDisplay">
+            <span>Kẹo hiện có: <span id="candyCount">0</span></span>
         </div>
     </div>
-
+    <div class="game-board" id="gameBoard"></div>
+<div class="message" id="message">Có cơ hội trúng 1.000.000.000 Kẹo!</div>
+<div id="floatingMessages" style="display: none;"></div>
+<div class="overlay" id="overlay">
+    <div class="modal">
+        <div id="resultMessage"></div>
+        <img id="rewardImage" src="" alt="Reward" style="display:none; width:50px; height:50px;"> <!-- Thêm ảnh hộp quà -->
+        <button id="playAgainButton">Chơi lại</button>
+    </div>
+</div>
     <script>
         const gameBoard = document.getElementById('gameBoard');
         const message = document.getElementById('message');
@@ -157,116 +191,179 @@
         const playAgainButton = document.getElementById('playAgainButton');
         const themeToggle = document.getElementById('themeToggle');
         const homeButton = document.getElementById('homeButton');
-        const homeButtonModal = document.getElementById('homeButtonModal');
         const startGameButton = document.getElementById('startGameButton');
-        const betAmountInput = document.getElementById('betAmount');
-        const minesCountSelect = document.getElementById('minesCount');
         const rows = 5;
         const cols = 5;
-        let minesCount = 1;
-        let betAmount = 10;
-        let mines = [];
-        let safeCells = 0;
-        let gameStarted = false;
 
-        function initGame() {
-            mines = [];
-            safeCells = 0;
-            gameBoard.innerHTML = '';
-            message.innerHTML = `Số lượng mìn: ${gameStarted ? minesCount : '?'}`;
-            overlay.classList.remove('visible');
-            for (let i = 0; i < rows * cols; i++) {
-                const cell = document.createElement('div');
-                cell.classList.add('cell');
-                const img = document.createElement('img');
-                img.src = 'https://i.ibb.co/SP4wdZb/Screenshot-2024-11-30-211516-removebg-preview.png'; // Đường dẫn đến hình ảnh kim cương
-                cell.appendChild(img);
-                cell.addEventListener('click', () => revealCell(cell, i));
-                gameBoard.appendChild(cell);
-            }
-            placeMines();
+        // Cập nhật giao diện hiển thị số kẹo
+        function updateUI() {
+            document.getElementById('candyCount').innerText = candies;
         }
 
-        function placeMines() {
-            const selectedValue = minesCountSelect.value;
-            if (selectedValue === 'random') {
-                minesCount = Math.floor(Math.random() * 24) + 1; // Số mìn ngẫu nhiên từ 1 đến 24
+        // Lưu dữ liệu kẹo vào localStorage
+        function saveData() {
+            localStorage.setItem('candies', candies);
+        }
+
+        // Tải dữ liệu kẹo từ localStorage và cập nhật giao diện
+        function loadSavedData() {
+            candies = parseInt(localStorage.getItem('candies')) || 0;
+            updateUI();
+        }
+
+let receivedCells = Array(rows * cols).fill(false); // Mảng theo dõi trạng thái ô đã nhận
+
+// Khởi tạo bảng chơi
+function initGame() {
+    gameBoard.innerHTML = '';
+    overlay.classList.remove('visible');
+    receivedCells.fill(false); // Đặt lại trạng thái ô đã nhận
+
+    // Tạo ô trong bảng chơi
+    for (let i = 0; i < rows * cols; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell', 'unreceived'); // Mặc định là ô chưa nhận
+        const img = document.createElement('img');
+        img.src = 'https://i.ibb.co/SP4wdZb/Screenshot-2024-11-30-211516-removebg-preview.png';
+        cell.appendChild(img);
+        cell.addEventListener('click', () => revealCell(cell, i)); // Truyền chỉ số ô
+        gameBoard.appendChild(cell);
+    }
+}
+        // Hàm để xác định phần thưởng ngẫu nhiên
+        function getReward() {
+            const randomNum = Math.random() * 1000000;
+            if (randomNum < 900000) {
+                return 1; // Quà nhỏ
+            } else if (randomNum < 990000) {
+                return 10; // Quà lớn
+            } else if (randomNum < 999999) {
+                return 100; // Quà khổng lồ
             } else {
-                minesCount = parseInt(selectedValue);
-            }
-            while (mines.length < minesCount) {
-                const mineIndex = Math.floor(Math.random() * rows * cols);
-                if (!mines.includes(mineIndex)) {
-                    mines.push(mineIndex);
-                }
+                return 1000000000; // Quà siêu cấp
             }
         }
 
-        function revealCell(cell, index) {
-            if (!gameStarted) return;
-            const img = cell.querySelector('img');
-            if (mines.includes(index)) {
-                img.src = 'https://i.ibb.co/tD8YZmf/Screenshot-2024-11-30-213457-removebg-preview.png'; // Đường dẫn đến hình ảnh mìn
-                cell.classList.add('mine');
-                showMessage(false);
-            } else {
-                cell.classList.add('safe');
-                safeCells++;
-                if (safeCells === rows * cols - minesCount) {
-                    showMessage(true);
-                }
+let hasPaid = false; // Biến theo dõi trạng thái đã trả kẹo
+
+// Bắt đầu trò chơi mới
+startGameButton.addEventListener('click', () => {
+    if (candies < 50) {
+        alert("Bạn không có đủ kẹo để quay thưởng!");
+        return;
+    }
+
+    candies -= 50; // Giảm 50 kẹo cho mỗi lần quay thưởng
+    saveData();
+    updateUI();
+    hasPaid = true; // Đánh dấu là đã trả kẹo
+
+    // Thêm hiệu ứng quay
+    gameBoard.classList.add('spin');
+
+    // Khởi tạo trò chơi sau một khoảng thời gian để hiệu ứng quay hoàn tất
+    setTimeout(() => {
+        initGame(); // Khởi tạo bảng mới
+        gameBoard.classList.remove('spin'); // Xóa hiệu ứng quay sau khi khởi tạo lại
+    }, 1000); // Thời gian quay 1 giây
+});
+
+function showFloatingMessage(message) {
+    const floatingMessages = document.getElementById('floatingMessages');
+    const messageItem = document.createElement('div');
+    messageItem.classList.add('message-item');
+    messageItem.innerText = message;
+    floatingMessages.appendChild(messageItem);
+    floatingMessages.style.display = 'block';
+
+    // Tự động ẩn thông báo sau 2 giây
+    setTimeout(() => {
+        messageItem.style.opacity = '0';
+        setTimeout(() => {
+            floatingMessages.removeChild(messageItem);
+            if (floatingMessages.children.length === 0) {
+                floatingMessages.style.display = 'none'; // Ẩn nếu không còn thông báo
             }
-        }
+        }, 500); // Thời gian để ẩn hoàn toàn
+    }, 2000); // Thời gian hiển thị thông báo
+}
 
-        function showMessage(isWin) {
-            const totalCells = rows * cols;
-            const safeRatio = safeCells / (totalCells - minesCount);
-            const multiplier = calculateMultiplier(minesCount, safeCells);
-            const winnings = betAmount * multiplier;
-            let ratioText = `x${multiplier.toFixed(2)}`;
-            if (multiplier > 1) {
-                resultMessage.style.color = 'green';
-                resultMessage.innerHTML = `Bạn đã đào trúng bom! ${ratioText} - ${winnings.toFixed(2)} Kẹo`;
-            } else {
-                resultMessage.style.color = 'red';
-                resultMessage.innerHTML = `Bạn đã thua! ${ratioText} - Bạn đã mất ${(betAmount * (1 - multiplier)).toFixed(2)} Kẹo`;
-            }
-            overlay.classList.add('visible');
-        }
+function revealCell(cell, index) {
+    if (!hasPaid) {
+        showFloatingMessage("Bạn cần trả kẹo để nhận quà!"); // Hiển thị thông báo trôi
+        return; // Không làm gì nếu chưa trả kẹo
+    }
 
-        function calculateMultiplier(minesCount, safeCells) {
-            // Công thức tính hệ số nhân có thể thay đổi tùy theo yêu cầu cụ thể
-            return (safeCells / (rows * cols - minesCount)) * (25 / minesCount);
-        }
+    if (receivedCells[index]) {
+        showFloatingMessage("Ô này đã được nhận rồi!"); // Hiển thị thông báo trôi
+        return; // Không làm gì nếu ô đã nhận
+    }
 
-        startGameButton.addEventListener('click', () => {
-            betAmount = parseFloat(betAmountInput.value);
-            gameStarted = true;
-            initGame();
-        });
+    const img = cell.querySelector('img');
+    const reward = getReward();
 
+    // Cập nhật số kẹo dựa trên phần thưởng
+    candies += reward;
+    saveData();
+    updateUI();
+
+    // Đánh dấu ô là đã nhận
+    receivedCells[index] = true; // Đánh dấu ô đã nhận
+    cell.classList.remove('unreceived');
+    cell.classList.add('received');
+
+    // Hiển thị hình ảnh phần thưởng trong ô đã nhấn
+    if (reward === 1) {
+        img.src = 'https://static.wikia.nocookie.net/roblox-blox-piece/images/3/3c/Uncommon_Holiday_Gift.png/revision/latest/scale-to-width-down/64?cb=20241227100523'; // Thay bằng đường dẫn ảnh quà nhỏ
+    } else if (reward === 10) {
+        img.src = 'https://static.wikia.nocookie.net/roblox-blox-piece/images/5/54/Mythical_Holiday_Gift.png/revision/latest/scale-to-width-down/64?cb=20241227100524'; // Thay bằng đường dẫn ảnh quà lớn
+    } else if (reward === 100) {
+        img.src = 'https://static.wikia.nocookie.net/roblox-blox-piece/images/7/77/Admin_Holiday_Gift.png/revision/latest/scale-to-width-down/64?cb=20241227100523'; // Thay bằng đường dẫn ảnh quà khổng lồ
+    } else if (reward === 1000000000) {
+    }
+
+    img.style.display = 'block'; // Hiển thị ảnh phần thưởng trong ô
+
+    // Hiển thị kết quả với thông báo trôi
+    showFloatingMessage(`Bạn nhận được ${reward} kẹo!`); // Hiển thị thông báo trôi
+}
+        // Chơi lại từ đầu
         playAgainButton.addEventListener('click', () => {
-            gameStarted = false;
             initGame();
         });
 
+        // Chuyển đổi chế độ sáng/tối
         themeToggle.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
-            themeToggle.src = document.body.classList.contains('dark-mode') ? 'https://i.ibb.co/PGnwV3k/day-night-mode-switch-sun-moon-button-97458-444.png' : 'https://i.ibb.co/0GQzy5s/day-night-mode-switch-sun-moon-button-97458-4444.png';
+            themeToggle.src = document.body.classList.contains('dark-mode') 
+                ? 'https://i.ibb.co/PGnwV3k/day-night-mode-switch-sun-moon-button-97458-444.png' 
+                : 'https://i.ibb.co/0GQzy5s/day-night-mode-switch-sun-moon-button-97458-4444.png';
             localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
         });
 
+        // Chuyển về trang chính
         homeButton.addEventListener('click', () => {
-            window.location.href = 'indexgame.html'; // Thay đổi URL này thành trang chính của bạn
+            window.location.href = 'indexgame.html';
         });
-        window.addEventListener('load', () => {
+
+        // Khi trang được tải, thiết lập dữ liệu và giao diện
+        window.onload = () => {
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark-mode');
                 themeToggle.src = 'moon.png';
             }
-        });
+
+            loadSavedData();
+            updateUI();
+        };
 
         initGame();
-    </script>
+
+     function playAudio() {
+        var audio = document.getElementById('audio');
+        audio.muted = false; // Bỏ chế độ tắt tiếng khi người dùng nhấn nút
+        audio.play();
+    }
+  </script>
 </body>
 </html>
