@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách liên kết</title>
+    <style>
+        /* CSS như trước */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-image: url('https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474064zXQ/background-website-tet_105958087.jpg'); /* Thay đổi đường dẫn tới ảnh của bạn */
+    background-size: cover; /* Để ảnh phủ toàn bộ nền */
+    background-position: center; /* Để căn giữa ảnh */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+        .container {
+            background-color: #e7241d;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1100px;
+            overflow-y: auto;
+            max-height: 75vh;
+    position: relative; /* Để các ảnh có thể được định vị tương đối với container */
+}
+
+.corner-image {
+    position: absolute; /* Định vị tuyệt đối */
+    width: 125px; /* Kích thước ảnh */
+    height: 125px; /* Kích thước ảnh */
+}
+
+.top-left {
+    top: -20px; /* Khoảng cách từ trên */
+    left: -5px; /* Khoảng cách từ trái */
+}
+
+.top-right {
+    top: -10px; /* Khoảng cách từ trên */
+    right: 0px; /* Khoảng cách từ phải */
+}
+
+.bottom-left {
+    bottom: -30px; /* Khoảng cách từ dưới */
+    left: 0px; /* Khoảng cách từ trái */
+}
+
+.bottom-right {
+    bottom: -30px; /* Khoảng cách từ dưới */
+    right: 0px; /* Khoảng cách từ phải */
+}
+        }
+        .philosophy {
+            background-color: #ff463d;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-size: 1.4em;
+            color: #333;
+            font-style: italic;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .author {
+            font-size: 1em;
+            text-align: center;
+            margin-top: 10px;
+            font-style: normal;
+        }
+        .link-item {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #ff463d;
+            color: #333;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        .link-item:hover {
+            background-color: #f9f9f9;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+        .rainbow-button {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(90deg, #00C0FF, #FFCF00, #FC4F4F, #00C0FF);
+            background-size: 300% 300%;
+            color: #333;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            animation: rainbow-animation 4s linear infinite;
+        }
+
+        .rainbow-button:hover {
+            animation: rainbow-animation-hover 1.5s linear infinite;
+        }
+
+        .rainbow-text {
+            flex-grow: 1;
+            margin-right: 20px;
+            font-size: 1.1em;
+        }
+
+        .rainbow-image {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .link-text {
+            flex-grow: 1;
+            margin-right: 20px;
+            font-size: 1.1em;
+        }
+        .link-description {
+            font-size: 0.9em;
+            color: ;
+        }
+        .link-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        @keyframes rainbow-animation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes rainbow-animation-hover {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+.update-history-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    display: none; /* Ẩn modal mặc định */
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 90%;
+}
+
+.info-button {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #ff564d; /* Màu nền trắng */
+    color: #333; /* Màu chữ tối để dễ đọc */
+    border: 2px solid #ff4137; /* Đường viền màu xám nhạt */
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s, border-color 0.3s;
+    font-size: 1em;
+}
+
+.info-button:hover {
+    background-color: #f0f0f0; /* Màu nền sáng hơn khi hover */
+    border-color: #888; /* Đường viền tối hơn khi hover */
+}
+
+.button-text {
+    margin-left: 10px; /* Khoảng cách giữa biểu tượng và văn bản */
+}
+
+.candy-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 70px; /* Tăng kích thước */
+    height: 70px; /* Tăng kích thước */
+    background: linear-gradient(45deg, #FF6F61, #FF4C3B); /* Màu gradient */
+    color: white; /* Màu chữ */
+    border-radius: 50%; /* Hình tròn */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px; /* Tăng kích thước chữ */
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Đổ bóng */
+    transition: background 0.3s, transform 0.3s; /* Hiệu ứng chuyển đổi */
+}
+
+.candy-button:hover {
+    background: linear-gradient(45deg, #FF4C3B, #FF6F61); /* Đổi màu khi hover */
+    transform: scale(1.1); /* Phóng to khi hover */
+}
+
+.candy-button:active {
+    transform: scale(0.95); /* Co lại khi nhấn */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.music-player {
+    display: flex;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .music-player {
+        display: flex; /* Hiển thị phần phát nhạc */
+        margin-left: 0; /* Đặt lại lề */
+        margin-top: 20px; /* Thêm khoảng cách trên */
+    }
+}
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Triết lý ngày mới
+const philosophies = [
+    { quote: "Cuộc sống không phải là chờ bão qua đi mà là học cách nhảy múa trong mưa.", author: "Vivian Greene" },
+    { quote: "Hãy sống như thể bạn sẽ chết vào ngày mai. Học như thể bạn sẽ sống mãi mãi.", author: "Mahatma Gandhi" },
+    { quote: "Không có con đường nào đến với hạnh phúc. Hạnh phúc chính là con đường.", author: "Thích Nhất Hạnh" },
+    { quote: "Thành công không phải là chìa khóa của hạnh phúc. Hạnh phúc là chìa khóa của thành công.", author: "Albert Schweitzer" },
+    { quote: "Chúng ta không thể thay đổi gió, nhưng chúng ta có thể điều chỉnh cánh buồm.", author: "Aristotle" },
+    { quote: "Sự kiên nhẫn là mẹ của thành công.", author: "Benjamin Franklin" },
+    { quote: "Hãy thay đổi nếu bạn muốn mọi thứ thay đổi.", author: "Jim Rohn" },
+    { quote: "Sự khác biệt giữa người thành công và người thất bại nằm ở thái độ.", author: "William James" },
+    { quote: "Cuộc sống là 10% những gì xảy ra với bạn và 90% cách bạn phản ứng với nó.", author: "Charles Swindoll" },
+    { quote: "Hãy biến những điều bình thường trở nên phi thường.", author: "Tony Robbins" },
+    { quote: "Hạnh phúc không phải là đích đến, mà là hành trình.", author: "Roy M. Goodman" },
+    { quote: "Người thành công là người có thể đặt nền móng vững chắc từ những viên gạch mà người khác ném vào mình.", author: "David Brinkley" },
+    { quote: "Đừng đếm những gì bạn đã mất, hãy trân trọng những gì bạn còn lại.", author: "Khuyết danh" },
+    { quote: "Hãy làm những gì bạn có thể, với những gì bạn có, ở nơi bạn đang ở.", author: "Theodore Roosevelt" },
+    { quote: "Thành công là một hành trình, không phải là đích đến.", author: "Ben Sweetland" },
+    { quote: "Hãy sống mỗi ngày như thể đó là ngày cuối cùng của bạn.", author: "Steve Jobs" },
+    { quote: "Không có gì là không thể với một trái tim kiên định.", author: "Khuyết danh" },
+    { quote: "Hãy tin rằng bạn có thể và bạn đã đi được nửa đường.", author: "Theodore Roosevelt" },
+    { quote: "Cuộc sống là một cuộc phiêu lưu táo bạo hoặc không là gì cả.", author: "Helen Keller" },
+    { quote: "Hãy luôn là phiên bản tốt nhất của chính mình.", author: "Khuyết danh" },
+    { quote: "Đừng bao giờ từ bỏ ước mơ của bạn chỉ vì thời gian cần để đạt được nó. Thời gian sẽ trôi qua dù bạn có làm hay không.", author: "Earl Nightingale" },
+    { quote: "Hãy làm những điều bạn sợ nhất và sự sợ hãi sẽ biến mất.", author: "Ralph Waldo Emerson" },
+    { quote: "Thành công không phải là cuối cùng, thất bại không phải là chết người: lòng can đảm tiếp tục mới quan trọng.", author: "Winston Churchill" },
+    { quote: "Hãy sống như thể bạn sẽ chết vào ngày mai. Học như thể bạn sẽ sống mãi mãi.", author: "Mahatma Gandhi" },
+    { quote: "Hãy làm những gì bạn có thể, với những gì bạn có, ở nơi bạn đang ở.", author: "Theodore Roosevelt" },
+    { quote: "Thành công là một hành trình, không phải là đích đến.", author: "Ben Sweetland" },
+    { quote: "Hãy sống mỗi ngày như thể đó là ngày cuối cùng của bạn.", author: "Steve Jobs" },
+    { quote: "Không có gì là không thể với một trái tim kiên định.", author: "Khuyết danh" },
+    { quote: "Hãy tin rằng bạn có thể và bạn đã đi được nửa đường.", author: "Theodore Roosevelt" },
+    { quote: "Cuộc sống là một cuộc phiêu lưu táo bạo hoặc không là gì cả.", author: "Helen Keller" },
+    { quote: "Hãy luôn là phiên bản tốt nhất của chính mình.", author: "Khuyết danh" },
+    { quote: "Đừng bao giờ từ bỏ ước mơ của bạn chỉ vì thời gian cần để đạt được nó. Thời gian sẽ trôi qua dù bạn có làm hay không.", author: "Earl Nightingale" },
+    { quote: "Hãy làm những điều bạn sợ nhất và sự sợ hãi sẽ biến mất.", author: "Ralph Waldo Emerson" },
+    { quote: "Thành công không phải là cuối cùng, thất bại không phải là chết người: lòng can đảm tiếp tục mới quan trọng.", author: "Winston Churchill" },
+    { quote: "Hẹn em Pickleball, vờn nhau Pickleball...", author: "Anh Trai Pickleball" },
+    { quote: "Điều gì không thể giết ta sẽ khiến ta mạnh mẽ hơn.", author: "ACN - Anh Công Nhân - Friedrich Nietzsche" },
+    { quote: "Donate đi donate đi donate đi", author: "Donate đi" },
+    { quote: "Cứ Chill đi", author: "Chill Guys" },
+];
+            const randomIndex = Math.floor(Math.random() * philosophies.length);
+            document.querySelector('.philosophy').textContent = philosophies[randomIndex].quote;
+            document.querySelector('.author').textContent = `- ${philosophies[randomIndex].author}`;
+        });
+    </script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6138079895042375"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="candy-button" onclick="claimCandy()">
+    <img src="https://png.pngtree.com/png-vector/20230111/ourmid/pngtree-lucky-money-new-year-png-image_6559428.png" style="width: 50px; height: 50px;">
+</div>
+    <div class="philosophy"></div>
+    <div class="author"></div>
+<br><i><big><strong id="countdown"></strong></big></i></br>
+    <!-- Phần phát nhạc-->
+    <div class="music-player" style="display: flex; align-items: right; margin-left: 0px; margin-top: 0px;">
+<img src="nút phát nhạc-tạm dừng.png" alt="Phát/Tạm Dừng" class="pause-song-button" onclick="togglePlayPause()" style="cursor: pointer; width: 30px; height: 30px; margin-left: 10px;">
+<div alt="Đã dừng" class="music-status-image paused" style="display: none; width: 60px; height: 60px;">Đã dừng</div>
+        <img src="nút tiếp theo.png" alt="Chuyển bài" class="next-song-button" onclick="playRandomSong()" style="cursor: pointer; width: 30px; height: 30px; margin-left: 10px;">
+        <div class="song-info" style="margin-left: 10px;">
+            <span class="song-title">Bấm để phát</span>
+        </div>
+        <img src="đĩa nhạc.png" class="record-image" alt="Đĩa nhạc" style="width: 60px; height: 60px; animation: spin 4s linear infinite;">
+    </div>
+</div>
+<div class="container">
+    <div>
+        <marquee>🎉Tết 2025 Chúc Bạn Và Gia Đình Luôn Mạnh Khỏe Giàu Có Và Không Quên Quay Lại Donate Cho Chúng Tớ Nhé!🇻🇳</marquee>
+        <img src="trên trái.png" class="corner-image top-left" alt="Top Left">
+        <img src="trên phải.png" class="corner-image top-right" alt="Top Right">
+        <button class="info-button" onclick="showUpdateHistoryModal()">
+            <img src="https://media.lordicon.com/icons/system/regular/162-update.svg" alt="Update History" style="width: 30px; height: 30px;">
+            <span class="button-text">Lịch Sử Cập Nhật</span>
+        </button>
+    </div>
+        <!-- Danh sách liên kết -->
+        <a href="indexgame.html" class="rainbow-button" target="_blank">
+            <div class="rainbow-text">
+                Trò chơi trong phòng tin
+                <div class="link-description">Chơi đê:)</div>
+            </div>
+            <img src="https://png.pngtree.com/png-vector/20191028/ourlarge/pngtree-game-control-line-icon-vector-png-image_1904129.jpg" class="rainbow-image">
+        </a>
+        <a href="https://patorjk.com/software/taag/#p=display&f=Crawford2&t=%F0%9F%91%89hhuyer.github.io%F0%9F%91%88" class="link-item" target="_blank">
+            <div class="link-text">
+                Chuyển chữ thành kí tự đẹp
+                <div class="link-description">Nếu biết dùng thì rất tuyệt đấy!</div>
+            </div>
+            <img src="https://scipython.com/static/media/uploads/blog/ascii-art/saturn-ascii-i.png" class="link-image">
+        </a>
+        <a href="ai làm toán cấp 1.html" class="link-item" target="_blank">
+            <div class="link-text">
+                Ai làm toán
+                <div class="link-description">Giải được từng bước! (Ai này mới học cấp 1)</div>
+            </div>
+            <img src="https://images.kienthuc.net.vn/zoom/800/uploaded/ctvcongdongtre/2020_05_27/8/toan-khong-gian-noi-am-anh-khung-khiep-cua-dan-hoc-sinh-cuoi-cap.jpg" class="link-image">
+        </a>
+        <a href="tulw.html" class="link-item" target="_blank">
+            <div class="link-text">
+                Web vô dụng
+                <div class="link-description">Vâng rất hữu dụng!</div>
+            </div>
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRB09DY5udNeNIfZJXG988PSaZhc7-47wRYsg&s" class="link-image">
+        </a>
+        <a href="https://www.youtube.com/watch?v=z6b8fMrOQD4" class="link-item" target="_blank">
+            <div class="link-text">
+                Lì Xì Năm Mới
+                <div class="link-description">Bấm vào đây để nhận quà</div>
+            </div>
+        </a>
+    <img src="dưới trái.png" class="corner-image bottom-left" alt="Bottom Left">
+    <img src="dưới phải.png" class="corner-image bottom-right" alt="Bottom Right">
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<div>
+    <p>Chào mừng bạn đến với trang web của chúng tôi! Đây không chỉ là một trang web thông thường mà là một không gian sáng tạo, nơi bạn có thể tìm thấy nhiều thông tin hữu ích, giải trí và những trải nghiệm độc đáo. Hãy cùng khám phá những điều thú vị mà chúng tôi đã chuẩn bị cho bạn!</p>
+
+    <p><strong>1. Mục tiêu của Trang Web</strong></p>
+    <p>Cung cấp thông tin: Chúng tôi mong muốn trở thành nguồn thông tin đáng tin cậy cho người dùng. Từ các bài viết về triết lý sống đến các liên kết hữu ích, mọi thứ đều được thiết kế để phục vụ bạn.</p>
+    <p>Giải trí: Không chỉ dừng lại ở việc cung cấp thông tin, chúng tôi còn mang đến những trò chơi thú vị và âm nhạc để bạn thư giãn sau những giờ làm việc căng thẳng.</p>
+    <p>Kết nối cộng đồng: Chúng tôi hy vọng trang web này sẽ trở thành nơi kết nối những người có cùng sở thích, từ những người yêu thích triết lý sống đến những người đam mê công nghệ.</p>
+
+    <p><strong>2. Các Tính Năng Nổi Bật</strong></p>
+    <p>Triết lý Ngày Mới: Mỗi ngày, bạn sẽ được truyền cảm hứng từ những câu nói nổi tiếng của các nhân vật vĩ đại. Những câu nói này không chỉ mang tính chất động viên mà còn giúp bạn suy ngẫm về cuộc sống.</p>
+    <p>Danh sách Liên kết Hữu ích: Chúng tôi đã tổng hợp một danh sách các liên kết đến những trang web thú vị và hữu ích, từ trò chơi đến các công cụ trực tuyến, giúp bạn tiết kiệm thời gian tìm kiếm.</p>
+    <p>Phát Nhạc: Với tính năng phát nhạc, bạn có thể thưởng thức những bản nhạc yêu thích trong khi duyệt web. Âm nhạc không chỉ giúp bạn thư giãn mà còn tạo ra bầu không khí vui vẻ.</p>
+
+    <p><strong>3. Giao Diện Thân Thiện</strong></p>
+    <p>Thiết kế Responsive: Trang web được thiết kế để hoạt động tốt trên mọi thiết bị, từ máy tính để bàn đến điện thoại di động. Bạn có thể truy cập mọi lúc, mọi nơi mà không gặp khó khăn.</p>
+    <p>Màu sắc Tươi Sáng: Với màu sắc tươi sáng và hình ảnh bắt mắt, trang web không chỉ thu hút mà còn tạo cảm giác thoải mái cho người dùng.</p>
+
+    <p><strong>4. Những Điều Thú Vị Khác</strong></p>
+    <p>Câu Chuyện Về Kẹo: Chúng tôi có một tính năng thú vị cho phép bạn nhận kẹo và xu mỗi ngày. Đây là một cách để khuyến khích bạn quay lại trang web thường xuyên và tham gia vào các hoạt động thú vị.</p>
+    <p>Lịch Sử Cập Nhật: Bạn có thể theo dõi các bản cập nhật mới nhất của trang web thông qua tính năng lịch sử cập nhật. Điều này giúp bạn không bỏ lỡ bất kỳ thông tin quan trọng nào.</p>
+    <p>Chia Sẻ Cảm Xúc: Chúng tôi khuyến khích bạn chia sẻ cảm xúc và ý kiến của mình về trang web. Những phản hồi của bạn sẽ giúp chúng tôi cải thiện và phát triển hơn nữa.</p>
+
+    <p><strong>5. Một Chút Về Chúng Tôi</strong></p>
+    <p>Đội Ngũ Phát Triển: Chúng tôi là một nhóm những người đam mê công nghệ và sáng tạo, luôn tìm kiếm cách để mang đến những trải nghiệm tốt nhất cho người dùng.</p>
+    <p>Tầm Nhìn Tương Lai: Chúng tôi không ngừng mở rộng và cải thiện trang web. Trong tương lai, chúng tôi dự định thêm nhiều tính năng mới và nội dung phong phú hơn nữa.</p>
+
+    <p><strong>6. Kết Luận</strong></p>
+    <p>Trang web của chúng tôi không chỉ là một nơi để tìm kiếm thông tin mà còn là một không gian để bạn khám phá, học hỏi và kết nối. Chúng tôi hy vọng bạn sẽ tìm thấy những điều thú vị và hữu ích tại đây. Hãy tham gia cùng chúng tôi trong hành trình này và đừng quên quay lại thường xuyên để không bỏ lỡ những điều mới mẻ!</p>
+
+    <p>Cảm ơn bạn đã ghé thăm trang web của chúng tôi! Chúc bạn có những trải nghiệm tuyệt vời!</p>
+</div>
+    </div>
+<div class="update-history-modal" id="update-history-modal" onclick="closeModal('update-history-modal')">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h2>Lịch Sử Cập Nhật</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ngày</th>
+                    <th>Nội Dung</th>
+                </tr>
+            </thead>
+            <tbody id="update-history-body">
+                <!-- Các bản cập nhật sẽ được thêm vào đây -->
+            </tbody>
+        </table>
+        <button onclick="closeModal('update-history-modal')">Đóng</button>
+    </div>
+<script>
+function showUpdateHistoryModal() {
+    const updateHistoryBody = document.getElementById('update-history-body');
+    updateHistoryBody.innerHTML = ''; // Xóa nội dung cũ
+
+    // Thêm các bản cập nhật vào bảng
+    const updates = [
+        { date: '21/12/2024', content: 'Chuẩn bị cho Update tết, thêm tính năng cho người chơi test, tối ưu' },
+        { date: '20/12/2024', content: 'Update tài xỉu...🤨, thêm nút tự động quay, update shop, tối ưu' },
+        { date: '19/12/2024', content: 'Thêm nút Lịch sử cập nhật, update Pet RNG(hiệu ứng, nút), shop và minigame(tiện lợi hơn)' },
+        { date: '69/96/SayGex', content: 'Mấy cái Update cũ thằng Admin không ghi chép lại nên không có đâu' },
+        // Thêm nhiều bản cập nhật hơn nếu cần
+    ];
+
+    updates.forEach(update => {
+        const row = updateHistoryBody.insertRow();
+        const dateCell = row.insertCell(0);
+        const contentCell = row.insertCell(1);
+        dateCell.innerText = update.date;
+        contentCell.innerText = update.content;
+    });
+
+    document.getElementById('update-history-modal').style.display = 'flex';
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+    let candies = parseInt(localStorage.getItem('candies')) || 0;
+    let coins = parseInt(localStorage.getItem('money')) || 0; // Thêm biến xu
+    let lastClaimDate = localStorage.getItem('lastClaimDate'); // Lấy ngày từ localStorage
+
+function claimCandy() {
+    const currentDate = new Date();
+    const today = currentDate.toDateString();
+    const lastClaimDateStored = lastClaimDate ? new Date(lastClaimDate).toDateString() : null; // Chuyển đổi lastClaimDate thành chuỗi ngày
+    const startDate = new Date('2025-01-01');
+    const endDate = new Date('2025-01-31');
+
+    // Kiểm tra xem thời gian có nằm trong tháng 1 năm 2025 không
+    if (currentDate < startDate || currentDate > endDate) {
+        alert("Bạn chỉ có thể nhận trong tháng 1 năm 2025. Hãy đăng nhập vào 1/1 để nhận quà khủng nhé! 💥");
+        return;
+    }
+
+    // Kiểm tra xem đã qua ngày mới chưa
+    if (lastClaimDateStored === today) {
+        alert("Bạn đã nhận kẹo hôm nay rồi! Nếu bạn đã qua hôm sau thì bạn hãy thử tắt trang đi bật lại xem.");
+        return;
+    }
+
+    // Kiểm tra xem có phải là ngày 1/1/2025 không
+    if (currentDate.toDateString() === startDate.toDateString()) {
+        // Tính số kẹo và xu nhận được cho ngày 1/1/2025
+        let candiesToClaim = Math.floor(Math.random() * 1000) + 1; // Số kẹo ngẫu nhiên từ 1-1000
+        let coinsToClaim = Math.floor(Math.random() * 1000000) + 1; // Số xu ngẫu nhiên từ 1-1000000
+
+        // Cập nhật số kẹo và xu
+        candies += candiesToClaim;
+        coins += coinsToClaim; // Cập nhật xu
+        lastClaimDate = today;
+
+        // Lưu trữ lại vào localStorage
+        localStorage.setItem('lastClaimDate', lastClaimDate); // Lưu ngày nhận kẹo
+        localStorage.setItem('candies', candies); // Lưu số kẹo vào localStorage
+        localStorage.setItem('money', coins); // Lưu số xu vào localStorage
+
+        alert(`Bạn đã nhận được ${candiesToClaim} kẹo và ${coinsToClaim} xu!`);
+        updateUI(); // Cập nhật giao diện
+        return; // Kết thúc hàm
+    }
+
+    // Tính số kẹo và xu nhận được cho các ngày khác
+    let candiesToClaim = Math.floor(Math.random() * 10) + 1; // Số kẹo ngẫu nhiên từ 1-10
+    let coinsToClaim = Math.floor(Math.random() * 1000) + 1; // Số xu ngẫu nhiên từ 1-50
+
+    // Kiểm tra xem có phải là ngày tiếp theo không
+    if (lastClaimDate) {
+        const lastDate = new Date(lastClaimDate);
+        const daysDiff = Math.floor((currentDate - lastDate) / (1000 * 60 * 60 * 24));
+
+        if (daysDiff === 1) {
+            candiesToClaim *= 2; // Nhận gấp đôi nếu là ngày tiếp theo
+            coinsToClaim *= 2; // Nhận gấp đôi xu nếu là ngày tiếp theo
+        } else if (daysDiff > 1) {
+            alert("Bạn đã bỏ lỡ ngày nhận kẹo. Còn bỏ nữa là tớ phạt đấy 😢"); // Thông báo khi bỏ lỡ ngày
+        }
+    }
+
+    // Cập nhật số kẹo và xu
+    candies += candiesToClaim;
+    coins += coinsToClaim; // Cập nhật xu
+    lastClaimDate = today;
+
+    // Lưu trữ lại vào localStorage
+    localStorage.setItem('lastClaimDate', lastClaimDate); // Lưu ngày nhận kẹo
+    localStorage.setItem('candies', candies); // Lưu số kẹo vào localStorage
+    localStorage.setItem('money', coins); // Lưu số xu vào localStorage
+
+    alert(`Bạn đã nhận được ${candiesToClaim} kẹo và ${coinsToClaim} xu! Hãy tiếp tục đăng nhập vào ngày mai để không mất chuỗi bạn nhé! 😄`);
+    updateUI(); // Cập nhật giao diện
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const countdownElement = document.getElementById('countdown');
+    const newYear = new Date('2025-01-01T00:00:00'); // Thay đổi ngày Tết
+    const updateCountdown = () => {
+        const now = new Date();
+        const timeDiff = newYear - now;
+
+        if (timeDiff <= 0) {
+            countdownElement.textContent = "Chúc Mừng 2025!"; // Hiển thị "2025" khi đến Tết
+            clearInterval(countdownInterval); // Dừng đếm ngược
+        } else {
+            const seconds = Math.floor((timeDiff / 1000) % 60);
+            const minutes = Math.floor((timeDiff / 1000 / 60) % 60);
+            const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+
+            countdownElement.textContent = `${days} ngày ${hours} giờ ${minutes} phút ${seconds} giây đến Tết!`;
+        }
+    };
+
+    updateCountdown(); // Cập nhật ngay lần đầu
+    const countdownInterval = setInterval(updateCountdown, 1000); // Cập nhật mỗi giây
+});
+
+const songs = [
+    { title: "Happickleball (Pickleball X Happy New Year) | NHẠC TẾT 2025", url: "Happickleball (Pickleball X Happy New Year)  NHẠC TẾT 2025.mp3" },
+    { title: "SKIBIDI TẾT  nhạc tết 2025", url: "SKIBIDI TẾT  nhạc tết giáp thìn 2025.mp3" },
+    { title: "Nhật Chàm x Hoàng  Ngày Xuân Long Phụng Sum Vầy VITAS  BẢN FULL  TẾT 2025", url: "Nhật Chàm x Hoàng  Ngày Xuân Long Phụng Sum Vầy VITAS  BẢN FULL  TẾT 2025.mp3" },
+    { title: "Nhạc Tết 2025  Ma Gaming x Bing Chilling x Hóc Xương Cá Remix", url: "Nhạc Tết 2025  Ma Gaming x Bing Chilling x Hóc Xương Cá Remix.mp3" },
+    // Thêm nhiều bài hát khác nếu cần
+];
+
+let audio; // Biến toàn cục để lưu trữ audio
+let isPlaying = false; // Biến để theo dõi trạng thái phát nhạc
+
+function playRandomSong() {
+    const randomIndex = Math.floor(Math.random() * songs.length);
+    const selectedSong = songs[randomIndex];
+    
+    // Cập nhật tên bài hát
+    document.querySelector('.song-title').textContent = selectedSong.title;
+
+    // Nếu có bài hát đang phát, tạm dừng nó
+    if (audio) {
+        audio.pause();
+        audio.currentTime = 0; // Đặt lại thời gian phát
+    }
+
+    // Tạo audio mới và phát bài hát
+    audio = new Audio(selectedSong.url);
+    audio.volume = 0; // Đặt âm lượng ban đầu là 0
+    audio.play();
+    isPlaying = true; // Đánh dấu là đang phát
+
+    // Thay đổi hình ảnh khi đang phát
+    document.querySelector('.music-status-image').style.display = 'block'; // Hiện hình ảnh đang phát
+    document.querySelector('.music-status-image.paused').style.display = 'none'; // Ẩn hình ảnh tạm dừng
+
+    // Hiệu ứng Fade in
+    let fadeInInterval = setInterval(() => {
+        if (audio.volume < 1) {
+            audio.volume = Math.min(audio.volume + 0.1, 1); // Tăng âm lượng
+        } else {
+            clearInterval(fadeInInterval); // Dừng hiệu ứng khi âm lượng đạt 1
+        }
+    }, 100); // Tăng âm lượng mỗi 100ms
+}
+
+function pauseSong() {
+    if (audio) {
+        // Hiệu ứng Fade out
+        let fadeOutInterval = setInterval(() => {
+            if (audio.volume > 0) {
+                audio.volume = Math.max(audio.volume - 0.1, 0); // Giảm âm lượng
+            } else {
+                audio.pause(); // Tạm dừng bài hát khi âm lượng đạt 0
+                clearInterval(fadeOutInterval); // Dừng hiệu ứng
+                isPlaying = false; // Đánh dấu là không còn phát
+
+                // Thay đổi hình ảnh khi tạm dừng
+                document.querySelector('.music-status-image').style.display = 'none'; // Ẩn hình ảnh đang phát
+                document.querySelector('.music-status-image.paused').style.display = 'block'; // Hiện hình ảnh tạm dừng
+            }
+        }, 100); // Giảm âm lượng mỗi 100ms
+    }
+}
+
+function togglePlayPause() {
+    if (isPlaying) {
+        pauseSong(); // Nếu đang phát, tạm dừng
+    } else {
+        if (audio) {
+            audio.play(); // Nếu không có bài hát mới, tiếp tục phát
+            isPlaying = true; // Đánh dấu là đang phát
+
+            // Thay đổi hình ảnh khi tiếp tục phát
+            document.querySelector('.music-status-image').style.display = 'block'; // Hiện hình ảnh đang phát
+            document.querySelector('.music-status-image.paused').style.display = 'none'; // Ẩn hình ảnh tạm dừng
+
+            // Hiệu ứng Fade in
+            let fadeInInterval = setInterval(() => {
+                if (audio.volume < 1) {
+                    audio.volume = Math.min(audio.volume + 0.1, 1); // Tăng âm lượng
+                } else {
+                    clearInterval(fadeInInterval); // Dừng hiệu ứng khi âm lượng đạt 1
+                }
+            }, 100); // Tăng âm lượng mỗi 100ms
+        } else {
+            playRandomSong(); // Nếu không có bài hát nào, phát bài hát ngẫu nhiên
+        }
+    }
+}
+</script>
+</body>
+</html>
