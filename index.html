@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách liên kết</title>
+    <title>Chúc Mừng Năm Mới 2025!</title>
     <style>
         /* CSS như trước */
         * {
@@ -11,19 +11,21 @@
             padding: 0;
             box-sizing: border-box;
         }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f7f9fb;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-image: url('https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474064zXQ/background-website-tet_105958087.jpg'); /* Thay đổi đường dẫn tới ảnh của bạn */
+    background-size: cover; /* Để ảnh phủ toàn bộ nền */
+    background-position: center; /* Để căn giữa ảnh */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
         .container {
-            background-color: #ffffff;
+            background-color: #e7241d;
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
@@ -31,9 +33,37 @@
             max-width: 1100px;
             overflow-y: auto;
             max-height: 75vh;
+    position: relative; /* Để các ảnh có thể được định vị tương đối với container */
+}
+
+.corner-image {
+    position: absolute; /* Định vị tuyệt đối */
+    width: 125px; /* Kích thước ảnh */
+    height: 125px; /* Kích thước ảnh */
+}
+
+.top-left {
+    top: -20px; /* Khoảng cách từ trên */
+    left: -5px; /* Khoảng cách từ trái */
+}
+
+.top-right {
+    top: -10px; /* Khoảng cách từ trên */
+    right: 0px; /* Khoảng cách từ phải */
+}
+
+.bottom-left {
+    bottom: -30px; /* Khoảng cách từ dưới */
+    left: 0px; /* Khoảng cách từ trái */
+}
+
+.bottom-right {
+    bottom: -30px; /* Khoảng cách từ dưới */
+    right: 0px; /* Khoảng cách từ phải */
+}
         }
         .philosophy {
-            background-color: #ffffff;
+            background-color: #ff463d;
             padding: 25px;
             border-radius: 12px;
             margin-bottom: 30px;
@@ -45,7 +75,6 @@
         }
         .author {
             font-size: 1em;
-            color: #666;
             text-align: center;
             margin-top: 10px;
             font-style: normal;
@@ -55,7 +84,7 @@
             align-items: center;
             margin: 20px 0;
             padding: 20px;
-            background-color: #ffffff;
+            background-color: #ff463d;
             color: #333;
             text-decoration: none;
             border-radius: 12px;
@@ -104,7 +133,7 @@
         }
         .link-description {
             font-size: 0.9em;
-            color: #888;
+            color: ;
         }
         .link-image {
             width: 60px;
@@ -162,9 +191,9 @@
     display: flex;
     align-items: center;
     padding: 10px 20px;
-    background-color: white; /* Màu nền trắng */
+    background-color: #ff564d; /* Màu nền trắng */
     color: #333; /* Màu chữ tối để dễ đọc */
-    border: 2px solid #ccc; /* Đường viền màu xám nhạt */
+    border: 2px solid #ff4137; /* Đường viền màu xám nhạt */
     border-radius: 12px;
     cursor: pointer;
     transition: background 0.3s, transform 0.3s, border-color 0.3s;
@@ -206,49 +235,139 @@
 .candy-button:active {
     transform: scale(0.95); /* Co lại khi nhấn */
 }
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.music-player {
+    display: flex;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .music-player {
+        display: flex; /* Hiển thị phần phát nhạc */
+        margin-left: 0; /* Đặt lại lề */
+        margin-top: 20px; /* Thêm khoảng cách trên */
+    }
+}
+#candy-effect span {
+    position: absolute;
+    pointer-events: none; /* Không cho phép tương tác với các biểu tượng */
+}
+.farewell-message {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 1); /* Nền trắng với độ mờ */
+    transition: background-color 1s ease; /* Thêm hiệu ứng chuyển đổi */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* Đảm bảo nó nằm trên cùng */
+}
+
+.year-text {
+    font-size: 96px;
+    color: #ff463d; /* Màu sắc nổi bật */
+    margin: 0;
+}
+
+.farewell-text {
+    font-size: 18px;
+    color: #333; /* Màu chữ tối */
+    margin: 10px 0;
+}
+
+.farewell-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #ff564d; /* Màu nền nút */
+    color: white; /* Màu chữ nút */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.farewell-button:hover {
+    background-color: #f0f0f0; /* Màu nền khi hover */
+    color: #ff564d; /* Màu chữ khi hover */
+}
+
+.fade-out {
+    animation: fadeOut 2s forwards; /* Hiệu ứng mờ dần */
+    opacity: 0; /* Đặt độ mờ thành 0 */
+    transition: opacity 1s ease; /* Thêm hiệu ứng chuyển tiếp */
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50px); /* Bay lên */
+    }
+}
+
+
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Triết lý ngày mới
 const philosophies = [
-    { quote: "Cuộc sống không phải là chờ bão qua đi mà là học cách nhảy múa trong mưa.", author: "Vivian Greene" },
-    { quote: "Hãy sống như thể bạn sẽ chết vào ngày mai. Học như thể bạn sẽ sống mãi mãi.", author: "Mahatma Gandhi" },
-    { quote: "Không có con đường nào đến với hạnh phúc. Hạnh phúc chính là con đường.", author: "Thích Nhất Hạnh" },
-    { quote: "Thành công không phải là chìa khóa của hạnh phúc. Hạnh phúc là chìa khóa của thành công.", author: "Albert Schweitzer" },
-    { quote: "Chúng ta không thể thay đổi gió, nhưng chúng ta có thể điều chỉnh cánh buồm.", author: "Aristotle" },
-    { quote: "Sự kiên nhẫn là mẹ của thành công.", author: "Benjamin Franklin" },
-    { quote: "Hãy thay đổi nếu bạn muốn mọi thứ thay đổi.", author: "Jim Rohn" },
-    { quote: "Sự khác biệt giữa người thành công và người thất bại nằm ở thái độ.", author: "William James" },
-    { quote: "Cuộc sống là 10% những gì xảy ra với bạn và 90% cách bạn phản ứng với nó.", author: "Charles Swindoll" },
-    { quote: "Hãy biến những điều bình thường trở nên phi thường.", author: "Tony Robbins" },
-    { quote: "Hạnh phúc không phải là đích đến, mà là hành trình.", author: "Roy M. Goodman" },
-    { quote: "Người thành công là người có thể đặt nền móng vững chắc từ những viên gạch mà người khác ném vào mình.", author: "David Brinkley" },
-    { quote: "Đừng đếm những gì bạn đã mất, hãy trân trọng những gì bạn còn lại.", author: "Khuyết danh" },
-    { quote: "Hãy làm những gì bạn có thể, với những gì bạn có, ở nơi bạn đang ở.", author: "Theodore Roosevelt" },
-    { quote: "Thành công là một hành trình, không phải là đích đến.", author: "Ben Sweetland" },
-    { quote: "Hãy sống mỗi ngày như thể đó là ngày cuối cùng của bạn.", author: "Steve Jobs" },
-    { quote: "Không có gì là không thể với một trái tim kiên định.", author: "Khuyết danh" },
-    { quote: "Hãy tin rằng bạn có thể và bạn đã đi được nửa đường.", author: "Theodore Roosevelt" },
-    { quote: "Cuộc sống là một cuộc phiêu lưu táo bạo hoặc không là gì cả.", author: "Helen Keller" },
-    { quote: "Hãy luôn là phiên bản tốt nhất của chính mình.", author: "Khuyết danh" },
-    { quote: "Đừng bao giờ từ bỏ ước mơ của bạn chỉ vì thời gian cần để đạt được nó. Thời gian sẽ trôi qua dù bạn có làm hay không.", author: "Earl Nightingale" },
-    { quote: "Hãy làm những điều bạn sợ nhất và sự sợ hãi sẽ biến mất.", author: "Ralph Waldo Emerson" },
-    { quote: "Thành công không phải là cuối cùng, thất bại không phải là chết người: lòng can đảm tiếp tục mới quan trọng.", author: "Winston Churchill" },
-    { quote: "Hãy sống như thể bạn sẽ chết vào ngày mai. Học như thể bạn sẽ sống mãi mãi.", author: "Mahatma Gandhi" },
-    { quote: "Hãy làm những gì bạn có thể, với những gì bạn có, ở nơi bạn đang ở.", author: "Theodore Roosevelt" },
-    { quote: "Thành công là một hành trình, không phải là đích đến.", author: "Ben Sweetland" },
-    { quote: "Hãy sống mỗi ngày như thể đó là ngày cuối cùng của bạn.", author: "Steve Jobs" },
-    { quote: "Không có gì là không thể với một trái tim kiên định.", author: "Khuyết danh" },
-    { quote: "Hãy tin rằng bạn có thể và bạn đã đi được nửa đường.", author: "Theodore Roosevelt" },
-    { quote: "Cuộc sống là một cuộc phiêu lưu táo bạo hoặc không là gì cả.", author: "Helen Keller" },
-    { quote: "Hãy luôn là phiên bản tốt nhất của chính mình.", author: "Khuyết danh" },
-    { quote: "Đừng bao giờ từ bỏ ước mơ của bạn chỉ vì thời gian cần để đạt được nó. Thời gian sẽ trôi qua dù bạn có làm hay không.", author: "Earl Nightingale" },
-    { quote: "Hãy làm những điều bạn sợ nhất và sự sợ hãi sẽ biến mất.", author: "Ralph Waldo Emerson" },
-    { quote: "Thành công không phải là cuối cùng, thất bại không phải là chết người: lòng can đảm tiếp tục mới quan trọng.", author: "Winston Churchill" },
     { quote: "Hẹn em Pickleball, vờn nhau Pickleball...", author: "Anh Trai Pickleball" },
     { quote: "Điều gì không thể giết ta sẽ khiến ta mạnh mẽ hơn.", author: "ACN - Anh Công Nhân - Friedrich Nietzsche" },
     { quote: "Donate đi donate đi donate đi", author: "Donate đi" },
     { quote: "Cứ Chill đi", author: "Chill Guys" },
+    { quote: "45 mà mũ 2 là gì?", author: "2025" },
+    { quote: "Chúc mừng năm mới! Năm nay, hãy để mọi điều xui xẻo đi qua như nước chảy!", author: "2025!!" },
+    { quote: "Năm mới, chúc bạn có nhiều tiền hơn, nhưng đừng quên chia sẻ với tôi nhé!", author: "2025!!" },
+    { quote: "Tết này, hãy ăn nhiều bánh chưng, nhưng đừng quên tập thể dục để không bị bánh chưng 'tấn công'!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới phát tài, phát lộc, và phát luôn cả chiều cao!", author: "2025!!" },
+    { quote: "Năm mới, hãy để mọi điều không vui qua đi, và chỉ giữ lại những điều vui vẻ như bánh kẹo!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới như một ly trà sữa: ngọt ngào, đầy đủ topping và không bao giờ hết vị!", author: "2025!!" },
+    { quote: "Năm mới, hãy sống như một chiếc bánh mì: giòn bên ngoài, mềm bên trong và luôn được yêu thương!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới không chỉ có tiền, mà còn có nhiều 'điểm' để tiêu!", author: "2025!!" },
+    { quote: "Tết này, hãy để mọi điều xui xẻo đi qua như một chiếc xe buýt, và chỉ đón những điều tốt đẹp!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới vui vẻ như một chú mèo được vuốt ve!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới như một chiếc bánh chưng: đầy đặn và không bao giờ thiếu vị!", author: "2025!!" },
+    { quote: "Năm mới, chúc bạn có nhiều niềm vui như số lượng bánh kẹo trong mâm cỗ Tết!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới phát tài phát lộc, và đừng quên mời tôi ăn Tết nhé!", author: "2025!!" },
+    { quote: "Năm mới, hãy để mọi điều không vui qua đi như một chiếc xe đẩy hàng!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới không chỉ có tiền mà còn có nhiều bạn bè để chia sẻ!", author: "2025!!" },
+    { quote: "Tết này, hãy ăn thật nhiều nhưng đừng quên tập thể dục để không bị 'bánh chưng' tấn công!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới như một ly trà sữa: ngọt ngào và đầy đủ topping!", author: "2025!!" },
+    { quote: "Năm mới, hãy sống như một chiếc bánh mì: giòn bên ngoài, mềm bên trong!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới vui vẻ như một chú mèo được vuốt ve!", author: "2025!!" },
+    { quote: "Năm mới, hãy để mọi điều xui xẻo đi qua như nước chảy!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới có nhiều tiền hơn, nhưng đừng quên chia sẻ với tôi nhé!", author: "2025!!" },
+    { quote: "Tết này, hãy để mọi điều không vui qua đi và chỉ giữ lại những điều vui vẻ!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới như một chiếc xe hơi: luôn chạy nhanh và không bao giờ hỏng hóc!", author: "2025!!" },
+    { quote: "Năm mới, hãy để mọi điều xui xẻo đi qua như một chiếc xe buýt, và chỉ đón những điều tốt đẹp!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới không chỉ có tiền, mà còn có nhiều 'điểm' để tiêu!", author: "2025!!" },
+    { quote: "Năm mới, hãy sống như một chiếc bánh mì: giòn bên ngoài, mềm bên trong và luôn được yêu thương!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới vui vẻ như một chú chó được cưng chiều!", author: "2025!!" },
+    { quote: "Năm mới, hãy để mọi điều không vui qua đi như một cơn gió!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới phát tài, phát lộc, và phát luôn cả chiều cao!", author: "2025!!" },
+    { quote: "Tết này, hãy ăn nhiều bánh chưng, nhưng đừng quên tập thể dục để không bị bánh chưng 'tấn công'!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới như một ly trà sữa: ngọt ngào, đầy đủ topping và không bao giờ hết vị!", author: "2025!!" },
+    { quote: "Năm mới, hãy sống như một chiếc bánh mì: giòn bên ngoài, mềm bên trong và luôn được yêu thương!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới không chỉ có tiền, mà còn có nhiều 'điểm' để tiêu!", author: "2025!!" },
+    { quote: "Tết này, hãy để mọi điều xui xẻo đi qua như một chiếc xe buýt, và chỉ đón những điều tốt đẹp!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới vui vẻ như một chú mèo được vuốt ve!", author: "2025!!" },
+    { quote: "Năm mới, hãy để mọi điều không vui qua đi như một chiếc xe đẩy hàng!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới có nhiều niềm vui như số lượng bánh kẹo trong mâm cỗ Tết!", author: "2025!!" },
+    { quote: "Năm mới, chúc bạn luôn giữ được nụ cười trên môi và không bao giờ thiếu niềm vui!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới như một chiếc bánh chưng: đầy đặn và không bao giờ thiếu vị!", author: "2025!!" },
+    { quote: "Năm mới, hãy để mọi điều không vui qua đi và chỉ giữ lại những điều vui vẻ!", author: "2025!!" }
 ];
             const randomIndex = Math.floor(Math.random() * philosophies.length);
             document.querySelector('.philosophy').textContent = philosophies[randomIndex].quote;
@@ -256,27 +375,49 @@ const philosophies = [
         });
     </script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6138079895042375"
-     crossorigin="anonymous">
-</script>
+     crossorigin="anonymous"></script>
 </head>
 <body>
+<div class="farewell-message" id="farewell-message">
+    <h1 class="year-text">2024</h1>
+    <p class="farewell-text">Năm 2024 sắp kết thúc, hãy cùng nói lời tạm biệt với cậu ấy nhé!</p>
+    <p class="farewell-text"><small>Tết v1</small></p>
+    <button class="farewell-button" id="farewell-button">Tạm biệt nhé 👋</button>
+<div class="new-message" id="new-message" style="display: none; text-align: center;">
+</div>
+</div>
 <div class="candy-button" onclick="claimCandy()">
+<div id="candy-effect" style="position: relative; overflow: hidden;"></div>
     <img src="https://png.pngtree.com/png-vector/20230111/ourmid/pngtree-lucky-money-new-year-png-image_6559428.png" style="width: 50px; height: 50px;">
 </div>
     <div class="philosophy"></div>
     <div class="author"></div>
-    <div class="container">
-<div>
-<marquee>🎉Tết 2025 Chúc Bạn Và Gia Đình Luôn Mạnh Khỏe Giàu Có Và Không Quên Quay Lại Donate Cho Chúng Tớ Nhé!🇻🇳</marquee>
-<button class="info-button" onclick="showUpdateHistoryModal()">
-    <img src="https://media.lordicon.com/icons/system/regular/162-update.svg" alt="Update History" style="width: 30px; height: 30px;">
-    <span class="button-text">Lịch Sử Cập Nhật</span>
-</button>
+<br><i><big><strong id="countdown"></strong></big></i></br>
+    <!-- Phần phát nhạc-->
+    <div class="music-player" style="display: flex; align-items: right; margin-left: 0px; margin-top: 0px;">
+<img src="nút phát nhạc-tạm dừng.png" alt="Phát/Tạm Dừng" class="pause-song-button" onclick="togglePlayPause()" style="cursor: pointer; width: 30px; height: 30px; margin-left: 10px;">
+<div alt="Đã dừng" class="music-status-image paused" style="display: none; width: 60px; height: 60px;">Đã dừng</div>
+        <img src="nút tiếp theo.png" alt="Chuyển bài" class="next-song-button" onclick="playRandomSong()" style="cursor: pointer; width: 30px; height: 30px; margin-left: 10px;">
+        <div class="song-info" style="margin-left: 10px;">
+            <span class="song-title">Bấm để phát</span>
+        </div>
+        <img src="đĩa nhạc.png" class="record-image" alt="Đĩa nhạc" style="width: 60px; height: 60px; animation: spin 4s linear infinite;">
+    </div>
 </div>
+<div class="container">
+    <div>
+        <marquee>🎉Tết 2025 Chúc Bạn Và Gia Đình Luôn Mạnh Khỏe Giàu Có Và Không Quên Quay Lại Donate Cho Chúng Tớ Nhé!🇻🇳</marquee>
+        <img src="trên trái.png" class="corner-image top-left" alt="Top Left">
+        <img src="trên phải.png" class="corner-image top-right" alt="Top Right">
+        <button class="info-button" onclick="showUpdateHistoryModal()">
+            <img src="https://media.lordicon.com/icons/system/regular/162-update.svg" alt="Update History" style="width: 30px; height: 30px;">
+            <span class="button-text">Lịch Sử Cập Nhật</span>
+        </button>
+    </div>
         <!-- Danh sách liên kết -->
-        <a href="indexgame.html" class="rainbow-button" target="_blank">
+        <a href="indexgame - bản tết.html" class="rainbow-button" target="_blank">
             <div class="rainbow-text">
-                Trò chơi trong phòng tin
+                Trò chơi trong phòng tin (Mới)
                 <div class="link-description">Chơi đê:)</div>
             </div>
             <img src="https://png.pngtree.com/png-vector/20191028/ourlarge/pngtree-game-control-line-icon-vector-png-image_1904129.jpg" class="rainbow-image">
@@ -284,7 +425,7 @@ const philosophies = [
         <a href="https://patorjk.com/software/taag/#p=display&f=Crawford2&t=%F0%9F%91%89hhuyer.github.io%F0%9F%91%88" class="link-item" target="_blank">
             <div class="link-text">
                 Chuyển chữ thành kí tự đẹp
-                <div class="link-description">Say Gex là gì?</div>
+                <div class="link-description">Nếu biết dùng thì rất tuyệt đấy!</div>
             </div>
             <img src="https://scipython.com/static/media/uploads/blog/ascii-art/saturn-ascii-i.png" class="link-image">
         </a>
@@ -293,7 +434,7 @@ const philosophies = [
                 Ai làm toán
                 <div class="link-description">Giải được từng bước! (Ai này mới học cấp 1)</div>
             </div>
-            <img src="https://static-media-cdn.mekongasean.vn/stores/news_dataimages/mekongaseanvn/012024/18/16/17sci-alphageometry-04-pljm-jumbo-6457.jpg" class="link-image">
+            <img src="https://images.kienthuc.net.vn/zoom/800/uploaded/ctvcongdongtre/2020_05_27/8/toan-khong-gian-noi-am-anh-khung-khiep-cua-dan-hoc-sinh-cuoi-cap.jpg" class="link-image">
         </a>
         <a href="tulw.html" class="link-item" target="_blank">
             <div class="link-text">
@@ -302,32 +443,15 @@ const philosophies = [
             </div>
             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRB09DY5udNeNIfZJXG988PSaZhc7-47wRYsg&s" class="link-image">
         </a>
-        <a href="https://radio.garden/" class="link-item" target="_blank">
-            <div class="link-text">
-                Nghe lỏm Đài Radio trên toàn thế giới
-                <div class="link-description">Suỵt! chỉ nghe thôi nhé</div>
-            </div>
-        </a>
-        <a href="https://www.reddit.com/r/InternetIsBeautiful/" class="link-item" target="_blank">
-            <div class="link-text">
-                Mấy cái web thú vị
-                <div class="link-description">Tôi không chịu trách nghiệm nếu bạn thấy gì đó sai đâu</div>
-            </div>
-        </a>
-        <a href="tc.html" class="link-item" target="_blank">
-            <div class="link-text">
-                Test mã HTML
-                <div class="link-description">Đừng động vào nếu không có mục đích chính đáng</div>
-            </div>
-            <img src="https://suthatthuvi.com/files/2024/02/html.webp" class="link-image">
-        </a>
         <a href="https://www.youtube.com/watch?v=z6b8fMrOQD4" class="link-item" target="_blank">
             <div class="link-text">
-                Bạn gái học sinh lộ hàng
-                <div class="link-description">Ảnh gái 18* cực mup</div>
+                Lì Xì Năm Mới
+                <div class="link-description">Bấm vào đây để nhận quà</div>
             </div>
         </a>
-    <br>
+    <img src="dưới trái.png" class="corner-image bottom-left" alt="Bottom Left">
+    <img src="dưới phải.png" class="corner-image bottom-right" alt="Bottom Right">
+<br>
 <br>
 <br>
 <br>
@@ -343,33 +467,34 @@ const philosophies = [
 <br>
 <br>
 <div>
+<div>
     <p>Chào mừng bạn đến với trang web của chúng tôi! Đây không chỉ là một trang web thông thường mà là một không gian sáng tạo, nơi bạn có thể tìm thấy nhiều thông tin hữu ích, giải trí và những trải nghiệm độc đáo. Hãy cùng khám phá những điều thú vị mà chúng tôi đã chuẩn bị cho bạn!</p>
 
     <p><strong>1. Mục tiêu của Trang Web</strong></p>
-    <p>Cung cấp thông tin: Chúng tôi mong muốn trở thành nguồn thông tin đáng tin cậy cho người dùng. Từ các bài viết về triết lý sống đến các liên kết hữu ích, mọi thứ đều được thiết kế để phục vụ bạn.</p>
-    <p>Giải trí: Không chỉ dừng lại ở việc cung cấp thông tin, chúng tôi còn mang đến những trò chơi thú vị và âm nhạc để bạn thư giãn sau những giờ làm việc căng thẳng.</p>
-    <p>Kết nối cộng đồng: Chúng tôi hy vọng trang web này sẽ trở thành nơi kết nối những người có cùng sở thích, từ những người yêu thích triết lý sống đến những người đam mê công nghệ.</p>
+    <p>Cung cấp thông tin: Chúng tôi mong muốn trở thành nguồn thông tin đáng tin cậy cho người dùng. Từ các bài viết về triết lý sống đến các liên kết hữu ích, mọi thứ đều được thiết kế để phục vụ bạn. Chúng tôi tin rằng thông tin là sức mạnh, và việc cung cấp thông tin chính xác, kịp thời sẽ giúp bạn đưa ra những quyết định đúng đắn trong cuộc sống.</p>
+    <p>Giải trí: Không chỉ dừng lại ở việc cung cấp thông tin, chúng tôi còn mang đến những trò chơi thú vị và âm nhạc để bạn thư giãn sau những giờ làm việc căng thẳng. Những trò chơi này không chỉ giúp bạn giải trí mà còn kích thích tư duy và sáng tạo, mang lại những giây phút thư giãn tuyệt vời.</p>
+    <p>Kết nối cộng đồng: Chúng tôi hy vọng trang web này sẽ trở thành nơi kết nối những người có cùng sở thích, từ những người yêu thích triết lý sống đến những người đam mê công nghệ. Chúng tôi khuyến khích bạn tham gia vào các diễn đàn thảo luận, nơi bạn có thể chia sẻ ý kiến và học hỏi từ những người khác.</p>
 
     <p><strong>2. Các Tính Năng Nổi Bật</strong></p>
-    <p>Triết lý Ngày Mới: Mỗi ngày, bạn sẽ được truyền cảm hứng từ những câu nói nổi tiếng của các nhân vật vĩ đại. Những câu nói này không chỉ mang tính chất động viên mà còn giúp bạn suy ngẫm về cuộc sống.</p>
-    <p>Danh sách Liên kết Hữu ích: Chúng tôi đã tổng hợp một danh sách các liên kết đến những trang web thú vị và hữu ích, từ trò chơi đến các công cụ trực tuyến, giúp bạn tiết kiệm thời gian tìm kiếm.</p>
-    <p>Phát Nhạc: Với tính năng phát nhạc, bạn có thể thưởng thức những bản nhạc yêu thích trong khi duyệt web. Âm nhạc không chỉ giúp bạn thư giãn mà còn tạo ra bầu không khí vui vẻ.</p>
+    <p>Triết lý Ngày Mới: Mỗi ngày, bạn sẽ được truyền cảm hứng từ những câu nói nổi tiếng của các nhân vật vĩ đại. Những câu nói này không chỉ mang tính chất động viên mà còn giúp bạn suy ngẫm về cuộc sống. Chúng tôi tin rằng một câu nói hay có thể thay đổi cách nhìn nhận của bạn về thế giới.</p>
+    <p>Danh sách Liên kết Hữu ích: Chúng tôi đã tổng hợp một danh sách các liên kết đến những trang web thú vị và hữu ích, từ trò chơi đến các công cụ trực tuyến, giúp bạn tiết kiệm thời gian tìm kiếm. Bạn sẽ không còn phải mất thời gian tìm kiếm thông tin trên internet, mà chỉ cần truy cập vào danh sách của chúng tôi.</p>
+    <p>Phát Nhạc: Với tính năng phát nhạc, bạn có thể thưởng thức những bản nhạc yêu thích trong khi duyệt web. Âm nhạc không chỉ giúp bạn thư giãn mà còn tạo ra bầu không khí vui vẻ. Chúng tôi đã chọn lọc những bản nhạc phù hợp với nhiều tâm trạng khác nhau, từ những giai điệu nhẹ nhàng đến những bản nhạc sôi động.</p>
 
     <p><strong>3. Giao Diện Thân Thiện</strong></p>
-    <p>Thiết kế Responsive: Trang web được thiết kế để hoạt động tốt trên mọi thiết bị, từ máy tính để bàn đến điện thoại di động. Bạn có thể truy cập mọi lúc, mọi nơi mà không gặp khó khăn.</p>
-    <p>Màu sắc Tươi Sáng: Với màu sắc tươi sáng và hình ảnh bắt mắt, trang web không chỉ thu hút mà còn tạo cảm giác thoải mái cho người dùng.</p>
+    <p>Thiết kế Responsive: Trang web được thiết kế để hoạt động tốt trên mọi thiết bị, từ máy tính để bàn đến điện thoại di động. Bạn có thể truy cập mọi lúc, mọi nơi mà không gặp khó khăn. Chúng tôi cam kết mang đến trải nghiệm người dùng tốt nhất, bất kể bạn đang sử dụng thiết bị nào.</p>
+    <p>Màu sắc Tươi Sáng: Với màu sắc tươi sáng và hình ảnh bắt mắt, trang web không chỉ thu hút mà còn tạo cảm giác thoải mái cho người dùng. Chúng tôi tin rằng một giao diện đẹp mắt sẽ giúp bạn cảm thấy thoải mái hơn khi khám phá nội dung của trang web.</p>
 
     <p><strong>4. Những Điều Thú Vị Khác</strong></p>
-    <p>Câu Chuyện Về Kẹo: Chúng tôi có một tính năng thú vị cho phép bạn nhận kẹo và xu mỗi ngày. Đây là một cách để khuyến khích bạn quay lại trang web thường xuyên và tham gia vào các hoạt động thú vị.</p>
-    <p>Lịch Sử Cập Nhật: Bạn có thể theo dõi các bản cập nhật mới nhất của trang web thông qua tính năng lịch sử cập nhật. Điều này giúp bạn không bỏ lỡ bất kỳ thông tin quan trọng nào.</p>
-    <p>Chia Sẻ Cảm Xúc: Chúng tôi khuyến khích bạn chia sẻ cảm xúc và ý kiến của mình về trang web. Những phản hồi của bạn sẽ giúp chúng tôi cải thiện và phát triển hơn nữa.</p>
+    <p>Câu Chuyện Về Kẹo: Chúng tôi có một tính năng thú vị cho phép bạn nhận kẹo và xu mỗi ngày. Đây là một cách để khuyến khích bạn quay lại trang web thường xuyên và tham gia vào các hoạt động thú vị. Bạn có thể sử dụng kẹo và xu để tham gia vào các trò chơi hoặc nhận những phần thưởng hấp dẫn.</p>
+    <p>Lịch Sử Cập Nhật: Bạn có thể theo dõi các bản cập nhật mới nhất của trang web thông qua tính năng lịch sử cập nhật. Điều này giúp bạn không bỏ lỡ bất kỳ thông tin quan trọng nào. Chúng tôi luôn nỗ lực để mang đến cho bạn những nội dung mới mẻ và hấp dẫn.</p>
+    <p>Chia Sẻ Cảm Xúc: Chúng tôi khuyến khích bạn chia sẻ cảm xúc và ý kiến của mình về trang web. Những phản hồi của bạn sẽ giúp chúng tôi cải thiện và phát triển hơn nữa. Chúng tôi luôn lắng nghe ý kiến của người dùng để tạo ra một không gian trực tuyến tốt nhất cho mọi người.</p>
 
     <p><strong>5. Một Chút Về Chúng Tôi</strong></p>
-    <p>Đội Ngũ Phát Triển: Chúng tôi là một nhóm những người đam mê công nghệ và sáng tạo, luôn tìm kiếm cách để mang đến những trải nghiệm tốt nhất cho người dùng.</p>
-    <p>Tầm Nhìn Tương Lai: Chúng tôi không ngừng mở rộng và cải thiện trang web. Trong tương lai, chúng tôi dự định thêm nhiều tính năng mới và nội dung phong phú hơn nữa.</p>
+    <p>Đội Ngũ Phát Triển: Chúng tôi là một nhóm những người đam mê công nghệ và sáng tạo, luôn tìm kiếm cách để mang đến những trải nghiệm tốt nhất cho người dùng. Mỗi thành viên trong đội ngũ đều có những kỹ năng và kinh nghiệm riêng, và chúng tôi làm việc cùng nhau để hiện thực hóa tầm nhìn của mình.</p>
+    <p>Tầm Nhìn Tương Lai: Chúng tôi không ngừng mở rộng và cải thiện trang web. Trong tương lai, chúng tôi dự định thêm nhiều tính năng mới và nội dung phong phú hơn nữa. Chúng tôi hy vọng sẽ tạo ra một cộng đồng trực tuyến mạnh mẽ và gắn kết, nơi mọi người có thể học hỏi và phát triển cùng nhau.</p>
 
     <p><strong>6. Kết Luận</strong></p>
-    <p>Trang web của chúng tôi không chỉ là một nơi để tìm kiếm thông tin mà còn là một không gian để bạn khám phá, học hỏi và kết nối. Chúng tôi hy vọng bạn sẽ tìm thấy những điều thú vị và hữu ích tại đây. Hãy tham gia cùng chúng tôi trong hành trình này và đừng quên quay lại thường xuyên để không bỏ lỡ những điều mới mẻ!</p>
+    <p>Trang web của chúng tôi không chỉ là một nơi để tìm kiếm thông tin mà còn là một không gian để bạn khám phá, học hỏi và kết nối. Chúng tôi hy vọng bạn sẽ tìm thấy những điều thú vị và hữu ích tại đây. Hãy tham gia cùng chúng tôi trong hành trình này và đừng quên quay lại thường xuyên để không bỏ lỡ những điều mới mẻ! Chúng tôi luôn chào đón bạn và mong muốn mang đến cho bạn những trải nghiệm tuyệt vời nhất.</p>
 
     <p>Cảm ơn bạn đã ghé thăm trang web của chúng tôi! Chúc bạn có những trải nghiệm tuyệt vời!</p>
 </div>
@@ -390,7 +515,6 @@ const philosophies = [
         </table>
         <button onclick="closeModal('update-history-modal')">Đóng</button>
     </div>
-</div>
 <script>
 function showUpdateHistoryModal() {
     const updateHistoryBody = document.getElementById('update-history-body');
@@ -398,6 +522,7 @@ function showUpdateHistoryModal() {
 
     // Thêm các bản cập nhật vào bảng
     const updates = [
+        { date: '31/12/2024', content: 'UPDATE TẾT! 😄 - v1' },
         { date: '21/12/2024', content: 'Chuẩn bị cho Update tết, thêm tính năng cho người chơi test, tối ưu' },
         { date: '20/12/2024', content: 'Update tài xỉu...🤨, thêm nút tự động quay, update shop, tối ưu' },
         { date: '19/12/2024', content: 'Thêm nút Lịch sử cập nhật, update Pet RNG(hiệu ứng, nút), shop và minigame(tiện lợi hơn)' },
@@ -425,6 +550,7 @@ function closeModal(modalId) {
     let lastClaimDate = localStorage.getItem('lastClaimDate'); // Lấy ngày từ localStorage
 
 function claimCandy() {
+    createCandyEffect();
     const currentDate = new Date();
     const today = currentDate.toDateString();
     const lastClaimDateStored = lastClaimDate ? new Date(lastClaimDate).toDateString() : null; // Chuyển đổi lastClaimDate thành chuỗi ngày
@@ -494,6 +620,175 @@ function claimCandy() {
     alert(`Bạn đã nhận được ${candiesToClaim} kẹo và ${coinsToClaim} xu! Hãy tiếp tục đăng nhập vào ngày mai để không mất chuỗi bạn nhé! 😄`);
     updateUI(); // Cập nhật giao diện
 }
+
+function createCandyEffect() {
+    const candyEffectContainer = document.getElementById('candy-effect');
+
+    for (let i = 0; i < 20; i++) { // Tạo 20 biểu tượng kẹo
+        const candy = document.createElement('span');
+        candy.textContent = '🧧';
+        candy.style.position = 'absolute';
+        candy.style.fontSize = Math.random() * 30 + 20 + 'px'; // Kích thước ngẫu nhiên
+        candy.style.left = Math.random() * 100 + 'vw'; // Vị trí ngẫu nhiên trên màn hình
+        candy.style.bottom = '0';
+        candy.style.opacity = '1';
+        candy.style.transition = 'transform 2s ease, opacity 2s ease';
+        
+        // Thêm biểu tượng vào container
+        candyEffectContainer.appendChild(candy);
+
+        // Tạo hiệu ứng bay lên
+        setTimeout(() => {
+            candy.style.transform = 'translateY(-100vh)'; // Bay lên trên
+            candy.style.opacity = '0'; // Biến mất
+        }, 10);
+
+        // Xóa biểu tượng sau khi hiệu ứng hoàn tất
+        setTimeout(() => {
+            candyEffectContainer.removeChild(candy);
+        }, 2000);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const countdownElement = document.getElementById('countdown');
+    const newYear = new Date('2025-01-01T00:00:00'); // Thay đổi ngày Tết
+    const updateCountdown = () => {
+        const now = new Date();
+        const timeDiff = newYear - now;
+
+        if (timeDiff <= 0) {
+            countdownElement.textContent = "Chúc Mừng 2025!"; // Hiển thị "2025" khi đến Tết
+            clearInterval(countdownInterval); // Dừng đếm ngược
+        } else {
+            const seconds = Math.floor((timeDiff / 1000) % 60);
+            const minutes = Math.floor((timeDiff / 1000 / 60) % 60);
+            const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+
+            countdownElement.textContent = `${days} ngày ${hours} giờ ${minutes} phút ${seconds} giây đến Tết!`;
+        }
+    };
+
+    updateCountdown(); // Cập nhật ngay lần đầu
+    const countdownInterval = setInterval(updateCountdown, 1000); // Cập nhật mỗi giây
+});
+
+const songs = [
+    { title: "Happickleball (Pickleball X Happy New Year) | NHẠC TẾT 2025", url: "Happickleball (Pickleball X Happy New Year)  NHẠC TẾT 2025.mp3" },
+    { title: "SKIBIDI TẾT  nhạc tết 2025", url: "SKIBIDI TẾT  nhạc tết giáp thìn 2025.mp3" },
+    { title: "Nhật Chàm x Hoàng  Ngày Xuân Long Phụng Sum Vầy VITAS  BẢN FULL  TẾT 2025", url: "Nhật Chàm x Hoàng  Ngày Xuân Long Phụng Sum Vầy VITAS  BẢN FULL  TẾT 2025.mp3" },
+    { title: "Nhạc Tết 2025  Ma Gaming x Bing Chilling x Hóc Xương Cá Remix", url: "Nhạc Tết 2025  Ma Gaming x Bing Chilling x Hóc Xương Cá Remix.mp3" },
+    // Thêm nhiều bài hát khác nếu cần
+];
+
+let audio; // Biến toàn cục để lưu trữ audio
+let isPlaying = false; // Biến để theo dõi trạng thái phát nhạc
+
+function playRandomSong() {
+    const randomIndex = Math.floor(Math.random() * songs.length);
+    const selectedSong = songs[randomIndex];
+    
+    // Cập nhật tên bài hát
+    document.querySelector('.song-title').textContent = selectedSong.title;
+
+    // Nếu có bài hát đang phát, tạm dừng nó
+    if (audio) {
+        audio.pause();
+        audio.currentTime = 0; // Đặt lại thời gian phát
+    }
+
+    // Tạo audio mới và phát bài hát
+    audio = new Audio(selectedSong.url);
+    audio.volume = 0; // Đặt âm lượng ban đầu là 0
+    audio.play();
+    isPlaying = true; // Đánh dấu là đang phát
+
+    // Thay đổi hình ảnh khi đang phát
+    document.querySelector('.music-status-image').style.display = 'block'; // Hiện hình ảnh đang phát
+    document.querySelector('.music-status-image.paused').style.display = 'none'; // Ẩn hình ảnh tạm dừng
+
+    // Hiệu ứng Fade in
+    let fadeInInterval = setInterval(() => {
+        if (audio.volume < 1) {
+            audio.volume = Math.min(audio.volume + 0.1, 1); // Tăng âm lượng
+        } else {
+            clearInterval(fadeInInterval); // Dừng hiệu ứng khi âm lượng đạt 1
+        }
+    }, 100); // Tăng âm lượng mỗi 100ms
+}
+
+function pauseSong() {
+    if (audio) {
+        // Hiệu ứng Fade out
+        let fadeOutInterval = setInterval(() => {
+            if (audio.volume > 0) {
+                audio.volume = Math.max(audio.volume - 0.1, 0); // Giảm âm lượng
+            } else {
+                audio.pause(); // Tạm dừng bài hát khi âm lượng đạt 0
+                clearInterval(fadeOutInterval); // Dừng hiệu ứng
+                isPlaying = false; // Đánh dấu là không còn phát
+
+                // Thay đổi hình ảnh khi tạm dừng
+                document.querySelector('.music-status-image').style.display = 'none'; // Ẩn hình ảnh đang phát
+                document.querySelector('.music-status-image.paused').style.display = 'block'; // Hiện hình ảnh tạm dừng
+            }
+        }, 100); // Giảm âm lượng mỗi 100ms
+    }
+}
+
+function togglePlayPause() {
+    if (isPlaying) {
+        pauseSong(); // Nếu đang phát, tạm dừng
+    } else {
+        if (audio) {
+            audio.play(); // Nếu không có bài hát mới, tiếp tục phát
+            isPlaying = true; // Đánh dấu là đang phát
+
+            // Thay đổi hình ảnh khi tiếp tục phát
+            document.querySelector('.music-status-image').style.display = 'block'; // Hiện hình ảnh đang phát
+            document.querySelector('.music-status-image.paused').style.display = 'none'; // Ẩn hình ảnh tạm dừng
+
+            // Hiệu ứng Fade in
+            let fadeInInterval = setInterval(() => {
+                if (audio.volume < 1) {
+                    audio.volume = Math.min(audio.volume + 0.1, 1); // Tăng âm lượng
+                } else {
+                    clearInterval(fadeInInterval); // Dừng hiệu ứng khi âm lượng đạt 1
+                }
+            }, 100); // Tăng âm lượng mỗi 100ms
+        } else {
+            playRandomSong(); // Nếu không có bài hát nào, phát bài hát ngẫu nhiên
+        }
+    }
+}
+
+document.getElementById('farewell-button').addEventListener('click', function() {
+    const yearText = document.querySelector('.year-text');
+    const farewellText = document.querySelector('.farewell-text');
+    const newMessage = document.getElementById('new-message');
+    const farewellMessage = document.getElementById('farewell-message'); // Thêm biến để tham chiếu đến nền trắng
+    const farewellButton = document.getElementById('farewell-button'); // Thêm biến để tham chiếu đến nút
+
+    // Gọi hàm phát nhạc ngẫu nhiên
+    playRandomSong(); // Thêm dòng này để phát nhạc
+
+    // Kiểm tra xem có đang hiển thị icon và dòng chữ mới không
+    if (newMessage.style.display === 'none') {
+        yearText.classList.add('fade-out'); // Thêm lớp để bắt đầu hiệu ứng bay đi
+        farewellText.classList.add('fade-out'); // Thêm lớp để bắt đầu hiệu ứng bay đi
+        farewellMessage.classList.add('fade-out'); // Thêm lớp để mờ dần nền trắng
+        farewellButton.classList.add('fade-out'); // Thêm lớp để mờ dần nút
+
+        // Ẩn phần tử sau khi hiệu ứng hoàn tất
+        setTimeout(() => {
+            yearText.style.display = 'none'; // Ẩn dòng chữ "2024"
+            farewellText.style.display = 'none'; // Ẩn dòng chữ nhỏ
+            farewellMessage.style.display = 'none'; // Ẩn nền trắng
+            farewellButton.style.display = 'none'; // Ẩn nút "Tạm biệt nhé 👋"
+        }, 1000); // Thêm thời gian cho hiệu ứng fade-out
+    }
+});
 </script>
 </body>
 </html>
