@@ -7,7 +7,9 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f3f4f6;
+    background-image: url('https://cellphones.com.vn/sforum/wp-content/uploads/2022/12/hinh-nen-powerpoint-tet-14-3.png'); /* Thay đổi đường dẫn tới ảnh của bạn */
+    background-size: cover; /* Để ảnh phủ toàn bộ nền */
+    background-position: center; /* Để căn giữa ảnh */
             color: #333;
             margin: 0;
             padding: 0;
@@ -20,7 +22,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            background-color: #4caf50;
+            background-color: #e2161a;
             color: white;
             text-decoration: none;
             padding: 8px 12px;
@@ -32,7 +34,7 @@
         }
 
         .back-button:hover {
-            background-color: #388e3c;
+            background-color: #ff0000;
             transform: scale(1.05);
         }
 
@@ -40,14 +42,47 @@
             font-size: 16px;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 50px auto 20px;
-            padding: 20px;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-        }
+.container {
+    max-width: 800px;
+    margin: 50px auto 20px;
+    padding: 20px;
+    background-color: #dc392f;
+    border-radius: 12px;
+    border: 6px solid #000000; /* Đường viền màu đen */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    position: relative; /* Để các ảnh có thể được định vị tương đối với container */
+}
+
+.corner-image {
+    position: absolute; /* Định vị tuyệt đối */
+    width: 500px; /* Kích thước ảnh */
+    height: 500px; /* Kích thước ảnh */
+}
+
+.top-left {
+    top: -100px; /* Khoảng cách từ trên */
+    left: -300px; /* Khoảng cách từ trái */
+}
+
+.top-right {
+    top: -100px; /* Khoảng cách từ trên */
+    right: -300px; /* Khoảng cách từ phải */
+}
+
+.bottom-left {
+    bottom: -50px; /* Khoảng cách từ dưới */
+    left: -150px; /* Khoảng cách từ trái */
+    width: 250px; /* Kích thước ảnh */
+    height: 250px; /* Kích thước ảnh */
+}
+
+.bottom-right {
+    bottom: -55px; /* Khoảng cách từ dưới */
+    right: -245px; /* Khoảng cách từ phải */
+    width: 500px; /* Kích thước ảnh */
+    height: 500px; /* Kích thước ảnh */
+}
+}
 
         h1 {
             text-align: center;
@@ -59,7 +94,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 20px;
-            background-color: #eef2ff;
+            background-color: #ff463d;
             border-radius: 8px;
             margin-bottom: 20px;
         }
@@ -71,7 +106,7 @@
 
         .currency-box button {
             padding: 10px 20px;
-            background-color: #007bff;
+            background-color: #c60202;
             color: white;
             border: none;
             border-radius: 5px;
@@ -81,7 +116,7 @@
         }
 
         .currency-box button:hover {
-            background-color: #0056b3;
+            background-color: #de0303;
         }
 
         .game-item {
@@ -90,7 +125,7 @@
             justify-content: space-between;
             padding: 15px;
             margin-bottom: 15px;
-            background-color: #f9fafb;
+            background-color: #ff463d;
             border-radius: 8px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s;
@@ -132,7 +167,7 @@
         .multi-exchange button {
             margin-right: 10px;
             padding: 10px 15px;
-            background-color: #ff5722;
+            background-color: #c60202;
             color: white;
             border: none;
             border-radius: 5px;
@@ -141,7 +176,7 @@
         }
 
         .multi-exchange button:hover {
-            background-color: #e64a19;
+            background-color: #bb0000;
         }
     </style>
     <script>
@@ -202,13 +237,15 @@
     </script>
 </head>
 <body>
-    <a href="index.html" class="back-button">
+    <a href="index - bản tết.html" class="back-button">
         <i>🏠</i> Trang chính
     </a>
 
     <div class="container">
-        <h1>Trung tâm trò chơi</h1>
-
+        <img src="Trên trái 2.png" class="corner-image top-left" alt="Top Left">
+        <img src="Trên phải 2.png" class="corner-image top-right" alt="Top Right">
+        <center><h1>Trung tâm trò chơi</h1></center>
+<center><b><i>Chúc Mừng 2025!</i></b></center>
         <div id="alert-box" class="alert"></div>
 
         <div class="currency-box">
@@ -228,18 +265,17 @@
 
         <div class="section">
             <h2>Danh sách trò chơi</h2>
-
             <div class="game-item">
-                <span>Trò chơi 0: Quay thú cưng ngẫu nhiên (Miễn phí)</span>
+                <span>Trò chơi 0: Khui Lì Xì (Mới)</span>
+                <button onclick="window.open('đào kim cương.html', '_blank')">Chơi ngay</button>
+            </div>
+            <div class="game-item">
+                <span>Trò chơi 1: Quay thú cưng ngẫu nhiên (Mới)</span>
                 <button onclick="window.open('Gacha RNG 50.000!!!.html', '_blank')">Chơi ngay</button>
             </div>
             <div class="game-item">
-                <span>Trò chơi 1: Tài Xỉu (Miễn phí)</span>
+                <span>Trò chơi 2: Tài Xỉu (Kiếm Kẹo Nhanh Nhất)</span>
                 <button onclick="window.open('txiu.html', '_blank')">Chơi ngay</button>
-            </div>
-            <div class="game-item">
-                <span>Trò chơi 2: Đào mìn may rủi (Miễn phí)</span>
-                <button onclick="window.open('đào kim cương.html', '_blank')">Chơi ngay</button>
             </div>
             <div class="game-item">
                 <span>Trò chơi 3: Thả bóng! (Miễn phí)</span>
@@ -262,6 +298,8 @@
                 <span>Trò chơi đang trong quá trình thử nghiệm: có lỗi gì thì báo ngay nhé (THỬ NGHIỆM!)</span>
                 <button onclick="window.open('indextest.html', '_blank')">Chơi ngay</button>
             </div>
+    <img src="Dưới trái 2.png" class="corner-image bottom-left" alt="Bottom Left">
+    <img src="Dưới phải 2.png" class="corner-image bottom-right" alt="Bottom Right">
         </div>
     </div>
 <small>Đừng nhập code 'pickleball'</small>
