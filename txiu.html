@@ -121,6 +121,8 @@
         <div class="title">
             <h1 class="main-title">Tài Xỉu</h1>
             <div class="sub-title">Kiếm Kẹo</div>
+<br>
+<br><i>+5% <small>may mắn và </small>20% <small>tiền thưởng tết</small></i></center>
         </div>
         <div class="info">Số kẹo hiện có: <span id="candy-count">0</span></div>
         <div class="slider-container">
@@ -181,7 +183,7 @@ function playGame(choice) {
         resultElement.textContent = `Bạn chọn ${choice.toUpperCase()}. Kết quả là ${outcome.toUpperCase()}.`;
 
         if (outcome === choice) {
-            const winAmount = Math.floor(bet * 1.95);
+            const winAmount = Math.floor(bet * 1.15);
             candies += winAmount;
             showMessageBox(`Bạn thắng! Nhận được ${winAmount} kẹo.`);
 
@@ -211,7 +213,7 @@ function playGame(choice) {
 
 // Đặt lại tỷ lệ thắng khi trang được làm mới hoặc vào lại
 window.onload = function() {
-    winRate = 45; // Khôi phục tỷ lệ thắng về 45%
+    winRate = 50; // Khôi phục tỷ lệ thắng về 45% - tết + 5% = 50%
 };
 
 function setRandomMessage() {
