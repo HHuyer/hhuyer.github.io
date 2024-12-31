@@ -651,90 +651,87 @@ function saveData() {
     localStorage.setItem('totalTimePlayed', totalTimePlayed);
 }
 
-// Hiển thị bảng thông báo khi truy cập lần đầu trong ngày
 function showDailyNotification() {
-    const notification = document.createElement('div');
-    notification.style.position = 'fixed';
-    notification.style.top = '0';
-    notification.style.left = '0';
-    notification.style.width = '100%';
-    notification.style.height = '100%';
-    notification.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-    notification.style.display = 'flex';
-    notification.style.justifyContent = 'center';
-    notification.style.alignItems = 'center';
-    notification.style.zIndex = '1000';
 
+    // Kiểm tra nếu ngày hôm nay khác với ngày đã lưu
+if (1 == 1) {
+        const notification = document.createElement('div');
+        notification.style.position = 'fixed';
+        notification.style.top = '0';
+        notification.style.left = '0';
+        notification.style.width = '100%';
+        notification.style.height = '100%';
+        notification.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        notification.style.display = 'flex';
+        notification.style.justifyContent = 'center';
+        notification.style.alignItems = 'center';
+        notification.style.zIndex = '1000';
 
-    const modal = document.createElement('div');
-    modal.style.backgroundColor = 'white';
-    modal.style.borderRadius = '10px';
-    modal.style.padding = '20px';
-    modal.style.textAlign = 'center';
-    modal.style.maxWidth = '80%';
-    modal.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-    modal.style.display = 'flex';
-    modal.style.flexDirection = 'column';
-    modal.style.alignItems = 'center';
+        const modal = document.createElement('div');
+        modal.style.backgroundColor = 'white';
+        modal.style.borderRadius = '10px';
+        modal.style.padding = '20px';
+        modal.style.textAlign = 'center';
+        modal.style.maxWidth = '80%';
+        modal.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+        modal.style.display = 'flex';
+        modal.style.flexDirection = 'column';
+        modal.style.alignItems = 'center';
 
+        const title = document.createElement('h2');
+        title.style.marginBottom = '10px';
+        title.style.fontWeight = 'bold';
+        title.innerText = 'Chào mừng bạn trở lại!';
 
-    const title = document.createElement('h2');
-    title.style.marginBottom = '10px';
-    title.style.fontWeight = 'bold';
-    title.innerText = 'Chào mừng bạn trở lại!';
+        const message = document.createElement('p');
+        message.style.marginBottom = '20px';
+        message.innerText = 'Quay ngay hôm nay để nhận Buff 200% trong dịp Tết!';
 
-    const message = document.createElement('p');
-    message.style.marginBottom = '20px';
-    message.innerText = 'Hãy cùng quay hôm nay để nhận thú cưng giới hạn!';
-setTimeout(function(){ alert("Đừng nhập mã code 'pickleball'"); }, 3000);
+        // Hàm tạo và định dạng phần tử ảnh
+        function createImage(imageUrl) {
+            const image = document.createElement('img');
+            image.src = imageUrl;
+            image.style.maxWidth = 'calc(50% - 10px)'; // Giảm chiều rộng để trừ margin
+            image.style.maxHeight = '200px'; // Đặt chiều cao tối đa (tùy chọn)
+            image.style.borderRadius = '5px';
+            image.style.margin = '5px'; // Thêm margin để tạo khoảng cách
+            image.style.objectFit = "cover"; // Để ảnh không bị méo khi tỉ lệ khung hình khác nhau
+            return image;
+        }
 
-    // Hàm tạo và định dạng phần tử ảnh
-    function createImage(imageUrl) {
-        const image = document.createElement('img');
-        image.src = imageUrl;
-        image.style.maxWidth = 'calc(50% - 10px)'; // Giảm chiều rộng để trừ margin
-        image.style.maxHeight = '200px'; // Đặt chiều cao tối đa (tùy chọn)
-        image.style.borderRadius = '5px';
-        image.style.margin = '5px'; // Thêm margin để tạo khoảng cách
-        image.style.objectFit = "cover"; // Để ảnh không bị méo khi tỉ lệ khung hình khác nhau
-        return image;
+        // Thay thế bằng URL ảnh mong muốn (điều chỉnh số lượng nếu cần)
+        const imageUrls = [
+            'https://assets.coingecko.com/coins/images/51981/large/IMG_9410.jpeg?1732289439',
+            'https://static.toiimg.com/thumb/msid-115690235,width-400,resizemode-4/115690235.jpg',
+            // Có thể thêm nhiều URL ảnh hơn vào đây
+        ];
+
+        const imageContainer = document.createElement('div');
+        imageContainer.style.display = 'flex';
+        imageContainer.style.justifyContent = 'center'; // Căn giữa các ảnh
+        imageContainer.style.width = "100%";
+        imageUrls.forEach(imageUrl => imageContainer.appendChild(createImage(imageUrl)));
+
+        const okButton = document.createElement('button');
+        okButton.style.padding = '10px 20px';
+        okButton.style.backgroundColor = '#4caf50';
+        okButton.style.color = 'white';
+        okButton.style.border = 'none';
+        okButton.style.borderRadius = '5px';
+        okButton.style.cursor = 'pointer';
+        okButton.style.fontSize = '1em';
+        okButton.innerText = 'OK';
+        okButton.onclick = function() {
+            notification.remove();
+        };
+
+        modal.appendChild(title);
+        modal.appendChild(message);
+        modal.appendChild(imageContainer);
+        modal.appendChild(okButton);
+        notification.appendChild(modal);
+        document.body.appendChild(notification);
     }
-
-    // Thay thế bằng URL ảnh mong muốn (điều chỉnh số lượng nếu cần)
-    const imageUrls = [
-        'https://assets.coingecko.com/coins/images/51981/large/IMG_9410.jpeg?1732289439',
-        'https://static.toiimg.com/thumb/msid-115690235,width-400,resizemode-4/115690235.jpg',
-        // Có thể thêm nhiều URL ảnh hơn vào đây
-    ];
-
-    const imageContainer = document.createElement('div');
-    imageContainer.style.display = 'flex';
-    imageContainer.style.justifyContent = 'center'; // Căn giữa các ảnh
-    imageContainer.style.width = "100%"
-    imageUrls.forEach(imageUrl => imageContainer.appendChild(createImage(imageUrl)));
-
-    const okButton = document.createElement('button');
-    okButton.style.padding = '10px 20px';
-    okButton.style.backgroundColor = '#4caf50';
-    okButton.style.color = 'white';
-    okButton.style.border = 'none';
-    okButton.style.borderRadius = '5px';
-    okButton.style.cursor = 'pointer';
-    okButton.style.fontSize = '1em';
-    okButton.innerText = 'OK';
-    okButton.onclick = function() {
-        notification.remove();
-    };
-
-    modal.appendChild(title);
-    modal.appendChild(message);
-    modal.appendChild(imageContainer);
-    modal.appendChild(okButton);
-    notification.appendChild(modal);
-    document.body.appendChild(notification);
-
-    // Lưu lại ngày truy cập để thông báo không hiển thị lại trong ngày
-    localStorage.setItem('lastVisit', new Date().toDateString());
 }
 
 // Khai báo và lấy giá trị may mắn từ localStorage, mặc định là 1 nếu không có giá trị
