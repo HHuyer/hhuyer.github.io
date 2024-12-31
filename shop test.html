@@ -162,6 +162,18 @@ setInterval(() => {
         function goBackToGacha() {
             window.location.href = "Gacha RNG 50.000!!!.html"; // Chuyển về Gacha RNG
         }
+// Đổi kẹo theo số lượng
+function exchangeCandy(amount) {
+    if (candies >= amount) {
+        candies -= amount;  // Giảm số kẹo
+        coins += amount * 90;  // Cộng xu vào số tiền
+        saveData();  // Lưu lại dữ liệu
+        updateUI();  // Cập nhật giao diện
+        alert(`Đã đổi ${amount} kẹo lấy ${amount * 90} xu!`);
+    } else {
+        alert("Không đủ kẹo để đổi!");
+    }
+}
     </script>
 </head>
 <body>
@@ -187,6 +199,15 @@ setInterval(() => {
     <p>Số kẹo hiện tại: <span id="candy-count">0</span></p>
     <p>1 kẹo = 90 xu</p>
     <button class="button" onclick="exchangeCandyForCoins()">Đổi kẹo</button>
+    
+    <div id="multi-exchange" class="multi-exchange">
+        <button class="button" onclick="exchangeCandy(5)">Đổi x5</button>
+        <button class="button" onclick="exchangeCandy(10)">Đổi x10</button>
+        <button class="button" onclick="exchangeCandy(50)">Đổi x50</button>
+        <button class="button" onclick="exchangeCandy(100)">Đổi x100</button>
+        <button class="button" onclick="exchangeCandy(1000)">Đổi x1000</button>
+        <button class="button" onclick="exchangeCandy(10000)">Đổi x10000</button>
+    </div>
 </div>
 </body>
 </html>
