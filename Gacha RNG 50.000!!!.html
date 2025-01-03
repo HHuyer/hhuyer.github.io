@@ -49,6 +49,7 @@
     .dice-icon {
         width: 175px;
         height: 175px;
+pointer-events: none; /* Không cho phép tương tác với ảnh */
     }
     .countdown-bar {
         width: 100%;
@@ -256,7 +257,7 @@
     <div class="container">
         <h1>Trình Tạo Thú Cưng Ngẫu Nhiên</h1>
         <p>Nhấn nút để nhận thú cưng ngẫu nhiên:</p>
-        <div class="generate-button" onclick="generateRandomPet()">
+<div class="generate-button" onclick="generateRandomPet(event), createFlyingIcon(event)">
             <img src="nút quay tết.png" alt="Dice Icon" class="dice-icon">
         </div>
 <button class="auto-generate-button" onclick="startAutoGenerate()">Tự động quay</button>
@@ -769,25 +770,31 @@ function generateRandomPet() {
             isGenerating = false;
         }
     }, intervalTime);
-
-    // Gọi hàm để tạo icon bay lên
-    createFlyingIcon();
 }
 
 // Hàm tạo icon bay lên
-function createFlyingIcon() {
+function createFlyingIcon(event) {
     const coin = document.createElement('div');
     coin.className = 'coin';
-    coin.innerText = '🍀'; // Thay thế bằng icon tiền của bạn
+    coin.innerText = '🍀'; // Biểu tượng tiền
     document.body.appendChild(coin);
-    coin.style.left = `${Math.random() * 100}%`;
-    coin.style.position = 'absolute'; // Đặt vị trí tuyệt đối để icon bay lên
-    coin.style.bottom = '0'; // Bắt đầu từ dưới cùng của màn hình
+
+    // Ngăn chặn tương tác với biểu tượng
+    coin.style.pointerEvents = 'none'; // Ngăn chặn tương tác
+
+    // Lấy vị trí click chuột
+    const clickX = event.clientX; // Tọa độ X của click
+    const clickY = event.clientY; // Tọa độ Y của click
+
+    // Đặt vị trí bắt đầu cho biểu tượng
+    coin.style.left = `${clickX}px`;
+    coin.style.top = `${clickY}px`;
+    coin.style.position = 'absolute'; // Đặt vị trí tuyệt đối
 
     // Animation bay lên
     setTimeout(() => {
         coin.style.transition = 'transform 1s ease-out, opacity 1s ease-out';
-        coin.style.transform = `translateY(-100px)`; // Di chuyển lên 100px
+        coin.style.transform = `translateY(-100px) translateX(${(Math.random() - 0.5) * 100}px)`; // Di chuyển lên 100px và ngẫu nhiên sang trái/phải
         coin.style.opacity = '0'; // Giảm độ mờ
     }, 10);
 
