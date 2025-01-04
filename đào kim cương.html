@@ -161,7 +161,7 @@
     </style>
 </head>
 <body>
-<audio id="audio" src="nhạc xổ số.mp3" type="audio/mpeg" autoplay muted></audio>
+<audio id="audio" src="nhạc xổ số.mp3" type="audio/mpeg" autoplay muted loop></audio>
 <button onclick="playAudio()">Phát nhạc</button>
     <div class="controls">
         <img id="themeToggle" src="https://www.vmcdn.ca/f/files/stalberttoday/0624-scistalsunmoon-sup.jpg" alt="Toggle Theme">
@@ -230,19 +230,23 @@ function initGame() {
         gameBoard.appendChild(cell);
     }
 }
-        // Hàm để xác định phần thưởng ngẫu nhiên
-        function getReward() {
-            const randomNum = Math.random() * 1000000;
-            if (randomNum < 900000) {
-                return 1; // Quà nhỏ
-            } else if (randomNum < 990000) {
-                return 10; // Quà lớn
-            } else if (randomNum < 999999) {
-                return 100; // Quà khổng lồ
-            } else {
-                return 1000000000; // Quà siêu cấp
-            }
-        }
+// Hàm để xác định phần thưởng ngẫu nhiên
+function getReward() {
+    const randomNum = Math.random() * 1000000; // Tạo số ngẫu nhiên từ 0 đến 1,000,000
+    if (randomNum < 900000) {
+        return 1; // Quà nhỏ (90%)
+    } else if (randomNum < 990000) {
+        return 10; // Quà lớn (9%)
+    } else if (randomNum < 999000) {
+        return 100; // Quà khổng lồ (0.9%)
+    } else if (randomNum < 999900) {
+        return 1000000000; // Quà siêu cấp (0.09%)
+    } else if (randomNum < 999990) {
+        return 10000000000; // Quà cực hiếm (0.009%)
+    } else {
+        return 1000000000000; // Quà huyền thoại (0.0001%)
+    }
+}
 
 let hasPaid = false; // Biến theo dõi trạng thái đã trả kẹo
 
@@ -316,10 +320,15 @@ function revealCell(cell, index) {
     if (reward === 1) {
         img.src = 'Uncommon_Holiday_Gift.webp'; // Thay bằng đường dẫn ảnh quà nhỏ
     } else if (reward === 10) {
-        img.src = 'Mythical_Holiday_Gift.webp'; // Thay bằng đường dẫn ảnh quà lớn
+        img.src = 'Rare_Holiday_Gift.webp'; // Thay bằng đường dẫn ảnh quà lớn
     } else if (reward === 100) {
-        img.src = 'Admin_Holiday_Gift.webp'; // Thay bằng đường dẫn ảnh quà khổng lồ
+        img.src = 'Legendary_Holiday_Gift.webp'; // Thay bằng đường dẫn ảnh quà khổng lồ
     } else if (reward === 1000000000) {
+        img.src = 'Mythical_Holiday_Gift.webp'; // Thay bằng đường dẫn ảnh quà siêu cấp
+    } else if (reward === 10000000000) {
+        img.src = 'Admin_Holiday_Gift.webp'; // Thay bằng đường dẫn ảnh quà cực hiếm
+    } else if (reward === 1000000000000) {
+        img.src = 'Legendary_Gift.webp'; // Thay bằng đường dẫn ảnh quà huyền thoại
     }
 
     img.style.display = 'block'; // Hiển thị ảnh phần thưởng trong ô
