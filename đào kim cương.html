@@ -158,6 +158,19 @@
 .message-item {
     margin: 5px 0; /* Khoảng cách giữa các thông báo */
 }
+#openAllButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    background-color: #ffcc00; /* Màu vàng cho nút */
+    color: #fff; /* Chữ trắng */
+}
+
+#openAllButton:hover {
+    background-color: #ddd;
+    transform: scale(1.1);
+}
     </style>
 </head>
 <body>
@@ -170,6 +183,7 @@
     <div class="bet-controls">
         <button id="startGameButton">Quay thưởng(50 Kẹo)</button>
         <div id="candyDisplay">
+<button id="openAllButton" style="display: none;">Mở tất cả</button>
             <span>Kẹo hiện có: <span id="candyCount">0</span></span>
         </div>
     </div>
@@ -292,6 +306,17 @@ function showFloatingMessage(message) {
     }, 2000); // Thời gian hiển thị thông báo
 }
 
+const openAllButton = document.getElementById('openAllButton');
+
+// Hàm để kiểm tra và cập nhật trạng thái của nút "Mở tất cả"
+function updateOpenAllButton() {
+    if (hasPaid && receivedCells.includes(false)) {
+        openAllButton.style.display = 'block'; // Hiện nút nếu đã chơi và chưa mở hết
+    } else {
+        openAllButton.style.display = 'none'; // Ẩn nút nếu chưa chơi hoặc đã mở hết
+    }
+}
+
 function revealCell(cell, index) {
     if (!hasPaid) {
         showFloatingMessage("Bạn cần trả kẹo để nhận quà!"); // Hiển thị thông báo trôi
@@ -335,10 +360,20 @@ function revealCell(cell, index) {
 
     // Hiển thị kết quả với thông báo trôi
     showFloatingMessage(`Bạn nhận được ${reward} kẹo!`); // Hiển thị thông báo trôi
+    updateOpenAllButton();
 }
+
+openAllButton.addEventListener('click', () => {
+    for (let i = 0; i < receivedCells.length; i++) {
+        if (!receivedCells[i]) {
+            revealCell(gameBoard.children[i], i); // Mở tất cả ô chưa nhận
+        }
+    }
+});
         // Chơi lại từ đầu
         playAgainButton.addEventListener('click', () => {
             initGame();
+    updateOpenAllButton(); // Cập nhật trạng thái nút khi bắt đầu trò chơi
         });
 
         // Chuyển đổi chế độ sáng/tối
