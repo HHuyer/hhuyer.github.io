@@ -234,17 +234,17 @@ function initGame() {
 function getReward() {
     const randomNum = Math.random() * 1000000; // Tạo số ngẫu nhiên từ 0 đến 1,000,000
     if (randomNum < 900000) {
-        return 1; // Quà nhỏ (90%)
+        return 1; // 90%
     } else if (randomNum < 990000) {
-        return 10; // Quà lớn (9%)
+        return 10; // 9%
     } else if (randomNum < 999000) {
-        return 100; // Quà khổng lồ (0.9%)
+        return 100; // 0.9%
     } else if (randomNum < 999900) {
-        return 1000; // Quà siêu cấp (0.09%)
+        return 1000; // 0.09%
     } else if (randomNum < 999990) {
-        return 10000; // Quà cực hiếm (0.009%)
+        return 10000; // 0.009%
     } else {
-        return 1000000000; // Quà huyền thoại (0.0001%)
+        return 1000000000; // 0.0001%
     }
 }
 
