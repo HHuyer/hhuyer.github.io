@@ -17,6 +17,7 @@
     <div id="name-container">
         <input id="username" placeholder="Nhập tên của bạn" />
         <button id="join-chat">Tham Gia Chat</button>
+<br><small>Lưu ý: Không thể thay đổi tên sau khi đã nhập</small>
     </div>
 
     <div id="chat-container">
@@ -62,60 +63,84 @@ pubnub.addListener({
         const userColor = userColors[username] || '#000'; // Mặc định màu đen nếu không tìm thấy
         const messageText = event.message.text.split(': ')[1]; // Lấy nội dung tin nhắn
         const messageTime = event.message.time; // Lấy thời gian gửi tin nhắn
-        item.innerHTML = `<span style="color: ${userColor};">${username}:</span> ${messageText} <span style="font-size: 0.8em; color: gray;">(${messageTime})</span>`;
+
+        // Kiểm tra xem tin nhắn có màu sắc không
+        if (event.message.color) {
+            item.innerHTML = `<span style="color: ${event.message.color}; font-weight: bold;">${username}:</span> ${messageText} <span style="font-size: 0.8em; color: gray;">(${messageTime})</span>`;
+        } else {
+            item.innerHTML = `<span style="color: ${userColor};">${username}:</span> ${messageText} <span style="font-size: 0.8em; color: gray;">(${messageTime})</span>`;
+        }
+
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
     }
 });
 
-// Xử lý sự kiện khi người dùng nhấn nút "Join Chat"
+document.addEventListener('DOMContentLoaded', function() {
+    // Kiểm tra xem tên người dùng đã được lưu chưa
+    const savedUsername = localStorage.getItem('username');
+    if (savedUsername) {
+        document.getElementById('username').value = savedUsername; // Tự động điền tên
+        document.getElementById('name-container').style.display = 'none'; // Ẩn ô nhập tên
+        document.getElementById('chat-container').style.display = 'block'; // Hiển thị giao diện chat
+        loadHistory(); // Tải lịch sử tin nhắn
+
+        // Gửi thông tin tự động
+        sendUserInfo(savedUsername);
+    }
+});
+
 document.getElementById('join-chat').addEventListener('click', function() {
     const username = document.getElementById('username').value;
     if (username) {
-        // Chọn màu ngẫu nhiên cho người dùng
-        let userColor;
-        do {
-            userColor = colors[Math.floor(Math.random() * colors.length)];
-        } while (Object.values(userColors).includes(userColor)); // Đảm bảo màu sắc không trùng
+        localStorage.setItem('username', username); // Lưu tên người dùng vào localStorage
+        document.getElementById('name-container').style.display = 'none'; // Ẩn ô nhập tên
+        document.getElementById('chat-container').style.display = 'block'; // Hiển thị giao diện chat
+        loadHistory(); // Tải lịch sử tin nhắn
 
-        userColors[username] = userColor; // Lưu màu sắc cho người dùng
-        document.getElementById('name-container').style.display = 'none';
-        document.getElementById('chat-container').style.display = 'block';
-        loadHistory(); // Gọi hàm để tải lịch sử tin nhắn
-
-        // Lấy thông tin từ localStorage
-        const savedMoney = parseInt(localStorage.getItem('money')) || 0;
-        const savedSpinCount = parseInt(localStorage.getItem('spinCount')) || 0;
-        const savedBestRandom = parseInt(localStorage.getItem('bestRandom')) || 0;
-        const savedCandies = parseInt(localStorage.getItem('candies')) || 0;
-
-        // Gửi từng thông tin thành 5 tin nhắn riêng biệt
-        pubnub.publish({
-            channel: channel,
-            message: { text: `${username} đã tham gia chat!`, time: new Date().toLocaleTimeString() }
-        });
-
-        pubnub.publish({
-            channel: channel,
-            message: { text: `Số xu: ${savedMoney}`, time: new Date().toLocaleTimeString() }
-        });
-
-        pubnub.publish({
-            channel: channel,
-            message: { text: `Số lần quay: ${savedSpinCount}`, time: new Date().toLocaleTimeString() }
-        });
-
-        pubnub.publish({
-            channel: channel,
-            message: { text: `Giá trị ngẫu nhiên tốt nhất: ${savedBestRandom}`, time: new Date().toLocaleTimeString() }
-        });
-
-        pubnub.publish({
-            channel: channel,
-            message: { text: `Số kẹo: ${savedCandies}`, time: new Date().toLocaleTimeString() }
-        });
+        // Gửi thông tin người dùng
+        sendUserInfo(username);
     }
 });
+
+// Hàm gửi thông tin người dùng
+function sendUserInfo(username) {
+    const savedMoney = parseInt(localStorage.getItem('money')) || 0;
+    const savedSpinCount = parseInt(localStorage.getItem('spinCount')) || 0;
+    const savedBestRandom = parseInt(localStorage.getItem('bestRandom')) || 0;
+    const savedCandies = parseInt(localStorage.getItem('candies')) || 0;
+
+    // Gửi thông tin tham gia chat với màu đỏ
+    pubnub.publish({
+        channel: channel,
+        message: { 
+            text: `${username} đã tham gia chat!`, 
+            time: new Date().toLocaleTimeString(), // Thời gian vẫn được giữ nguyên
+            color: 'red'
+        }
+    });
+
+    // Gửi từng thông tin thành 4 tin nhắn riêng biệt với tên người dùng trong ngoặc
+    pubnub.publish({
+        channel: channel,
+        message: { text: `Số xu của (${username}): ${savedMoney}`, time: new Date().toLocaleTimeString() }
+    });
+
+    pubnub.publish({
+        channel: channel,
+        message: { text: `Số lần quay của (${username}): ${savedSpinCount}`, time: new Date().toLocaleTimeString() }
+    });
+
+    pubnub.publish({
+        channel: channel,
+        message: { text: `Pet hiếm nhất của (${username}): ${savedBestRandom}`, time: new Date().toLocaleTimeString() }
+    });
+
+    pubnub.publish({
+        channel: channel,
+        message: { text: `Số kẹo của (${username}): ${savedCandies}`, time: new Date().toLocaleTimeString() }
+    });
+}
 
     // Lấy lịch sử tin nhắn khi người dùng tham gia chat
     function loadHistory() {
