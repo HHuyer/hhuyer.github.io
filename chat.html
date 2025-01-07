@@ -29,24 +29,61 @@
 
     <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.29.9.js"></script>
 <script>
-    const pubnub = new PubNub({
-        publishKey: 'pub-c-a9203236-6895-4409-9106-867306da17e5', // Thay thế bằng Publish Key của bạn
-        subscribeKey: 'sub-c-4d5db111-ccbb-4d92-afb2-1d39658ab93c' // Thay thế bằng Subscribe Key của bạn
-    });
+// Khởi tạo PubNub
+const pubnub = new PubNub({
+    publishKey: 'pub-c-a9203236-6895-4409-9106-867306da17e5',
+    subscribeKey: 'sub-c-4d5db111-ccbb-4d92-afb2-1d39658ab93c'
+});
 
-    const channel = 'chat_channel';
-    
-    pubnub.subscribe({ channels: [channel] });
+const channel = 'chat_channel';
 
-    pubnub.addListener({
-        message: function(event) {
-            const messages = document.getElementById('messages');
-            const item = document.createElement('li');
-            item.textContent = event.message.text;
-            messages.appendChild(item);
-            window.scrollTo(0, document.body.scrollHeight);
-        }
-    });
+// Đảm bảo chỉ subscribe một lần
+pubnub.subscribe({ channels: [channel] });
+
+document.getElementById('form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const input = document.getElementById('input');
+    const username = document.getElementById('username').value; // Lấy tên người dùng
+    if (input.value) {
+        const currentTime = new Date().toLocaleTimeString(); // Lấy thời gian hiện tại
+        pubnub.publish({
+            channel: channel,
+            message: { text: `${username}: ${input.value}`, time: currentTime } // Gửi tin nhắn với tên người dùng và thời gian
+        });
+        input.value = '';
+    }
+});
+
+pubnub.addListener({
+    message: function(event) {
+        const messages = document.getElementById('messages');
+        const item = document.createElement('li');
+        const username = event.message.text.split(':')[0]; // Lấy tên người dùng từ tin nhắn
+        const userColor = userColors[username] || '#000'; // Mặc định màu đen nếu không tìm thấy
+        const messageText = event.message.text.split(': ')[1]; // Lấy nội dung tin nhắn
+        const messageTime = event.message.time; // Lấy thời gian gửi tin nhắn
+        item.innerHTML = `<span style="color: ${userColor};">${username}:</span> ${messageText} <span style="font-size: 0.8em; color: gray;">(${messageTime})</span>`;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+});
+
+// Xử lý sự kiện khi người dùng nhấn nút "Join Chat"
+document.getElementById('join-chat').addEventListener('click', function() {
+    const username = document.getElementById('username').value;
+    if (username) {
+        // Chọn màu ngẫu nhiên cho người dùng
+        let userColor;
+        do {
+            userColor = colors[Math.floor(Math.random() * colors.length)];
+        } while (Object.values(userColors).includes(userColor)); // Đảm bảo màu sắc không trùng
+
+        userColors[username] = userColor; // Lưu màu sắc cho người dùng
+        document.getElementById('name-container').style.display = 'none';
+        document.getElementById('chat-container').style.display = 'block';
+        loadHistory(); // Gọi hàm để tải lịch sử tin nhắn
+    }
+});
 
     // Lấy lịch sử tin nhắn khi người dùng tham gia chat
     function loadHistory() {
@@ -54,7 +91,7 @@
             {
                 channel: channel,
                 count: 100, // Số lượng tin nhắn muốn lấy
-                reverse: false // Lấy tin nhắn theo thứ tự từ cũ đến mới
+                reverse: true // Lấy tin nhắn theo thứ tự từ cũ đến mới
             },
             function(status, response) {
                 if (status.error) {
@@ -75,28 +112,9 @@
         );
     }
 
-    // Xử lý sự kiện khi người dùng nhấn nút "Join Chat"
-    document.getElementById('join-chat').addEventListener('click', function() {
-        const username = document.getElementById('username').value;
-        if (username) {
-            document.getElementById('name-container').style.display = 'none';
-            document.getElementById('chat-container').style.display = 'block';
-            loadHistory(); // Gọi hàm để tải lịch sử tin nhắn
-        }
-    });
+const colors = ['#FF5733', '#33FF57', '#3357FF', '#F1C40F', '#8E44AD', '#E67E22', '#2ECC71', '#3498DB'];
+const userColors = {}; // Đối tượng lưu trữ màu sắc của người dùng
 
-    document.getElementById('form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const input = document.getElementById('input');
-        const username = document.getElementById('username').value; // Lấy tên người dùng
-        if (input.value) {
-            pubnub.publish({
-                channel: channel,
-                message: { text: `${username}: ${input.value}` } // Gửi tin nhắn với tên người dùng
-            });
-            input.value = '';
-        }
-    });
 </script>
 </body>
 </html>
