@@ -82,6 +82,38 @@ document.getElementById('join-chat').addEventListener('click', function() {
         document.getElementById('name-container').style.display = 'none';
         document.getElementById('chat-container').style.display = 'block';
         loadHistory(); // Gọi hàm để tải lịch sử tin nhắn
+
+        // Lấy thông tin từ localStorage
+        const savedMoney = parseInt(localStorage.getItem('money')) || 0;
+        const savedSpinCount = parseInt(localStorage.getItem('spinCount')) || 0;
+        const savedBestRandom = parseInt(localStorage.getItem('bestRandom')) || 0;
+        const savedCandies = parseInt(localStorage.getItem('candies')) || 0;
+
+        // Gửi từng thông tin thành 5 tin nhắn riêng biệt
+        pubnub.publish({
+            channel: channel,
+            message: { text: `${username} đã tham gia chat!`, time: new Date().toLocaleTimeString() }
+        });
+
+        pubnub.publish({
+            channel: channel,
+            message: { text: `Số xu: ${savedMoney}`, time: new Date().toLocaleTimeString() }
+        });
+
+        pubnub.publish({
+            channel: channel,
+            message: { text: `Số lần quay: ${savedSpinCount}`, time: new Date().toLocaleTimeString() }
+        });
+
+        pubnub.publish({
+            channel: channel,
+            message: { text: `Giá trị ngẫu nhiên tốt nhất: ${savedBestRandom}`, time: new Date().toLocaleTimeString() }
+        });
+
+        pubnub.publish({
+            channel: channel,
+            message: { text: `Số kẹo: ${savedCandies}`, time: new Date().toLocaleTimeString() }
+        });
     }
 });
 
