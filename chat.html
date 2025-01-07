@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple App</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #messages { list-style-type: none; padding: 0; }
+        #messages li { padding: 8px; margin-bottom: 5px; background-color: #f1f1f1; }
+        #chat-container { display: none; }
+    </style>
+</head>
+<body>
+    <h1>Chat</h1>
+    
+    <div id="name-container">
+        <input id="username" placeholder="Nhập tên của bạn" />
+        <button id="join-chat">Tham Gia Chat</button>
+    </div>
+
+    <div id="chat-container">
+        <ul id="messages"></ul>
+        <form id="form" action="">
+            <input id="input" autocomplete="off" placeholder="Type a message..." />
+            <button>Send</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.29.9.js"></script>
+<script>
+    const pubnub = new PubNub({
+        publishKey: 'pub-c-a9203236-6895-4409-9106-867306da17e5', // Thay thế bằng Publish Key của bạn
+        subscribeKey: 'sub-c-4d5db111-ccbb-4d92-afb2-1d39658ab93c' // Thay thế bằng Subscribe Key của bạn
+    });
+
+    const channel = 'chat_channel';
+    
+    pubnub.subscribe({ channels: [channel] });
+
+    pubnub.addListener({
+        message: function(event) {
+            const messages = document.getElementById('messages');
+            const item = document.createElement('li');
+            item.textContent = event.message.text;
+            messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+    });
+
+    // Lấy lịch sử tin nhắn khi người dùng tham gia chat
+    function loadHistory() {
+        pubnub.history(
+            {
+                channel: channel,
+                count: 100, // Số lượng tin nhắn muốn lấy
+                reverse: false // Lấy tin nhắn theo thứ tự từ cũ đến mới
+            },
+            function(status, response) {
+                if (status.error) {
+                    console.error("Error fetching history: ", status);
+                } else {
+                    if (response.messages) {
+                        response.messages.forEach(function(message) {
+                            const messages = document.getElementById('messages');
+                            const item = document.createElement('li');
+                            item.textContent = message.entry.text; // Hiển thị tin nhắn
+                            messages.appendChild(item);
+                        });
+                    } else {
+                        console.log("No messages found.");
+                    }
+                }
+            }
+        );
+    }
+
+    // Xử lý sự kiện khi người dùng nhấn nút "Join Chat"
+    document.getElementById('join-chat').addEventListener('click', function() {
+        const username = document.getElementById('username').value;
+        if (username) {
+            document.getElementById('name-container').style.display = 'none';
+            document.getElementById('chat-container').style.display = 'block';
+            loadHistory(); // Gọi hàm để tải lịch sử tin nhắn
+        }
+    });
+
+    document.getElementById('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const input = document.getElementById('input');
+        const username = document.getElementById('username').value; // Lấy tên người dùng
+        if (input.value) {
+            pubnub.publish({
+                channel: channel,
+                message: { text: `${username}: ${input.value}` } // Gửi tin nhắn với tên người dùng
+            });
+            input.value = '';
+        }
+    });
+</script>
+</body>
+</html>
