@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đổi Tên Người Dùng</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .message {
+            margin-top: 10px;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Đổi Tên Người Dùng</h1>
+        <input type="text" id="new-username" placeholder="Nhập tên mới của bạn" />
+        <button id="change-name">Đổi Tên</button>
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        document.getElementById('change-name').addEventListener('click', function() {
+            const newUsername = document.getElementById('new-username').value;
+            if (newUsername) {
+                localStorage.setItem('username', newUsername); // Lưu tên mới vào localStorage
+                document.getElementById('message').textContent = 'Tên đã được đổi thành công!';
+                document.getElementById('new-username').value = ''; // Xóa ô nhập
+            } else {
+                document.getElementById('message').textContent = 'Vui lòng nhập tên!';
+            }
+        });
+    </script>
+</body>
+</html>
