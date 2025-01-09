@@ -5,10 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simple App</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        #messages { list-style-type: none; padding: 0; }
-        #messages li { padding: 8px; margin-bottom: 5px; background-color: #f1f1f1; }
-        #chat-container { display: none; }
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f4;
+}
+
+#messages li {
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #e9ecef;
+}
+#messages {
+    list-style-type: none; /* Loại bỏ chấm đen */
+    padding: 0; /* Xóa khoảng cách bên trong */
+}
+#input {
+    border-radius: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    width: calc(100% - 60px);
+}
+
+button {
+    border-radius: 20px;
+    background-color: white;
+    color: black;
+    border: 1px solid black;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #E0E0E0;
+}
     </style>
 </head>
 <body>
@@ -17,7 +47,8 @@
     <div id="name-container">
         <input id="username" placeholder="Nhập tên của bạn" />
         <button id="join-chat">Tham Gia Chat</button>
-<br><small>Lưu ý: Không thể thay đổi tên sau khi đã nhập</small>
+<br><small>Lưu ý: Không thể thay đổi tên sau khi đã nhập, làm mới trang sau khi tham gia chat</small>
+<br><br><i>Nếu không muốn hiển thị tên bạn có thể chat ẩn danh ở dưới</i>
     </div>
     <div id="chat-container">
         <ul id="messages"></ul>
@@ -31,6 +62,16 @@
 
     <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.29.9.js"></script>
 <script>
+
+document.getElementById('join-chat').addEventListener('click', function() {
+    const username = document.getElementById('username').value;
+    if (username) {
+        localStorage.setItem('username', username); // Lưu tên người dùng
+        document.getElementById('name-container').style.display = 'none'; // Ẩn ô nhập tên
+        document.getElementById('chat-container').style.display = 'block'; // Hiển thị giao diện chat
+    }
+});
+
 // Khởi tạo PubNub
 const pubnub = new PubNub({
     publishKey: 'pub-c-a9203236-6895-4409-9106-867306da17e5',
@@ -148,7 +189,7 @@ function ShowInfo() {
         pubnub.history(
             {
                 channel: channel,
-                count: 14, // Số lượng tin nhắn muốn lấy
+                count: 10, // Số lượng tin nhắn muốn lấy
                 reverse: false // Lấy tin nhắn theo thứ tự từ cũ đến mới
             },
             function(status, response) {
