@@ -1,1 +1,99 @@
-<big><big><center><marquee>TY So Much!!!😘🤭🤩</marquee></center></big></big>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Jumpscare</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            cursor: pointer;
+            overflow: hidden; /* Ngăn chặn cuộn trang */
+        }
+
+        #jumpscare {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: url('https://previews.dropbox.com/p/thumb/ACgToFRXZ5m8BxAxeZKwZn-uATeYO2GUXb3Vwblw0hnDOS6lPhba2FxdhAG7hdt4b5emqwltrmR1YeEVld0bw4FYdr7YDVNtgX7mylWaGtksMa0uI6SE4ZVjUfhaVGawZm1lPP1VejpTUJLSjcZwn7fo-W_WvCsT5YbScH5UZtirkeEmpw4f16dpl1tKFnUL7CbY3v536jrmixkQ3Zm8W5PRyEh5ur4wYgSU9UbD6nvsFrOgx4kIDX6A1HwaaJUnfiTW_1yqP9qzD7wmVJ47S_EPnitZAr5rRPkLLJW76CZ1Q7dYGfukyOBLOAVEqHQ6i2NIuIbGB49lgb_UBXCthnSI/p.jpeg?is_prewarmed=true') no-repeat center center;
+            background-size: cover;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(-50%, -50%); }
+            25% { transform: translate(-50%, calc(-50% - 20px)); }
+            50% { transform: translate(-50%, calc(-50% + 20px)); }
+            75% { transform: translate(-50%, calc(-50% - 20px)); }
+            100% { transform: translate(-50%, -50%); }
+        }
+
+        #random-text {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+
+        #get-code-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="jumpscare"></div>
+    <h1>Gift code</h1>
+    <audio id="scary-sound" src="jumpscare.mp3" preload="auto"></audio>
+    <img src="https://previews.dropbox.com/p/thumb/ACgToFRXZ5m8BxAxeZKwZn-uATeYO2GUXb3Vwblw0hnDOS6lPhba2FxdhAG7hdt4b5emqwltrmR1YeEVld0bw4FYdr7YDVNtgX7mylWaGtksMa0uI6SE4ZVjUfhaVGawZm1lPP1VejpTUJLSjcZwn7fo-W_WvCsT5YbScH5UZtirkeEmpw4f16dpl1tKFnUL7CbY3v536jrmixkQ3Zm8W5PRyEh5ur4wYgSU9UbD6nvsFrOgx4kIDX6A1HwaaJUnfiTW_1yqP9qzD7wmVJ47S_EPnitZAr5rRPkLLJW76CZ1Q7dYGfukyOBLOAVEqHQ6i2NIuIbGB49lgb_UBXCthnSI/p.jpeg?is_prewarmed=true" style="display:none;" alt="Jumpscare Image">
+
+    <div id="random-text"></div>
+    <button id="get-code-button">Nhận mã</button>
+
+    <script>
+        const randomTexts = [
+            "Tạo mã",
+            "gift mã năm mới",
+            "Hãy nhấn vào đây để nhận mã!",
+            "Mã của bạn sẽ được tạo ngay sau khi bạn nhấn!",
+            "Chỉ 1 mã mỗi người!",
+            "Mã sẽ hết hạn sau 1 tiếng đồng hồ sau khi nhận!",
+        ];
+
+        function displayRandomText() {
+            const randomIndex = Math.floor(Math.random() * randomTexts.length);
+            document.getElementById('random-text').innerText = randomTexts[randomIndex];
+        }
+
+        document.body.addEventListener('click', function() {
+            const jumpscare = document.getElementById('jumpscare');
+            jumpscare.style.display = 'block';
+            jumpscare.style.animation = 'shake 0.1s infinite'; // Lắc liên tục
+            document.getElementById('scary-sound').play();
+
+            // Tự động ẩn jumpscare sau 3 giây
+            setTimeout(() => {
+                jumpscare.style.display = 'none';
+            }, 3000);
+        });
+
+        document.getElementById('get-code-button').addEventListener('click', function() {
+            displayRandomText();
+        });
+
+        // Gọi hàm hiển thị chữ ngẫu nhiên khi trang được tải
+        document.addEventListener('DOMContentLoaded', displayRandomText);
+    </script>
+
+</body>
+</html>
