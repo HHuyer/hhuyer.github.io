@@ -779,29 +779,35 @@ function togglePlayPause() {
 }
 
 document.getElementById('farewell-button').addEventListener('click', function() {
-    const yearText = document.querySelector('.year-text');
-    const farewellText = document.querySelector('.farewell-text');
-    const newMessage = document.getElementById('new-message');
-    const farewellMessage = document.getElementById('farewell-message'); // Thêm biến để tham chiếu đến nền trắng
-    const farewellButton = document.getElementById('farewell-button'); // Thêm biến để tham chiếu đến nút
+    const randomChance = Math.random(); // Tạo một số ngẫu nhiên từ 0 đến 1
+    if (randomChance < 0.01) { // Kiểm tra xem số ngẫu nhiên có nhỏ hơn 0.01 (1%) không
+        window.location.href = 'petspin.html'; // Chuyển đến trang petspin.html
+    } else {
+        // Thực hiện các hành động khác nếu không chuyển trang
+        const yearText = document.querySelector('.year-text');
+        const farewellText = document.querySelector('.farewell-text');
+        const newMessage = document.getElementById('new-message');
+        const farewellMessage = document.getElementById('farewell-message'); // Thêm biến để tham chiếu đến nền trắng
+        const farewellButton = document.getElementById('farewell-button'); // Thêm biến để tham chiếu đến nút
 
-    // Gọi hàm phát nhạc ngẫu nhiên
-    playRandomSong(); // Thêm dòng này để phát nhạc
+        // Gọi hàm phát nhạc ngẫu nhiên
+        playRandomSong(); // Thêm dòng này để phát nhạc
 
-    // Kiểm tra xem có đang hiển thị icon và dòng chữ mới không
-    if (newMessage.style.display === 'none') {
-        yearText.classList.add('fade-out'); // Thêm lớp để bắt đầu hiệu ứng bay đi
-        farewellText.classList.add('fade-out'); // Thêm lớp để bắt đầu hiệu ứng bay đi
-        farewellMessage.classList.add('fade-out'); // Thêm lớp để mờ dần nền trắng
-        farewellButton.classList.add('fade-out'); // Thêm lớp để mờ dần nút
+        // Kiểm tra xem có đang hiển thị icon và dòng chữ mới không
+        if (newMessage.style.display === 'none') {
+            yearText.classList.add('fade-out'); // Thêm lớp để bắt đầu hiệu ứng bay đi
+            farewellText.classList.add('fade-out'); // Thêm lớp để bắt đầu hiệu ứng bay đi
+            farewellMessage.classList.add('fade-out'); // Thêm lớp để mờ dần nền trắng
+            farewellButton.classList.add('fade-out'); // Thêm lớp để mờ dần nút
 
-        // Ẩn phần tử sau khi hiệu ứng hoàn tất
-        setTimeout(() => {
-            yearText.style.display = 'none'; // Ẩn dòng chữ "2024"
-            farewellText.style.display = 'none'; // Ẩn dòng chữ nhỏ
-            farewellMessage.style.display = 'none'; // Ẩn nền trắng
-            farewellButton.style.display = 'none'; // Ẩn nút "Tạm biệt nhé 👋"
-        }, 1000); // Thêm thời gian cho hiệu ứng fade-out
+            // Ẩn phần tử sau khi hiệu ứng hoàn tất
+            setTimeout(() => {
+                yearText.style.display = 'none'; // Ẩn dòng chữ "2024"
+                farewellText.style.display = 'none'; // Ẩn dòng chữ nhỏ
+                farewellMessage.style.display = 'none'; // Ẩn nền trắng
+                farewellButton.style.display = 'none'; // Ẩn nút "Tạm biệt nhé 👋"
+            }, 1000); // Thêm thời gian cho hiệu ứng fade-out
+        }
     }
 });
 </script>
