@@ -319,6 +319,40 @@
             <p id="pet-modal-info"></p>
         </div>
     </div>
+    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.29.9.js"></script>
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const joinChatButton = document.getElementById('join-chat');
+    if (joinChatButton) {
+        joinChatButton.addEventListener('click', function() {
+            const username = document.getElementById('username').value;
+            if (username) {
+                localStorage.setItem('username', username); // Lưu tên người dùng
+                document.getElementById('name-container').style.display = 'none'; // Ẩn ô nhập tên
+                document.getElementById('chat-container').style.display = 'block'; // Hiển thị giao diện chat
+            }
+        });
+    }
+    
+    loadSavedData();
+    // Nếu chưa có thông tin lưu trữ trong localStorage, gọi hàm để thông báo lần đầu
+    if (!localStorage.getItem('lastVisit')) {
+        showDailyNotification();
+    }
+});
+
+// Khởi tạo PubNub
+const pubnub = new PubNub({
+    publishKey: 'pub-c-a9203236-6895-4409-9106-867306da17e5',
+    subscribeKey: 'sub-c-4d5db111-ccbb-4d92-afb2-1d39658ab93c'
+});
+
+const channel = 'chat_channel';
+
+// Đảm bảo chỉ subscribe một lần
+pubnub.subscribe({ channels: [channel] });
+</script>
     <script>
         const pets = [
             { name: 'Cat', probability: 1/20, image: 'https://ih1.redbubble.net/image.5524686591.1356/raf,360x360,075,t,fafafa:ca443f4786.jpg' },
@@ -589,6 +623,17 @@ let startTime = Date.now(); // Thời gian bắt đầu chơi
 
 // Load data from localStorage
 window.onload = function() {
+    const joinChatButton = document.getElementById('join-chat');
+    if (joinChatButton) {
+        joinChatButton.addEventListener('click', function() {
+            const username = document.getElementById('username').value;
+            if (username) {
+                localStorage.setItem('username', username); // Lưu tên người dùng
+                document.getElementById('name-container').style.display = 'none'; // Ẩn ô nhập tên
+                document.getElementById('chat-container').style.display = 'block'; // Hiển thị giao diện chat
+            }
+        });
+    }
     loadSavedData();
     // Nếu chưa có thông tin lưu trữ trong localStorage, gọi hàm để thông báo lần đầu
     if (!localStorage.getItem('lastVisit')) {
@@ -843,6 +888,18 @@ function showFinalPet() {
     // Cập nhật lần random may nhất
     if (bestRandom === 0 || selectedProbability > bestRandom) {
         bestRandom = selectedProbability;
+    }
+
+    // Gửi thông báo lên chat nếu độ hiếm >= 999
+    if (selectedProbability >= 999) {
+        const username = localStorage.getItem('username') || 'Ẩn danh'; // Lấy tên người chơi từ localStorage
+        const message = `Wow! Người chơi (${username}) đã quay ra ${selectedPet} có độ hiếm là 1 trong ${selectedProbability}`;
+        
+        // Gửi thông báo lên kênh chat
+        pubnub.publish({
+            channel: channel,
+            message: { text: message, time: new Date().toLocaleTimeString() }
+        });
     }
 }
 
