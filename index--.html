@@ -36,9 +36,17 @@ body {
     position: relative; /* Để các ảnh có thể được định vị tương đối với container */
 }
 
-.container {
+.container::before {
+    content: '';
+    position: absolute;
+    top: -5px; /* Để viền nằm trên viền của container */
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
     border: 5px solid #ff463d; /* Màu viền */
-    animation: wave 0.5s infinite; /* Thêm hiệu ứng dập dềnh */
+    border-radius: 12px; /* Để viền có góc bo tròn */
+    animation: wave 0.5s infinite; /* Thêm hiệu ứng dập dềnh cho viền */
+    pointer-events: none; /* Không cho phép tương tác với viền */
 }
 
 .corner-image {
