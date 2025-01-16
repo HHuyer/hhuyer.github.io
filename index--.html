@@ -740,17 +740,16 @@ function playRandomSong() {
     source.connect(analyser);
     analyser.connect(audioContext.destination);
 
-    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+const dataArray = new Uint8Array(analyser.frequencyBinCount);
+analyser.getByteFrequencyData(dataArray);
 
     function animateBorder() {
         requestAnimationFrame(animateBorder);
-        analyser.getByteFrequencyData(dataArray);
 
         // Tính toán độ cao của viền dựa trên tần số âm thanh
         const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
-        const scale = 1 + average / 256; // Điều chỉnh tỷ lệ theo âm thanh
-
-        document.querySelector('.container').style.transform = `scale(${scale})`;
+const scale = 1 + average / 256; // Điều chỉnh tỷ lệ theo âm thanh
+document.querySelector('.container').style.transform = `scale(${scale})`;
     }
 
     // Bắt đầu phát nhạc và gọi hàm animateBorder
