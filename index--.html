@@ -25,8 +25,6 @@ body {
     padding: 20px;
 }
         .container {
-    border: 5px solid #ff463d; /* Màu viền */
-    animation: wave 0.5s infinite; /* Thêm hiệu ứng dập dềnh */
             background-color: #e7241d;
             padding: 30px;
             border-radius: 12px;
@@ -38,16 +36,9 @@ body {
     position: relative; /* Để các ảnh có thể được định vị tương đối với container */
 }
 
-@keyframes wave {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-    100% {
-        transform: scale(1);
-    }
+.container {
+    border: 5px solid #ff463d; /* Màu viền */
+    animation: wave 0.5s infinite; /* Thêm hiệu ứng dập dềnh */
 }
 
 .corner-image {
