@@ -36,6 +36,10 @@ body {
     position: relative; /* Để các ảnh có thể được định vị tương đối với container */
 }
 
+.outer-border {
+    position: relative; /* Để định vị border mới */
+}
+
 .container {
     border: 5px solid #ff463d; /* Màu viền */
     animation: wave 0.5s infinite; /* Thêm hiệu ứng dập dềnh */
@@ -323,12 +327,7 @@ body {
     }
 }
 
-#music-visualizer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 0; /* Đặt z-index thấp hơn để không che khuất các phần tử khác */
-}
+
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -415,7 +414,7 @@ const philosophies = [
         <img src="đĩa nhạc.png" class="record-image" alt="Đĩa nhạc" style="width: 60px; height: 60px; animation: spin 4s linear infinite;">
     </div>
 </div>
-<canvas id="music-visualizer" width="800" height="400"></canvas>
+<div class="outer-border">
 <div class="container">
     <div>
         <marquee>🎉Tết 2025 Chúc Bạn Và Gia Đình Luôn Mạnh Khỏe Giàu Có Và Không Quên Quay Lại Donate Cho Chúng Tớ Nhé!🇻🇳</marquee>
@@ -522,6 +521,7 @@ const philosophies = [
     <p>Trang web của chúng tôi không chỉ là một nơi để tìm kiếm thông tin mà còn là một không gian để bạn khám phá, học hỏi và kết nối. Chúng tôi hy vọng bạn sẽ tìm thấy những điều thú vị và hữu ích tại đây. Hãy tham gia cùng chúng tôi trong hành trình này và đừng quên quay lại thường xuyên để không bỏ lỡ những điều mới mẻ! Chúng tôi luôn chào đón bạn và mong muốn mang đến cho bạn những trải nghiệm tuyệt vời nhất.</p>
 
     <p>Cảm ơn bạn đã ghé thăm trang web của chúng tôi! Chúc bạn có những trải nghiệm tuyệt vời!</p>
+</div>
 </div>
     </div>
 <div class="update-history-modal" id="update-history-modal" onclick="closeModal('update-history-modal')">
@@ -700,13 +700,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const countdownInterval = setInterval(updateCountdown, 1000); // Cập nhật mỗi giây
 });
 
-let audio; // Biến toàn cục để lưu trữ audio
-const canvas = document.getElementById('music-visualizer');
-const ctx = canvas.getContext('2d');
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-const analyser = audioContext.createAnalyser();
-const dataArray = new Uint8Array(analyser.frequencyBinCount);
-
 const songs = [
     { title: "Happickleball (Pickleball X Happy New Year) | NHẠC TẾT 2025", url: "Happickleball (Pickleball X Happy New Year)  NHẠC TẾT 2025.mp3" },
     { title: "SKIBIDI TẾT  nhạc tết 2025", url: "SKIBIDI TẾT  nhạc tết giáp thìn 2025.mp3" },
@@ -715,6 +708,10 @@ const songs = [
     { title: "Nhạc Xổ Số 2025 Remix", url: "nhạc xổ số rm.MP3" },
     // Thêm nhiều bài hát khác nếu cần
 ];
+
+let audio; // Biến toàn cục để lưu trữ audio
+let audioContext; // Biến để lưu trữ AudioContext
+let analyser; // Biến để lưu trữ AnalyserNode
 
 function playRandomSong() {
     const randomIndex = Math.floor(Math.random() * songs.length);
@@ -730,39 +727,27 @@ function playRandomSong() {
     }
 
     // Tạo audio mới và phát bài hát
-    audio = new Audio(selectedSong.url);
+    audio = new Audio(selectedSong.url); // Đảm bảo audio là HTMLMediaElement
     audio.volume = 0; // Đặt âm lượng ban đầu là 0
 
-    // Kết nối audio với analyser
-    const source = audioContext.createMediaElementSource(audio);
+    // Khởi tạo AudioContext và Analyser
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioContext.createAnalyser();
+    const source = audioContext.createMediaElementSource(audio); // Sử dụng audio ở đây
     source.connect(analyser);
     analyser.connect(audioContext.destination);
 
-    // Bắt đầu phát nhạc
-    audio.play();
-    animateVisualizer(); // Bắt đầu hiệu ứng visualizer
-}
+const dataArray = new Uint8Array(analyser.frequencyBinCount);
+analyser.getByteFrequencyData(dataArray);
 
-function animateVisualizer() {
-    requestAnimationFrame(animateVisualizer);
+function animateBorder() {
+    requestAnimationFrame(animateBorder);
     analyser.getByteFrequencyData(dataArray); // Lấy dữ liệu tần số
-
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; // Màu nền với độ trong suốt
-    ctx.fillRect(0, 0, canvas.width, canvas.height); // Xóa canvas
-
-    const barWidth = (canvas.width / dataArray.length) * 2.5; // Tính chiều rộng của mỗi cột
-    let barHeight;
-    let x = 0;
-
-    for (let i = 0; i < dataArray.length; i++) {
-        barHeight = dataArray[i] / 2; // Tính chiều cao của cột
-        ctx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)'; // Màu sắc cột
-        ctx.fillRect(x, canvas.height - barHeight / 2, barWidth, barHeight); // Vẽ cột
-        x += barWidth + 1; // Di chuyển sang bên phải
-    }
+    const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+    const scale = 1 + average / 256; // Điều chỉnh tỷ lệ theo âm thanh
+    document.querySelector('.outer-border').style.transform = `scale(${scale})`;
 }
 
-// Gọi hàm playRandomSong() khi bạn muốn phát nhạc
     // Bắt đầu phát nhạc và gọi hàm animateBorder
     audioContext.resume().then(() => {
         audio.play();
@@ -777,6 +762,7 @@ function animateVisualizer() {
             }
         }, 100); // Tăng âm lượng mỗi 100ms
     });
+}
 
 let isPlaying = false; // Biến để theo dõi trạng thái phát nhạc
 
