@@ -763,7 +763,7 @@ function animateBorder() {
     analyser.getByteFrequencyData(dataArray); // Lấy dữ liệu tần số
     const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
     const scale = 1 + average / 256; // Điều chỉnh tỷ lệ theo âm thanh
-    document.querySelector('.record-image').style.transform = `scale(${scale})`;
+    document.querySelector('.record-image').style.transform = `scale(${scale})`; // Thay đổi kích thước
 }
 
     // Bắt đầu phát nhạc và gọi hàm animateBorder
