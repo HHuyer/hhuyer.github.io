@@ -329,7 +329,12 @@ border-radius: 12px;
     }
 }
 
-
+#music-visualizer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1; /* Đặt z-index để nó nằm dưới các phần tử khác */
+}
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -416,6 +421,7 @@ const philosophies = [
         <img src="đĩa nhạc.png" class="record-image" alt="Đĩa nhạc" style="width: 60px; height: 60px; animation: spin 4s linear infinite;">
     </div>
 </div>
+<canvas id="music-visualizer" width="800" height="400"></canvas>
 <div class="outer-border"></div>
 <div class="container">
     <div>
@@ -725,6 +731,7 @@ function playRandomSong() {
     if (audio) {
         audio.pause();
         audio.currentTime = 0; // Đặt lại thời gian phát
+    draw();
     }
 
     // Tạo audio mới và phát bài hát
@@ -844,6 +851,29 @@ document.getElementById('farewell-button').addEventListener('click', function() 
         }
     }
 });
+
+function draw() {
+    requestAnimationFrame(draw);
+    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(dataArray);
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; // Màu nền
+    ctx.fillRect(0, 0, canvas.width, canvas.height); // Xóa canvas
+
+    const barWidth = (canvas.width / dataArray.length) * 2.5; // Độ rộng của mỗi thanh
+    let barHeight;
+    let x = 0;
+
+    for (let i = 0; i < dataArray.length; i++) {
+        barHeight = dataArray[i];
+
+        ctx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)'; // Màu sắc của thanh
+        ctx.fillRect(x, canvas.height - barHeight / 2, barWidth, barHeight / 2); // Vẽ thanh
+
+        x += barWidth + 1; // Di chuyển đến vị trí tiếp theo
+    }
+}
+
 </script>
 </body>
 </html>
