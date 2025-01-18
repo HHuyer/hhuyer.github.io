@@ -337,6 +337,18 @@ height: 60px;
 .spin {
 animation: spin 4s linear infinite;
 }
+
+.buidoi {
+    background-size: cover; /* Để ảnh phủ toàn bộ */
+    background-position: center; /* Để căn giữa ảnh */
+    position: fixed; /* Đặt vị trí cố định */
+    top: 0; /* Căn trên cùng */
+    left: 0; /* Căn bên trái */
+    width: 100%; /* Chiếm toàn bộ chiều rộng */
+    height: 100%; /* Chiếm toàn bộ chiều cao */
+    z-index: 888; /* Đảm bảo nó nằm trên cùng */
+    pointer-events: none; /* Không cho phép tương tác với ảnh */
+}
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -425,7 +437,7 @@ const philosophies = [
 </div></center>
     </div>
 </div>
-
+        <img src="https://news.khangz.com/wp-content/uploads/2024/12/Chill-guy-la-gi-750x450.jpg" class="buidoi" alt="Bụi đời">
 <div class="container">
     <div>
         <marquee>🎉Tết 2025 Chúc Bạn Và Gia Đình Luôn Mạnh Khỏe Giàu Có Và Không Quên Quay Lại Donate Cho Chúng Tớ Nhé!🇻🇳</marquee>
