@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chúc Mừng Năm Mới 2025!</title>
+    <link rel="icon" href="favicon.ico" type="favicon">
     <style>
         /* CSS như trước */
         * {
@@ -20,7 +21,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    height: 100vh;
+    height: 100%;
     margin: 0;
     padding: 20px;
 }
@@ -29,10 +30,10 @@ body {
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-            width: 100%;
             max-width: 1100px;
             overflow-y: auto;
-            max-height: 75vh;
+            max-height: 5500px;
+            overflow: hidden;
     position: relative; /* Để các ảnh có thể được định vị tương đối với container */
 }
 
@@ -339,15 +340,16 @@ animation: spin 4s linear infinite;
 }
 
 .buidoi {
-    background-size: cover; /* Để ảnh phủ toàn bộ */
-    background-position: center; /* Để căn giữa ảnh */
+    object-fit: cover; /* Để video phủ toàn bộ */
+    object-position: center; /* Chỉnh vị trí của video */
     position: fixed; /* Đặt vị trí cố định */
-    top: 0; /* Căn trên cùng */
-    left: 0; /* Căn bên trái */
-    width: 100%; /* Chiếm toàn bộ chiều rộng */
-    height: 100%; /* Chiếm toàn bộ chiều cao */
+    top: 50%; /* Căn giữa theo chiều dọc */
+    left: 50%; /* Căn giữa theo chiều ngang */
+    width: 100%; /* Chiều rộng theo tỷ lệ 16:9 */
+    height: 100%; /* Chiều cao chiếm toàn bộ màn hình */
     z-index: 888; /* Đảm bảo nó nằm trên cùng */
     pointer-events: none; /* Không cho phép tương tác với ảnh */
+    transform: translate(-50%, -50%); /* Dịch chuyển để căn giữa */
 }
     </style>
     <script>
@@ -437,7 +439,7 @@ const philosophies = [
 </div></center>
     </div>
 </div>
-        <img src="BuiDoi.mp4" class="buidoi" alt="Bụi đời">
+<video src="BuiDoimp4" class="buidoi" alt="Bụi đời" autoplay loop muted></video>
 <div class="container">
     <div>
         <marquee>🎉Tết 2025 Chúc Bạn Và Gia Đình Luôn Mạnh Khỏe Giàu Có Và Không Quên Quay Lại Donate Cho Chúng Tớ Nhé!🇻🇳</marquee>
@@ -775,6 +777,7 @@ function playRandomSong() {
 const dataArray = new Uint8Array(analyser.frequencyBinCount);
 analyser.getByteFrequencyData(dataArray);
 
+// Hàm để thực hiện hiệu ứng viền
 function animateBorder() {
     requestAnimationFrame(animateBorder);
     analyser.getByteFrequencyData(dataArray); // Lấy dữ liệu tần số
@@ -846,6 +849,14 @@ function pauseSong() {
     }
 }
 
+function phatnhac() {
+    playRandomSong(); // phát bài hát ngẫu nhiên
+    
+    audio.addEventListener('ended', () => {
+    setTimeout(playRandomSong, 1000); // Đợi 1 giây trước khi phát bài hát mới
+});
+}
+
 document.getElementById('farewell-button').addEventListener('click', function() {
     const randomChance = Math.random(); // Tạo một số ngẫu nhiên từ 0 đến 1
     if (randomChance < 0.01) { // Kiểm tra xem số ngẫu nhiên có nhỏ hơn 0.01 (1%) không
@@ -859,7 +870,7 @@ document.getElementById('farewell-button').addEventListener('click', function() 
         const farewellButton = document.getElementById('farewell-button'); // Thêm biến để tham chiếu đến nút
 
         // Gọi hàm phát nhạc ngẫu nhiên
-        playRandomSong(); // Thêm dòng này để phát nhạc
+        phatnhac(); // Thêm dòng này để phát nhạc
 
         // Kiểm tra xem có đang hiển thị icon và dòng chữ mới không
         if (newMessage.style.display === 'none') {
