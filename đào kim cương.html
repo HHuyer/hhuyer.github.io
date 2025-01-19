@@ -409,7 +409,7 @@ openAllButton.addEventListener('click', () => {
         notificationToggle.addEventListener('click', () => {
             notificationsEnabled = !notificationsEnabled;
             document.body.classList.toggle('notifications-off', !notificationsEnabled);
-            notificationToggle.src = notificationsEnabled ? 'notification-on.png' : 'notification-off.png';
+            notificationToggle.src = notificationsEnabled ? 'https://png.pngtree.com/element_our/png_detail/20181226/chat-line-black-icon-png_281650.jpg' : 'https://www.vietguys.biz/storage/knowledge/7-loi-khien-tin-nhan-cua-ban-vao-thung-rac.png';
             localStorage.setItem('notifications', notificationsEnabled ? 'on' : 'off');
         });
 
@@ -423,7 +423,7 @@ openAllButton.addEventListener('click', () => {
             if (localStorage.getItem('notifications') === 'off') {
                 notificationsEnabled = false;
                 document.body.classList.add('notifications-off');
-                notificationToggle.src = 'notification-off.png';
+                notificationToggle.src = 'https://www.vietguys.biz/storage/knowledge/7-loi-khien-tin-nhan-cua-ban-vao-thung-rac.png';
             }
 
             loadSavedData();
