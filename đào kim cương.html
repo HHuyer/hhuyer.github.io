@@ -456,6 +456,11 @@ openAllButton.addEventListener('click', () => {
                 cell.classList.remove('revealed');
             }, 2000);
         });
+
+        // Lặp lại nếu chưa mua vé chơi
+        if (!hasPaid) {
+            setTimeout(revealRandomCells, 3000);
+        }
     }
   </script>
 </body>
