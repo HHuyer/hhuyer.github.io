@@ -399,6 +399,8 @@ openAllButton.addEventListener('click', () => {
 
             loadSavedData();
             updateUI();
+            initGame(); // Khởi tạo bảng chơi
+            revealRandomCells(); // Gọi hàm mở ngẫu nhiên các ô khi mới vào
         };
 
         initGame();
@@ -407,6 +409,53 @@ openAllButton.addEventListener('click', () => {
         var audio = document.getElementById('audio');
         audio.muted = false; // Bỏ chế độ tắt tiếng khi người dùng nhấn nút
         audio.play();
+    }
+
+    // Hàm để xác định phần thưởng ngẫu nhiên với tỷ lệ cao cho các hộp từ 100 trở lên
+    function getInitialReward() {
+        const randomNum = Math.random() * 100;
+        if (randomNum < 5) {
+            return 1; // 5%
+        } else if (randomNum < 20) {
+            return 10; // 15%
+        } else {
+            return 100; // 80%
+        }
+    }
+
+    // Hàm để mở ngẫu nhiên các ô khi mới vào
+    function revealRandomCells() {
+        const randomIndices = [];
+        while (randomIndices.length < 5) { // Mở 5 ô ngẫu nhiên
+            const randomIndex = Math.floor(Math.random() * (rows * cols));
+            if (!randomIndices.includes(randomIndex)) {
+                randomIndices.push(randomIndex);
+            }
+        }
+
+        randomIndices.forEach(index => {
+            const cell = gameBoard.children[index];
+            const img = cell.querySelector('img');
+            const reward = getInitialReward();
+
+            // Hiển thị hình ảnh phần thưởng trong ô đã nhấn
+            if (reward === 1) {
+                img.src = 'Uncommon_Holiday_Gift.webp'; // Thay bằng đường dẫn ảnh quà nhỏ
+            } else if (reward === 10) {
+                img.src = 'Mythical_Holiday_Gift.webp'; // Thay bằng đường dẫn ảnh quà lớn
+            } else if (reward === 100) {
+                img.src = 'Admin_Holiday_Gift.webp'; // Thay bằng đường dẫn ảnh quà khổng lồ
+            }
+
+            img.style.display = 'block'; // Hiển thị ảnh phần thưởng trong ô
+            cell.classList.add('revealed'); // Thêm lớp để theo dõi ô đã mở
+
+            // Đóng lại sau 2 giây
+            setTimeout(() => {
+                img.style.display = 'none';
+                cell.classList.remove('revealed');
+            }, 2000);
+        });
     }
   </script>
 </body>
