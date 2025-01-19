@@ -28,6 +28,15 @@
         .controls img:hover {
             transform: scale(1.2);
         }
+        .controls img.notification-toggle {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .controls img.notification-toggle:hover {
+            transform: scale(1.2);
+        }
         .game-board {
             display: grid;
             grid-template-columns: repeat(5, 50px);
@@ -171,6 +180,9 @@
     background-color: #ddd;
     transform: scale(1.1);
 }
+.notifications-off #floatingMessages {
+    display: none !important;
+}
     </style>
 </head>
 <body>
@@ -179,6 +191,7 @@
     <div class="controls">
         <img id="themeToggle" src="https://www.vmcdn.ca/f/files/stalberttoday/0624-scistalsunmoon-sup.jpg" alt="Toggle Theme">
         <img id="homeButton" src="https://www.freeiconspng.com/thumbs/exit-icon/exit-icon-png-close-0.png" alt="Home">
+        <img id="notificationToggle" class="notification-toggle" src="notification-on.png" alt="Toggle Notifications">
     </div>
     <div class="bet-controls">
         <button id="startGameButton">Quay thưởng(50 Kẹo)</button>
@@ -206,6 +219,8 @@
         const themeToggle = document.getElementById('themeToggle');
         const homeButton = document.getElementById('homeButton');
         const startGameButton = document.getElementById('startGameButton');
+        const notificationToggle = document.getElementById('notificationToggle');
+        let notificationsEnabled = true;
         const rows = 5;
         const cols = 5;
 
@@ -287,6 +302,7 @@ startGameButton.addEventListener('click', () => {
 });
 
 function showFloatingMessage(message) {
+    if (!notificationsEnabled) return;
     const floatingMessages = document.getElementById('floatingMessages');
     const messageItem = document.createElement('div');
     messageItem.classList.add('message-item');
@@ -390,11 +406,24 @@ openAllButton.addEventListener('click', () => {
             window.location.href = 'indexgame.html';
         });
 
+        notificationToggle.addEventListener('click', () => {
+            notificationsEnabled = !notificationsEnabled;
+            document.body.classList.toggle('notifications-off', !notificationsEnabled);
+            notificationToggle.src = notificationsEnabled ? 'notification-on.png' : 'notification-off.png';
+            localStorage.setItem('notifications', notificationsEnabled ? 'on' : 'off');
+        });
+
         // Khi trang được tải, thiết lập dữ liệu và giao diện
         window.onload = () => {
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark-mode');
                 themeToggle.src = 'moon.png';
+            }
+
+            if (localStorage.getItem('notifications') === 'off') {
+                notificationsEnabled = false;
+                document.body.classList.add('notifications-off');
+                notificationToggle.src = 'notification-off.png';
             }
 
             loadSavedData();
