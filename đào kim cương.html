@@ -367,9 +367,9 @@ function revealCell(cell, index) {
     } else if (reward === 1000) {
         img.src = 'Rare_Holiday_Gift.webp'; // Thay bằng đường dẫn ảnh quà siêu cấp
     } else if (reward === 10000) {
-        img.src = 'https://png.pngtree.com/png-vector/20211229/ourlarge/pngtree-crystal-diamond-cartoon-illustration-png-image_4071384.png'; // Thay bằng đường dẫn ảnh quà cực hiếm
+        img.src = 'Legendary_Gift.webp'; // Thay bằng đường dẫn ảnh quà cực hiếm
     } else if (reward === 1000000000) {
-        img.src = 'Legendary_Gift.webp'; // Thay bằng đường dẫn ảnh quà huyền thoại
+        img.src = 'https://png.pngtree.com/png-vector/20211229/ourlarge/pngtree-crystal-diamond-cartoon-illustration-png-image_4071384.png'; // Thay bằng đường dẫn ảnh quà huyền thoại
     }
 
     img.style.display = 'block'; // Hiển thị ảnh phần thưởng trong ô
@@ -443,12 +443,18 @@ openAllButton.addEventListener('click', () => {
     // Hàm để xác định phần thưởng ngẫu nhiên với tỷ lệ cao cho các hộp từ 100 trở lên
     function getInitialReward() {
         const randomNum = Math.random() * 100;
-        if (randomNum < 5) {
-            return 1; // 5%
-        } else if (randomNum < 20) {
-            return 10; // 15%
-        } else {
-            return 100; // 80%
+        if (randomNum < 20) {
+            return 1; // 20%
+        } else if (randomNum < 45) {
+            return 10; // 45%
+        } else if (randomNum < 75) {
+            return 100; // 75%
+        } else if (randomNum < 80) {
+            return 1000; // 80%
+        } else if (randomNum < 90) {
+            return 10000; // 90%
+        } else { 
+            return 1000000; // 80%
         }
     }
 
@@ -474,7 +480,14 @@ openAllButton.addEventListener('click', () => {
                 img.src = 'Mythical_Holiday_Gift.webp'; // Thay bằng đường dẫn ảnh quà lớn
             } else if (reward === 100) {
                 img.src = 'Admin_Holiday_Gift.webp'; // Thay bằng đường dẫn ảnh quà khổng lồ
+            } else if (reward === 1000) {
+                img.src = 'Rare_Holiday_Gift.webp'; // Thay bằng đường dẫn ảnh quà siêu cấp
+            } else if (reward === 10000) {
+                img.src = 'Legendary_Gift.webp'; // Thay bằng đường dẫn ảnh quà cực hiếm
+            } else if (reward === 1000000) {
+                img.src = 'https://png.pngtree.com/png-vector/20211229/ourlarge/pngtree-crystal-diamond-cartoon-illustration-png-image_4071384.png'; // Thay bằng đường dẫn ảnh quà huyền thoại
             }
+
 
             img.style.display = 'block'; // Hiển thị ảnh phần thưởng trong ô
             cell.classList.add('revealed'); // Thêm lớp để theo dõi ô đã mở
