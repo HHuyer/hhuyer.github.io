@@ -76,6 +76,9 @@
         const gameContainer = document.getElementById('game-container');
         let startTime, endTime;
 
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectUrl = urlParams.get('redirect');
+
         card.addEventListener('mousedown', (e) => {
             startTime = new Date().getTime();
             card.style.transition = 'none';
@@ -100,6 +103,9 @@
                     message.textContent = tooSlowMessage;
                 } else if (parseInt(card.style.left) >= gameContainer.offsetWidth - card.offsetWidth) {
                     message.textContent = successMessage;
+                    if (redirectUrl) {
+                        window.location.href = redirectUrl;
+                    }
                 } else {
                     const randomChance = Math.random();
                     if (randomChance < 0.5) {
