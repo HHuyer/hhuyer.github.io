@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bạn có phải robot?</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        #game-container {
+            width: 300px;
+            height: 150px;
+            background-color: #fff;
+            border: 2px solid #000;
+            position: relative;
+            overflow: hidden;
+        }
+        #card {
+            width: 100px;
+            height: 150px;
+            background-color: #007bff;
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+        }
+        #message {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+<big>Bạn có phải con người không?</big>
+<br>
+    <div id="game-container">
+        <div id="card"></div>
+    </div>
+    <div id="message">Kéo để kiểm tra</div>
+
+    <script>
+        const trollMessages = [
+            "Mạng kém, vui lòng thử lại",
+            "Tay bạn dính mồ hôi, vui lòng thử lại",
+            "Có lỗi xảy ra, vui lòng thử lại",
+            "Thẻ bị lỗi, vui lòng thử lại",
+            "Bạn đang đùa tôi à?",
+            "Thử lại lần nữa xem sao",
+            "Có vẻ như bạn không phải là người chơi Among Us chuyên nghiệp",
+            "Thẻ của bạn đã bị từ chối, vui lòng thử lại",
+            "Bạn có chắc là bạn biết cách quẹt thẻ không?",
+            "Thẻ của bạn đã hết hạn, vui lòng thử lại",
+            "Bạn đã quẹt thẻ sai cách, vui lòng thử lại",
+            "Hệ thống đang bận, vui lòng thử lại sau",
+            "Có vẻ như bạn cần thêm chút may mắn",
+            "Thẻ của bạn đã bị khóa, vui lòng thử lại",
+            "Hệ thống đang ngủ, vui lòng thử lại",
+            "Bạn chơi Among Us bao giờ chưa?"
+        ];
+
+        const successMessage = "Thành công";
+        const tooFastMessage = "Quá nhanh";
+        const tooSlowMessage = "Quá chậm";
+        const initialMessage = "Vui lòng kéo hết";
+
+        const card = document.getElementById('card');
+        const message = document.getElementById('message');
+        const gameContainer = document.getElementById('game-container');
+        let startTime, endTime;
+
+        card.addEventListener('mousedown', (e) => {
+            startTime = new Date().getTime();
+            card.style.transition = 'none';
+            card.style.left = `${e.clientX - card.offsetWidth / 2}px`;
+
+            const onMouseMove = (e) => {
+                let newLeft = e.clientX - card.offsetWidth / 2;
+                if (newLeft < 0) newLeft = 0;
+                if (newLeft > gameContainer.offsetWidth - card.offsetWidth) newLeft = gameContainer.offsetWidth - card.offsetWidth;
+                card.style.left = `${newLeft}px`;
+            };
+
+            const onMouseUp = () => {
+                endTime = new Date().getTime();
+                const duration = endTime - startTime;
+                card.style.transition = 'left 0.5s';
+                card.style.left = '0px';
+
+                if (duration < 750) {
+                    message.textContent = tooFastMessage;
+                } else if (duration > 1000) {
+                    message.textContent = tooSlowMessage;
+                } else if (parseInt(card.style.left) >= gameContainer.offsetWidth - card.offsetWidth) {
+                    message.textContent = successMessage;
+                } else {
+                    const randomChance = Math.random();
+                    if (randomChance < 0.5) {
+                        const randomIndex = Math.floor(Math.random() * trollMessages.length);
+                        message.textContent = trollMessages[randomIndex];
+                    } else {
+                        message.textContent = successMessage;
+                    }
+                }
+
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            };
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+    </script>
+</body>
+</html>
