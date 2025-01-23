@@ -12,18 +12,30 @@
             padding: 0;
             box-sizing: border-box;
         }
-body {
+        body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-image: url('https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474064zXQ/background-website-tet_105958087.jpg'); /* Thay đổi đường dẫn tới ảnh của bạn */
-    background-size: cover; /* Để ảnh phủ toàn bộ nền */
-    background-position: center; /* Để căn giữa ảnh */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    height: 100%;
     margin: 0;
     padding: 20px;
+    min-height: 100vh; /* Đảm bảo body kéo dài hết chiều cao màn hình */
+}
+body {
+    background-image: url('https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474064zXQ/background-website-tet_105958087.jpg'); /* Thay đổi đường dẫn tới ảnh của bạn */
+    background-size: cover;
+    background-position: center; /* Để căn giữa ảnh */
+    background-attachment: fixed; /* Giữ hình nền cố định */
+
+}
+.falling-image {
+    position: absolute;
+    bottom: 100%; /* Bắt đầu từ trên cùng */
+    transition: transform 1s linear; /* Hiệu ứng chuyển động */
+    transform-origin: center; /* Đặt gốc xoay ở giữa ảnh */
+    width: 30px; /* Kích thước mặc định nhỏ */
+    height: 30px; /* Kích thước mặc định nhỏ */
 }
         .container {
             background-color: #e7241d;
@@ -338,19 +350,6 @@ height: 60px;
 .spin {
 animation: spin 4s linear infinite;
 }
-
-.buidoi {
-    object-fit: cover; /* Để video phủ toàn bộ */
-    object-position: center; /* Chỉnh vị trí của video */
-    position: fixed; /* Đặt vị trí cố định */
-    top: 50%; /* Căn giữa theo chiều dọc */
-    left: 50%; /* Căn giữa theo chiều ngang */
-    width: 100%; /* Chiều rộng theo tỷ lệ 16:9 */
-    height: 100%; /* Chiều cao chiếm toàn bộ màn hình */
-    z-index: 888; /* Đảm bảo nó nằm trên cùng */
-    pointer-events: none; /* Không cho phép tương tác với ảnh */
-    transform: translate(-50%, -50%); /* Dịch chuyển để căn giữa */
-}
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -406,7 +405,27 @@ const philosophies = [
             document.querySelector('.philosophy').textContent = philosophies[randomIndex].quote;
             document.querySelector('.author').textContent = `- ${philosophies[randomIndex].author}`;
         });
-    </script>
+
+    function handleLinkClick(event, originalUrl) {
+        event.preventDefault();
+        const randomChance = Math.random();
+        if (randomChance < 0.1) {
+            window.location.href = `AYouIsHuman.html?redirect=${encodeURIComponent(originalUrl)}`;
+        } else {
+            window.location.href = originalUrl;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // ...existing code...
+
+        // Attach event listeners to all link items
+        document.querySelectorAll('.link-item, .rainbow-button').forEach(link => {
+            const originalUrl = link.getAttribute('href');
+            link.addEventListener('click', (event) => handleLinkClick(event, originalUrl));
+        });
+    });
+</script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6138079895042375"
      crossorigin="anonymous"></script>
 </head>
@@ -439,7 +458,6 @@ const philosophies = [
 </div></center>
     </div>
 </div>
-<video src="BuiDoimp4" class="buidoi" alt="Bụi đời" autoplay loop muted></video>
 <div class="container">
     <div>
         <marquee>🎉Tết 2025 Chúc Bạn Và Gia Đình Luôn Mạnh Khỏe Giàu Có Và Không Quên Quay Lại Donate Cho Chúng Tớ Nhé!🇻🇳</marquee>
@@ -791,6 +809,9 @@ function animateBorder() {
         audio.play();
         animateBorder(); // Bắt đầu hiệu ứng viền
 
+        // Cập nhật BPM theo nhạc
+        updateBpm(120); // Ví dụ: cập nhật BPM theo bài hát hiện tại
+
         // Hiệu ứng Fade In
         let fadeInInterval = setInterval(() => {
             if (audio.volume < 1) {
@@ -850,7 +871,7 @@ function pauseSong() {
 }
 
 function phatnhac() {
-    playRandomSong(); // phát bài hát ngẫu nhiên
+    playRandomSong(); // phát bài hát ngẫu nhiê
     
     audio.addEventListener('ended', () => {
     setTimeout(playRandomSong, 1000); // Đợi 1 giây trước khi phát bài hát mới
@@ -885,10 +906,86 @@ document.getElementById('farewell-button').addEventListener('click', function() 
                 farewellText.style.display = 'none'; // Ẩn dòng chữ nhỏ
                 farewellMessage.style.display = 'none'; // Ẩn nền trắng
                 farewellButton.style.display = 'none'; // Ẩn nút "Tạm biệt nhé 👋"
+                // Xóa tất cả các ảnh đang rơi
+                document.querySelectorAll('.falling-image').forEach(img => img.remove());
             }, 1000); // Thêm thời gian cho hiệu ứng fade-out
         }
     }
 });
+
+const imageUrls = [
+    'lá đào1.png', 'lá đào2.png', 'lá đào3.png', 'lá đào4.png', 
+    'lá đào5.png', 'lá đào6.png', 'lá đào7.png', 'lá đào8.png', 
+    'lá đào9.png', 'lá đào10.png', 'lá đào11.png', 'lá đào12.png'
+]; // Danh sách đường dẫn đến ảnh
+const defaultBpm = 1; // BPM mặc định siêu chậm
+let currentBpm = defaultBpm; // BPM hiện tại
+
+function createFallingImage() {
+    const img = document.createElement('img');
+    const randomImageUrl = imageUrls[Math.floor(Math.random() * imageUrls.length)];
+    img.src = randomImageUrl;
+    img.className = 'falling-image';
+
+    // Đặt vị trí ngẫu nhiên từ trái sang phải
+    const randomX = Math.random() * window.innerWidth;
+    img.style.left = `${randomX}px`;
+
+    // Chọn góc rơi ngẫu nhiên từ -60 đến 60 độ
+    const randomAngle = (Math.random() * 120 - 60); // Góc từ -60 đến 60 độ
+    const fallDistance = window.innerHeight + 50; // Khoảng cách rơi
+
+    document.body.appendChild(img);
+
+    // Tính toán thời gian rơi
+    const speedFactor = 100 / (currentBpm / 60); // Giảm tốc độ rơi
+    const fallDuration = speedFactor * (5 / 100) * 1000; // Tốc độ rơi tương ứng với chiều cao (đơn vị ms)
+
+    // Chọn hướng rơi ngẫu nhiên
+    const directions = ['left', 'right', 'down-left', 'down-right'];
+    const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+
+    // Bắt đầu hiệu ứng rơi
+    setTimeout(() => {
+        let translateX = 0;
+        let translateY = fallDistance;
+        let rotateAngle = 0;
+
+        switch (randomDirection) {
+            case 'left':
+                translateX = -fallDistance / 2;
+                rotateAngle = -90;
+                break;
+            case 'right':
+                translateX = fallDistance / 2;
+                rotateAngle = 90;
+                break;
+            case 'down-left':
+                translateX = -fallDistance / 2;
+                rotateAngle = -45;
+                break;
+            case 'down-right':
+                translateX = fallDistance / 2;
+                rotateAngle = 45;
+                break;
+        }
+
+        img.style.transform = `translate(${translateX}px, ${translateY}px) rotate(${rotateAngle}deg)`; // Rơi xuống theo hướng ngẫu nhiên và xoay
+    }, 100); // Thời gian chờ trước khi bắt đầu rơi
+
+    // Xóa ảnh sau khi rơi xong
+    setTimeout(() => {
+        img.remove();
+    }, fallDuration + 700); // Thêm thời gian để đảm bảo ảnh đã rơi xong
+}
+
+// Tạo hiệu ứng rơi liên tục
+setInterval(createFallingImage, 500); // Tạo ảnh mới mỗi 500ms
+
+// Hàm để cập nhật BPM theo nhạc
+function updateBpm(newBpm) {
+    currentBpm = newBpm;
+}
 </script>
 </body>
 </html>
