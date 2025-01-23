@@ -78,17 +78,20 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const redirectUrl = urlParams.get('redirect');
+        console.log('Redirect URL:', redirectUrl);
 
         card.addEventListener('mousedown', (e) => {
             startTime = new Date().getTime();
             card.style.transition = 'none';
             card.style.left = `${e.clientX - card.offsetWidth / 2}px`;
+            console.log('Mouse down at:', e.clientX);
 
             const onMouseMove = (e) => {
                 let newLeft = e.clientX - card.offsetWidth / 2;
                 if (newLeft < 0) newLeft = 0;
                 if (newLeft > gameContainer.offsetWidth - card.offsetWidth) newLeft = gameContainer.offsetWidth - card.offsetWidth;
                 card.style.left = `${newLeft}px`;
+                console.log('Mouse move to:', newLeft);
             };
 
             const onMouseUp = () => {
@@ -96,23 +99,39 @@
                 const duration = endTime - startTime;
                 card.style.transition = 'left 0.5s';
                 card.style.left = '0px';
+                console.log('Mouse up after:', duration, 'ms');
 
+                const cardLeft = parseInt(card.style.left);
+                console.log('Card left position:', cardLeft);
                 if (duration < 750) {
                     message.textContent = tooFastMessage;
+                    console.log('Result: Too fast');
                 } else if (duration > 1000) {
                     message.textContent = tooSlowMessage;
-                } else if (parseInt(card.style.left) >= gameContainer.offsetWidth - card.offsetWidth) {
+                    console.log('Result: Too slow');
+                } else if (cardLeft >= gameContainer.offsetWidth - card.offsetWidth) {
                     message.textContent = successMessage;
+                    console.log('Result: Success');
                     if (redirectUrl) {
-                        window.location.href = redirectUrl;
+                        console.log('Redirecting to:', redirectUrl);
+                        setTimeout(() => {
+                            window.location.href = redirectUrl;
+                        }, 1000); // Adding a delay to ensure the message is displayed before redirecting
                     }
                 } else {
                     const randomChance = Math.random();
                     if (randomChance < 0.5) {
                         const randomIndex = Math.floor(Math.random() * trollMessages.length);
                         message.textContent = trollMessages[randomIndex];
+                        console.log('Result: Troll message -', trollMessages[randomIndex]);
                     } else {
                         message.textContent = successMessage;
+                        console.log('Result: Success');
+
+                        console.log('Redirecting to:', redirectUrl);
+                        setTimeout(() => {
+                            window.location.href = redirectUrl;
+                        }, 1); // Adding a delay to ensure the message is displayed before redirecting
                     }
                 }
 
