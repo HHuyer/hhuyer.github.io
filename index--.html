@@ -927,9 +927,11 @@ function createFallingImage() {
     img.src = randomImageUrl;
     img.className = 'falling-image';
 
-    // Đặt vị trí ngẫu nhiên từ trái sang phải
-    const randomX = Math.random() * window.innerWidth;
+    // Đặt vị trí ngẫu nhiên từ trên bên phải
+    const randomX = window.innerWidth * (0.5 + Math.random() * 0.5); // Chỉ từ giữa đến phải
     img.style.left = `${randomX}px`;
+    img.style.top = '0'; // Bắt đầu từ trên cùng
+    img.style.opacity = '0'; // Bắt đầu với độ mờ 0
 
     // Chọn góc rơi ngẫu nhiên từ -60 đến 60 độ
     const randomAngle = (Math.random() * 120 - 60); // Góc từ -60 đến 60 độ
@@ -944,31 +946,35 @@ function createFallingImage() {
     // Chọn hướng rơi ngẫu nhiên
     const directions = ['left', 'right', 'down-left', 'down-right'];
     const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+    let translateX, rotateAngle;
 
     // Bắt đầu hiệu ứng rơi
     setTimeout(() => {
+        img.style.transition = 'opacity 1s, transform 1s linear'; // Thêm hiệu ứng chuyển đổi độ mờ
+        img.style.opacity = '1'; // Hiển thị dần dần
+
         let translateX = 0;
         let translateY = fallDistance;
         let rotateAngle = 0;
 
         switch (randomDirection) {
-            case 'left':
-                translateX = -fallDistance / 2;
-                rotateAngle = -90;
-                break;
-            case 'right':
-                translateX = fallDistance / 2;
-                rotateAngle = 90;
-                break;
-            case 'down-left':
-                translateX = -fallDistance / 2;
-                rotateAngle = -45;
-                break;
-            case 'down-right':
-                translateX = fallDistance / 2;
-                rotateAngle = 45;
-                break;
-        }
+        case 'left':
+            translateX = -fallDistance / 2;
+            rotateAngle = randomAngle;
+            break;
+        case 'right':
+            translateX = fallDistance / 2;
+            rotateAngle = randomAngle;
+            break;
+        case 'down-left':
+            translateX = -fallDistance / 2;
+            rotateAngle = randomAngle;
+            break;
+        case 'down-right':
+            translateX = fallDistance / 2;
+            rotateAngle = randomAngle;
+            break;
+    }
 
         img.style.transform = `translate(${translateX}px, ${translateY}px) rotate(${rotateAngle}deg)`; // Rơi xuống theo hướng ngẫu nhiên và xoay
     }, 100); // Thời gian chờ trước khi bắt đầu rơi
