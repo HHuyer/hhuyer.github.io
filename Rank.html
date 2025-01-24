@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rank</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+        main {
+            padding: 20px;
+        }
+        section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h2 {
+            color: #333;
+        }
+        .rank-item {
+            display: inline-block;
+            width: 150px;
+            height: 150px;
+            margin: 10px;
+            text-align: center;
+            vertical-align: top;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .rank-item:last-child {
+            border-bottom: none;
+        }
+        .rank-item button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 75%;
+            box-sizing: border-box;
+        }
+        .rank-item button:hover {
+            background-color: #45a049;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 25%;
+            box-sizing: border-box;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .rank-noob { color: #808080; } /* Gray */
+        .rank-pro { color: #00FFFF; } /* Cyan */
+        .rank-quy { color: #FF0000; } /* Red */
+        .rank-than { color: #800080; } /* Purple */
+        .rank-chua { color: #FFD700; } /* Gold */
+        .rank-custom { color: #000000; } /* Default Black */
+        .rank-tet { color: #FF0000; } /* Red */
+        .rank-donate { background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet); -webkit-background-clip: text; color: transparent; } /* Rainbow */
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Mua Rank</h1>
+    </header>
+    <main>
+        <section>
+        <h2 id="rank-header">Chọn Rank của bạn</h2>
+        <p id="candies-count">Số Kẹo hiện có: 0</p>
+        <p>-Thông thường-</p>
+        <div class="rank-container">
+            <div class="rank-item">
+                <big class="rank-noob">Noob</big><br>
+                <p>Giá: 100 Kẹo</p>
+                <button type="button" onclick="muaRank('Noob')">Mua ngay</button>
+            </div>
+            <div class="rank-item">
+                <big class="rank-pro">Pro</big><br>
+                <p>Giá: 250 Kẹo</p>
+                <button type="button" onclick="muaRank('Pro')">Mua ngay</button>
+            </div>
+            <div class="rank-item">
+                <big class="rank-quy">Quỷ</big><br>
+                <p>Giá: 500 Kẹo</p>
+                <button type="button" onclick="muaRank('Quỷ')">Mua ngay</button>
+            </div>
+            <div class="rank-item">
+                <big class="rank-than">Thần</big><br>
+                <p>Giá: 1000 Kẹo</p>
+                <button type="button" onclick="muaRank('Thần')">Mua ngay</button>
+            </div>
+            <div class="rank-item">
+                <big class="rank-chua">Chúa</big><br>
+                <p>Giá: 5000 Kẹo</p>
+                <button type="button" onclick="muaRank('Chúa')">Mua ngay</button>
+            </div>
+            <div class="rank-item">
+                <big class="rank-custom">Custom</big><br>
+                <p>Giá: 10000 Kẹo</p>
+                <button type="button" onclick="muaRank('Custom')">Mua ngay</button>
+            </div>
+        </div>
+        <p>-Giới hạn-</p>
+        <div class="rank-container">
+            <div class="rank-item">
+                <big class="rank-donate">Donate</big><br>
+                <p>Giá: 5000 VND</p>
+                <button type="button" onclick="muaRank('Donate')">Mua ngay</button>
+            </div>
+            <div class="rank-item">
+                <big class="rank-tet">Tết - 2025</big><br>
+                <p>Giá: 2025 Kẹo</p>
+                <button type="button" onclick="muaRank('Tết - 2025')">Mua ngay</button>
+            </div>
+            <div class="rank-item">
+                <big>Chill Guys</big><br>
+                <p>Giá: 0 Kẹo</p>
+                <button type="button" onclick="muaRank('Chill Guys')">Nhận</button>
+            </div>
+        </div>
+        <p>-Bạn đã sở hữu-</p>
+        <div id="owned-ranks" class="rank-container">
+            <!-- Owned ranks will be displayed here -->
+        </div>
+    </section>
+    </main>
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Thanh toán</h2>
+            <p id="payment-details"></p>
+            <center><button class="button" onclick="confirmPurchase()">Xác nhận</button></center>
+            <br><center><small>Không hoàn tiền nếu bạn đã mua rank trước đó.</small></center>
+        </div>
+    </div>
+    <div id="customRankModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCustomRankModal()">&times;</span>
+            <h2>Chọn tên và màu cho Rank Custom</h2>
+            <input type="text" id="customRankName" placeholder="Nhập tên rank của bạn">
+            <input type="color" id="customRankColor" value="#000000">
+            <center><button class="button" onclick="confirmCustomRank()">Xác nhận</button></center>
+        </div>
+    </div>
+    <script>
+        let candies = 0;
+        let selectedRank = '';
+
+        function loadSavedData() {
+            candies = parseInt(localStorage.getItem('candies')) || 0;
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('candies-count').innerText = `Số Kẹo hiện có: ${candies}`;
+        }
+
+        function muaRank(rank) {
+            selectedRank = rank;
+            const rankPrices = {
+                'Noob': 100,
+                'Pro': 250,
+                'Quỷ': 500,
+                'Thần': 1000,
+                'Chúa': 5000,
+                'Custom': 10000,
+                'Donate': 5000,
+                'Tết - 2025': 2025,
+                'Chill Guys': 0
+            };
+            const price = rankPrices[rank];
+            document.getElementById('payment-details').innerText = `Bạn đang mua rank ${rank} với giá ${price} Kẹo.`;
+            document.getElementById('paymentModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        function confirmPurchase() {
+            const rankPrices = {
+                'Noob': 100,
+                'Pro': 250,
+                'Quỷ': 500,
+                'Thần': 1000,
+                'Chúa': 5000,
+                'Custom': 10000,
+                'Donate': 5000,
+                'Tết - 2025': 2025,
+                'Chill Guys': 0
+            };
+            const rankOrder = ['Noob', 'Pro', 'Quỷ', 'Thần', 'Chúa'];
+            const price = rankPrices[selectedRank];
+            let ownedRanks = JSON.parse(localStorage.getItem('ownedRanks')) || [];
+
+            if (candies >= price) {
+                if (rankOrder.includes(selectedRank)) {
+                    const requiredRankIndex = rankOrder.indexOf(selectedRank) - 1;
+                    if (requiredRankIndex >= 0 && !ownedRanks.includes(rankOrder[requiredRankIndex])) {
+                        alert(`Bạn phải mua rank ${rankOrder[requiredRankIndex]} trước.`);
+                        closeModal();
+                        return;
+                    }
+                }
+
+                candies -= price;
+                localStorage.setItem('candies', candies);
+                if (!ownedRanks.includes(selectedRank)) {
+                    ownedRanks.push(selectedRank);
+                    localStorage.setItem('ownedRanks', JSON.stringify(ownedRanks));
+                }
+                alert(`Bạn đã mua rank ${selectedRank} thành công!`);
+                updateUI();
+                displayOwnedRanks();
+            } else {
+                alert("Bạn không có đủ kẹo để mua rank này.");
+            }
+            closeModal();
+        }
+
+        function displayOwnedRanks() {
+            const ownedRanks = JSON.parse(localStorage.getItem('ownedRanks')) || [];
+            const ownedRanksContainer = document.getElementById('owned-ranks');
+            const rankHeader = document.getElementById('rank-header');
+            ownedRanksContainer.innerHTML = '';
+            ownedRanks.forEach(rank => {
+                const rankItem = document.createElement('div');
+                rankItem.className = '';
+                rankItem.innerHTML = `<br><span class="rank-${rank.toLowerCase().replace(' ', '-')}">${rank}</span><center><button type="button" class="button" onclick="equipRank('${rank}')">Bấm để trang bị</button></center>`;
+                ownedRanksContainer.appendChild(rankItem);
+            });
+            const equippedRank = localStorage.getItem('equippedRank');
+            const equippedRankColor = localStorage.getItem('equippedRankColor');
+            if (equippedRank) {
+                rankHeader.innerHTML = `Rank của bạn: <span style="color: ${equippedRankColor}">${equippedRank}</span>`;
+            } else if (ownedRanks.length > 0) {
+                rankHeader.innerHTML = `Rank của bạn: ${ownedRanks[0]}`;
+            }
+        }
+
+        function equipRank(rank) {
+            if (rank === 'Custom') {
+                document.getElementById('customRankModal').style.display = 'block';
+            } else {
+                const buttons = document.querySelectorAll('#owned-ranks .rank-item button');
+                buttons.forEach(button => button.innerText = 'Trang bị');
+                event.target.innerText = 'Đang trang bị';
+                const rankHeader = document.getElementById('rank-header');
+                rankHeader.innerHTML = `Rank của bạn: <span class="rank-${rank.toLowerCase().replace(' ', '-')}">${rank}</span>`;
+                localStorage.setItem('equippedRank', rank);
+            }
+        }
+
+        function closeCustomRankModal() {
+            document.getElementById('customRankModal').style.display = 'none';
+        }
+
+        function confirmCustomRank() {
+            const customRankName = document.getElementById('customRankName').value;
+            const customRankColor = document.getElementById('customRankColor').value;
+            if (customRankName) {
+                const rankHeader = document.getElementById('rank-header');
+                rankHeader.innerHTML = `Rank của bạn: <span style="color: ${customRankColor}">${customRankName}</span>`;
+                localStorage.setItem('equippedRank', customRankName);
+                localStorage.setItem('equippedRankColor', customRankColor);
+                closeCustomRankModal();
+            } else {
+                alert('Vui lòng nhập tên cho rank Custom.');
+            }
+        }
+
+        // Load saved data and display owned ranks on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSavedData();
+            displayOwnedRanks();
+        });
+    </script>
+</body>
+</html>
