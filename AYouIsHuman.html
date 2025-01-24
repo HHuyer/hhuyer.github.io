@@ -142,6 +142,61 @@
             document.addEventListener('mousemove', onMouseMove);
             document.addEventListener('mouseup', onMouseUp);
         });
+
+        card.addEventListener('touchstart', (e) => {
+            startTime = new Date().getTime();
+            card.style.transition = 'none';
+            const touch = e.touches[0];
+            card.style.left = `${touch.clientX - card.offsetWidth / 2}px`;
+
+            const onTouchMove = (e) => {
+                const touch = e.touches[0];
+                let newLeft = touch.clientX - card.offsetWidth / 2;
+                if (newLeft < 0) newLeft = 0;
+                if (newLeft > gameContainer.offsetWidth - card.offsetWidth) newLeft = gameContainer.offsetWidth - card.offsetWidth;
+                card.style.left = `${newLeft}px`;
+            };
+
+            const onTouchEnd = () => {
+                endTime = new Date().getTime();
+                const duration = endTime - startTime;
+                card.style.transition = 'left 0.5s';
+                card.style.left = '0px';
+
+                const cardLeft = parseInt(card.style.left);
+                if (duration < 750) {
+                    message.textContent = tooFastMessage;
+                } else if (duration > 1000) {
+                    message.textContent = tooSlowMessage;
+                } else if (cardLeft >= gameContainer.offsetWidth - card.offsetWidth) {
+                    message.textContent = successMessage;
+                    if (redirectUrl) {
+                        setTimeout(() => {
+                            window.location.href = redirectUrl;
+                        }, 1000);
+                    }
+                } else {
+                    const randomChance = Math.random();
+                    if (randomChance < 0.5) {
+                        const randomIndex = Math.floor(Math.random() * trollMessages.length);
+                        message.textContent = trollMessages[randomIndex];
+                    } else {
+                        message.textContent = successMessage;
+                        if (redirectUrl) {
+                            setTimeout(() => {
+                                window.location.href = redirectUrl;
+                            }, 1);
+                        }
+                    }
+                }
+
+                document.removeEventListener('touchmove', onTouchMove);
+                document.removeEventListener('touchend', onTouchEnd);
+            };
+
+            document.addEventListener('touchmove', onTouchMove);
+            document.addEventListener('touchend', onTouchEnd);
+        });
     </script>
 </body>
 </html>
