@@ -982,10 +982,19 @@ function createFallingImage() {
         img.style.transform = `translate(${translateX}px, ${translateY}px) rotate(${rotateAngle}deg)`; // Rơi xuống theo hướng ngẫu nhiên và xoay
     }, 100); // Thời gian chờ trước khi bắt đầu rơi
 
-    // Xóa ảnh sau khi rơi xong
-    setTimeout(() => {
+    // Xóa ảnh sau khi rơi xong hoặc ra khỏi màn hình
+    const removeImage = () => {
         img.remove();
-    }, fallDuration + 700); // Thêm thời gian để đảm bảo ảnh đã rơi xong
+    };
+
+    img.addEventListener('transitionend', () => {
+        const rect = img.getBoundingClientRect();
+        if (rect.left < 0 || rect.right > window.innerWidth) {
+            removeImage();
+        }
+    });
+
+    setTimeout(removeImage, fallDuration + 700); // Thêm thời gian để đảm bảo ảnh đã rơi xong
 }
 
 // Tạo hiệu ứng rơi liên tục
