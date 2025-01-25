@@ -113,6 +113,7 @@
         .rank-custom { color: #000000; } /* Default Black */
         .rank-tet { color: #FF0000; } /* Red */
         .rank-donate { background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet); -webkit-background-clip: text; color: transparent; } /* Rainbow */
+        .rank-random { color: #FF4500; } /* Orange */
     </style>
 </head>
 <body>
@@ -175,6 +176,14 @@
                 <button type="button" onclick="muaRank('Chill Guys')">Nhận</button>
             </div>
         </div>
+        <p>-Mystery Box-</p>
+        <div class="rank-container">
+            <div class="rank-item">
+                <big class="rank-random">Random Rank</big><br>
+                <p>Giá: 25000 Kẹo hoặc 100 VND</p>
+                <button type="button" onclick="muaRank('Random')">Mua ngay</button>
+            </div>
+        </div>
         <p>-Bạn đã sở hữu-</p>
         <div id="owned-ranks" class="rank-container">
             <!-- Owned ranks will be displayed here -->
@@ -226,10 +235,11 @@
                 'Custom': 10000,
                 'Donate': 500,
                 'Tết - 2025': 2025,
-                'Chill Guys': 0
+                'Chill Guys': 0,
+                'Random': 25000
             };
             const price = rankPrices[rank];
-            const currency = rank === 'Donate' ? 'VND' : 'Kẹo';
+            const currency = rank === 'Donate' || rank === 'Random' ? 'VND' : 'Kẹo';
             document.getElementById('payment-details').innerText = `Bạn đang mua rank ${rank} với giá ${price} ${currency}.`;
             document.getElementById('paymentModal').style.display = 'block';
         }
@@ -248,13 +258,14 @@
                 'Custom': 10000,
                 'Donate': 500,
                 'Tết - 2025': 2025,
-                'Chill Guys': 0
+                'Chill Guys': 0,
+                'Random': 25000
             };
             const rankOrder = ['Noob', 'Pro', 'Quỷ', 'Thần', 'Chúa'];
             const price = rankPrices[selectedRank];
             let ownedRanks = JSON.parse(localStorage.getItem('ownedRanks')) || [];
 
-            if ((selectedRank === 'Donate' && vnd >= price) || (selectedRank !== 'Donate' && candies >= price)) {
+            if ((selectedRank === 'Donate' && vnd >= price) || (selectedRank !== 'Donate' && candies >= price) || (selectedRank === 'Random' && (candies >= price || vnd >= 100))) {
                 if (rankOrder.includes(selectedRank)) {
                     const requiredRankIndex = rankOrder.indexOf(selectedRank) - 1;
                     if (requiredRankIndex >= 0 && !ownedRanks.includes(rankOrder[requiredRankIndex])) {
@@ -267,6 +278,15 @@
                 if (selectedRank === 'Donate') {
                     vnd -= price;
                     localStorage.setItem('vnd', vnd);
+                } else if (selectedRank === 'Random') {
+                    if (candies >= price) {
+                        candies -= price;
+                        localStorage.setItem('candies', candies);
+                    } else {
+                        vnd -= 100;
+                        localStorage.setItem('vnd', vnd);
+                    }
+                    selectedRank = getRandomRank();
                 } else {
                     candies -= price;
                     localStorage.setItem('candies', candies);
@@ -283,6 +303,20 @@
                 alert(`Bạn không có đủ ${selectedRank === 'Donate' ? 'VND' : 'kẹo'} để mua rank này.`);
             }
             closeModal();
+        }
+
+        function getRandomRank() {
+            const ranks = ['Noob', 'Pro', 'Quỷ', 'Thần', 'Chúa', 'Custom', 'Donate', 'Tết - 2025', 'Chill Guys'];
+            const weights = [30, 25, 20, 15, 5, 3, 1, 1, 0]; // Adjust weights based on rarity
+            const totalWeight = weights.reduce((a, b) => a + b, 0);
+            let random = Math.floor(Math.random() * totalWeight);
+            for (let i = 0; i < ranks.length; i++) {
+                if (random < weights[i]) {
+                    return ranks[i];
+                }
+                random -= weights[i];
+            }
+            return 'Noob'; // Default fallback
         }
 
         function displayOwnedRanks() {
