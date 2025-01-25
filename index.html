@@ -879,6 +879,9 @@ function phatnhac() {
     audio.addEventListener('ended', () => {
     setTimeout(playRandomSong, 1000); // Đợi 1 giây trước khi phát bài hát mới
 });
+
+// Tạo hiệu ứng rơi liên tục
+setInterval(createFallingImage, 500); // Tạo ảnh mới mỗi 500ms
 }
 
 document.getElementById('farewell-button').addEventListener('click', function() {
@@ -996,9 +999,6 @@ function createFallingImage() {
 
     setTimeout(removeImage, fallDuration + 700); // Thêm thời gian để đảm bảo ảnh đã rơi xong
 }
-
-// Tạo hiệu ứng rơi liên tục
-setInterval(createFallingImage, 500); // Tạo ảnh mới mỗi 500ms
 
 // Hàm để cập nhật BPM theo nhạc
 function updateBpm(newBpm) {
