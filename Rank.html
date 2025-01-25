@@ -123,7 +123,6 @@
         <section>
         <h2 id="rank-header">Chọn Rank của bạn</h2>
         <p id="candies-count">Số Kẹo hiện có: 0</p>
-        <p id="vnd-count">Số VND hiện có: 0</p>
         <p>-Thông thường-</p>
         <div class="rank-container">
             <div class="rank-item">
@@ -161,7 +160,7 @@
         <div class="rank-container">
             <div class="rank-item">
                 <big class="rank-donate">Donate</big><br>
-                <p>Giá: 500 VND</p>
+                <p>Giá: 5000 VND</p>
                 <button type="button" onclick="muaRank('Donate')">Mua ngay</button>
             </div>
             <div class="rank-item">
@@ -201,18 +200,15 @@
     </div>
     <script>
         let candies = 0;
-        let vnd = 0;
         let selectedRank = '';
 
         function loadSavedData() {
             candies = parseInt(localStorage.getItem('candies')) || 0;
-            vnd = parseInt(localStorage.getItem('vnd')) || 0;
             updateUI();
         }
 
         function updateUI() {
             document.getElementById('candies-count').innerText = `Số Kẹo hiện có: ${candies}`;
-            document.getElementById('vnd-count').innerText = `Số VND hiện có: ${vnd}`;
         }
 
         function muaRank(rank) {
@@ -224,13 +220,12 @@
                 'Thần': 1000,
                 'Chúa': 5000,
                 'Custom': 10000,
-                'Donate': 500,
+                'Donate': 5000,
                 'Tết - 2025': 2025,
                 'Chill Guys': 0
             };
             const price = rankPrices[rank];
-            const currency = rank === 'Donate' ? 'VND' : 'Kẹo';
-            document.getElementById('payment-details').innerText = `Bạn đang mua rank ${rank} với giá ${price} ${currency}.`;
+            document.getElementById('payment-details').innerText = `Bạn đang mua rank ${rank} với giá ${price} Kẹo.`;
             document.getElementById('paymentModal').style.display = 'block';
         }
 
@@ -246,7 +241,7 @@
                 'Thần': 1000,
                 'Chúa': 5000,
                 'Custom': 10000,
-                'Donate': 500,
+                'Donate': 5000,
                 'Tết - 2025': 2025,
                 'Chill Guys': 0
             };
@@ -254,7 +249,7 @@
             const price = rankPrices[selectedRank];
             let ownedRanks = JSON.parse(localStorage.getItem('ownedRanks')) || [];
 
-            if ((selectedRank === 'Donate' && vnd >= price) || (selectedRank !== 'Donate' && candies >= price)) {
+            if (candies >= price) {
                 if (rankOrder.includes(selectedRank)) {
                     const requiredRankIndex = rankOrder.indexOf(selectedRank) - 1;
                     if (requiredRankIndex >= 0 && !ownedRanks.includes(rankOrder[requiredRankIndex])) {
@@ -264,14 +259,8 @@
                     }
                 }
 
-                if (selectedRank === 'Donate') {
-                    vnd -= price;
-                    localStorage.setItem('vnd', vnd);
-                } else {
-                    candies -= price;
-                    localStorage.setItem('candies', candies);
-                }
-
+                candies -= price;
+                localStorage.setItem('candies', candies);
                 if (!ownedRanks.includes(selectedRank)) {
                     ownedRanks.push(selectedRank);
                     localStorage.setItem('ownedRanks', JSON.stringify(ownedRanks));
@@ -280,7 +269,7 @@
                 updateUI();
                 displayOwnedRanks();
             } else {
-                alert(`Bạn không có đủ ${selectedRank === 'Donate' ? 'VND' : 'kẹo'} để mua rank này.`);
+                alert("Bạn không có đủ kẹo để mua rank này.");
             }
             closeModal();
         }
@@ -292,8 +281,9 @@
             ownedRanksContainer.innerHTML = '';
             ownedRanks.forEach(rank => {
                 const rankItem = document.createElement('div');
-                rankItem.className = '';
-                rankItem.innerHTML = `<br><span class="rank-${rank.toLowerCase().replace(' ', '-')}">${rank}</span><center><button type="button" class="button" onclick="equipRank('${rank}')">Bấm để trang bị</button></center>`;
+                rankItem.className = 'rank-item';
+                const rankClass = rank.toLowerCase().replace(' ', '-');
+                rankItem.innerHTML = `<br><span class="rank-${rankClass}">${rank}</span><center><button type="button" class="button" onclick="equipRank('${rank}')">Bấm để trang bị</button></center>`;
                 ownedRanksContainer.appendChild(rankItem);
             });
             const equippedRank = localStorage.getItem('equippedRank');
@@ -313,7 +303,8 @@
                 buttons.forEach(button => button.innerText = 'Trang bị');
                 event.target.innerText = 'Đang trang bị';
                 const rankHeader = document.getElementById('rank-header');
-                rankHeader.innerHTML = `Rank của bạn: <span class="rank-${rank.toLowerCase().replace(' ', '-')}">${rank}</span>`;
+                const rankClass = rank.toLowerCase().replace(' ', '-');
+                rankHeader.innerHTML = `Rank của bạn: <span class="rank-${rankClass}">${rank}</span>`;
                 localStorage.setItem('equippedRank', rank);
             }
         }
