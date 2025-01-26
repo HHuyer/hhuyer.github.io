@@ -189,7 +189,7 @@ function ShowInfo() {
         pubnub.history(
             {
                 channel: channel,
-                count: 10, // Số lượng tin nhắn muốn lấy
+                count: 1000, // Số lượng tin nhắn muốn lấy
                 reverse: false // Lấy tin nhắn theo thứ tự từ cũ đến mới
             },
             function(status, response) {
