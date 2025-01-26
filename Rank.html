@@ -455,6 +455,14 @@ setInterval(() => {
             selectedRank = rank;
             document.getElementById('paymentModal').style.display = 'block';
             alert(`Bạn đã mua rank ${selectedRank} thành công!`);
+
+            let ownedRanks = JSON.parse(localStorage.getItem('ownedRanks')) || [];
+            if (!ownedRanks.includes(selectedRank)) {
+                ownedRanks.push(selectedRank);
+                localStorage.setItem('ownedRanks', JSON.stringify(ownedRanks));
+            }
+            updateUI();
+            displayOwnedRanks();
         }
 
         function displayOwnedRanks() {
