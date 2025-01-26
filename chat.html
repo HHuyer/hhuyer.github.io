@@ -39,6 +39,21 @@ button {
 button:hover {
     background-color: #E0E0E0;
 }
+
+#image-input {
+    display: none;
+}
+#image-label {
+    border-radius: 20px;
+    background-color: white;
+    color: black;
+    border: 1px solid black;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+#image-label:hover {
+    background-color: #E0E0E0;
+}
     </style>
 </head>
 <body>
@@ -55,7 +70,9 @@ button:hover {
         <form id="form" action="">
             <input id="input" autocomplete="off" placeholder="Nhập tin nhắn" />
             <button>Gửi</button>
-    <button onclick="ShowInfo()">Show thông tin</button>
+            <label id="image-label" for="image-input">Đính kèm ảnh</label>
+            <input type="file" id="image-input" accept="image/*">
+            <button onclick="ShowInfo()">Show thông tin</button>
 <br><a href="đổi tên.html">Đổi Tên?</a>
         </form>
     </div>
@@ -97,6 +114,23 @@ document.getElementById('form').addEventListener('submit', function(e) {
     }
 });
 
+document.getElementById('image-input').addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64Image = e.target.result;
+            const username = document.getElementById('username').value;
+            const currentTime = new Date().toLocaleTimeString();
+            pubnub.publish({
+                channel: channel,
+                message: { text: `${username} đã gửi một ảnh:`, image: base64Image, time: currentTime }
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
 pubnub.addListener({
     message: function(event) {
         const messages = document.getElementById('messages');
@@ -114,7 +148,11 @@ pubnub.addListener({
             if (event.message.color) {
                 item.innerHTML = `<span style="color: ${event.message.color}; font-weight: bold;">${username}:</span> ${messageText} <span style="font-size: 0.8em; color: gray;">(${messageTime})</span>`;
             } else {
-                item.innerHTML = `<span style="color: ${userColor};">${username}:</span> ${messageText} <span style="font-size: 0.8em; color: gray;">(${messageTime})</span>`;
+                if (event.message.image) {
+                    item.innerHTML = `<span style="color: ${userColor};">${username}:</span> <img src="${event.message.image}" alt="Image" style="max-width: 200px; display: block; margin-top: 10px;"> <span style="font-size: 0.8em; color: gray;">(${messageTime})</span>`;
+                } else {
+                    item.innerHTML = `<span style="color: ${userColor};">${username}:</span> ${messageText} <span style="font-size: 0.8em; color: gray;">(${messageTime})</span>`;
+                }
             }
         }
 
@@ -200,7 +238,16 @@ function ShowInfo() {
                         response.messages.forEach(function(message) {
                             const messages = document.getElementById('messages');
                             const item = document.createElement('li');
-                            item.textContent = message.entry.text; // Hiển thị tin nhắn
+                            const username = message.entry.text.split(':')[0]; // Lấy tên người dùng từ tin nhắn
+                            const userColor = userColors[username] || '#000'; // Mặc định màu đen nếu không tìm thấy
+                            const messageText = message.entry.text.split(': ')[1]; // Lấy nội dung tin nhắn
+                            const messageTime = message.entry.time; // Lấy thời gian gửi tin nhắn
+
+                            if (message.entry.image) {
+                                item.innerHTML = `<span style="color: ${userColor};">${username}:</span> <img src="${message.entry.image}" alt="Image" style="max-width: 200px; display: block; margin-top: 10px;"> <span style="font-size: 0.8em; color: gray;">(${messageTime})</span>`;
+                            } else {
+                                item.innerHTML = `<span style="color: ${userColor};">${username}:</span> ${messageText} <span style="font-size: 0.8em; color: gray;">(${messageTime})</span>`;
+                            }
                             messages.appendChild(item);
                         });
                     } else {
