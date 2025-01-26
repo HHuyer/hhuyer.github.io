@@ -274,6 +274,11 @@
             updateUI();
         }
 
+        // Update candies and VND every second
+setInterval(() => {
+    loadSavedData();
+}, 1000);
+
         function updateUI() {
             document.getElementById('candies-count').innerText = `Số Kẹo hiện có: ${candies}`;
             document.getElementById('vnd-count').innerText = `Số VND hiện có: ${vnd}`;
