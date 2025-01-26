@@ -158,11 +158,15 @@
     90% { transform: translateX(-1000%); } /* Chậm hơn nữa */
     100% { transform: translateX(-1025%); } /* Dừng lại */
 }
+    .super-small {
+        font-size: 8px; /* Bạn có thể điều chỉnh kích thước này theo ý muốn */
+    }
     </style>
 </head>
 <body>
     <header>
         <h1>Mua Rank</h1>
+        <small><center>Tất cả rank đang được khuyến mãi, hãy mua ngay bây giờ để nhận những đặc quyền!</center></small>
     </header>
     <main>
         <section>
@@ -226,7 +230,8 @@
                 <big class="rank-random">Random Rank</big><br>
                 <p>Giá: 25000 Kẹo hoặc 100 VND</p>
                 <p>Tỷ lệ: 35% Noob</p><p>25% Pro</p><p>15% Quỷ</p><p>10% Tết - 2025</p><p>5% Thần</p><p>4% Chúa</p><p>3% Custom</p><p>2% Donate</p><p>1% Secret</p>
-                <button type="button" onclick="muaRank('Random')">Mua ngay</button>
+                <button type="button" onclick="muaRank('Random')">Mua ngay</button><br>
+                <small class="super-small"><center>Animation quay chỉ mang tính chất minh họa!</center></small>
             </div>
         </div></center>
         <p>-Bạn đã sở hữu-</p>
