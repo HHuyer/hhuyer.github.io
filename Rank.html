@@ -318,7 +318,7 @@ setInterval(() => {
             const price = rankPrices[rank];
             const priceVND = rankPricesVND[rank];
             const currency = rank === 'Donate' || rank === 'Random' ? 'VND' : 'Kẹo';
-            document.getElementById('payment-details').innerText = `Bạn đang mua rank ${rank} với giá ${price} ${currency} hoặc ${priceVND} VND.`;
+            document.getElementById('payment-details').innerText = `Bạn đang mua rank ${rank} với giá ${price} Kẹo hoặc ${priceVND} VND.`;
             document.getElementById('paymentModal').style.display = 'block';
         }
 
@@ -357,6 +357,13 @@ setInterval(() => {
                     vnd -= price;
                     localStorage.setItem('vnd', vnd);
                 } else if (selectedRank === 'Random') {
+                    if (candies >= price) {
+                        candies -= price;
+                        localStorage.setItem('candies', candies);
+                    } else if (vnd >= 100) {
+                        vnd -= 100;
+                        localStorage.setItem('vnd', vnd);
+                    }
                     startRankAnimation();
                     return;
                 } else {
