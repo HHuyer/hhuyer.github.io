@@ -179,11 +179,41 @@
         .multi-exchange button:hover {
             background-color: #bb0000;
         }
+
+        .user-info {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 8px 12px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .user-info .top-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-info img {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+        }
     </style>
     <script>
         let coins = parseInt(localStorage.getItem('money')) || 0;
         let candies = parseInt(localStorage.getItem('candies')) || 0;
         let candyExchanges = parseInt(localStorage.getItem('candyExchanges')) || 0;
+        let username = localStorage.getItem('username') || 'Guest';
+        let equippedRank = localStorage.getItem('equippedRank') || 'No rank';
 
         function loadSavedData() {
             updateUI();
@@ -217,6 +247,8 @@
         function updateUI() {
             document.getElementById('coin-count').innerText = coins;
             document.getElementById('candy-count').innerText = candies;
+            document.getElementById('username-display').innerText = username;
+            document.getElementById('rank-display').innerText = `Rank: ${equippedRank}`;
         }
 
         function saveData() {
@@ -238,10 +270,16 @@
     </script>
 </head>
 <body>
-    <a href="index.html" class="back-button">
+    <a href="index - bản tết.html" class="back-button">
         <i>🏠</i> Trang chính
     </a>
-
+    <div class="user-info">
+        <div class="top-line">
+            <span id="username-display">${username}</span>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png" alt="User Image">
+        </div>
+        <span id="rank-display">Rank: ${equippedRank}</span>
+    </div><br><br><br><br>
     <div class="container">
         <img src="Trên trái 2.png" class="corner-image top-left" alt="Top Left">
         <img src="Trên phải 2.png" class="corner-image top-right" alt="Top Right">
