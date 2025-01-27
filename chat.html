@@ -91,8 +91,8 @@ document.getElementById('join-chat').addEventListener('click', function() {
 
 // Khởi tạo PubNub
 const pubnub = new PubNub({
-    publishKey: 'pub-c-a9203236-6895-4409-9106-867306da17e5',
-    subscribeKey: 'sub-c-4d5db111-ccbb-4d92-afb2-1d39658ab93c'
+    publishKey: 'pub-c-cd151f65-0466-45ce-89d0-9543f9a67388',
+    subscribeKey: 'sub-c-2cec1329-5cea-4dbd-a17a-b77debee36dc'
 });
 
 const channel = 'chat_channel';
@@ -227,7 +227,7 @@ function ShowInfo() {
         pubnub.history(
             {
                 channel: channel,
-                count: 1000, // Số lượng tin nhắn muốn lấy
+                count: 100, // Số lượng tin nhắn muốn lấy
                 reverse: false // Lấy tin nhắn theo thứ tự từ cũ đến mới
             },
             function(status, response) {
