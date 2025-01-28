@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaderboard</title>
+    <title>Bảng Xếp Hạng</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -93,7 +93,7 @@
                 if (status.error) {
                     console.log(status);
                 } else {
-                    console.log("Message Published w/ timetoken", response.timetoken);
+                    console.log("Tin nhắn đã được gửi với mã thời gian", response.timetoken);
                 }
             });
         }
@@ -102,7 +102,7 @@
             pubnub.history(
                 {
                     channel: 'leaderboard',
-                    count: 100, // Adjust the count as needed
+                    count: 100, // Điều chỉnh số lượng nếu cần
                     reverse: false
                 },
                 function(status, response) {
@@ -117,7 +117,7 @@
             );
         }
 
-        setInterval(publishData, 2000); // Publish data every 5 seconds
+        setInterval(publishData, 2000); // Gửi dữ liệu mỗi 2 giây
 
         pubnub.addListener({
             message: function(event) {
@@ -139,22 +139,22 @@
 
         function updateLeaderboard(tableId, data, key) {
             const table = document.getElementById(tableId);
-            // Remove older entry with the same username
+            // Xóa mục cũ với cùng tên người dùng
             for (let i = 1, row; row = table.rows[i]; i++) {
                 if (row.cells[1].innerText === data.username) {
                     table.deleteRow(i);
                     break;
                 }
             }
-            // Only insert new row if data[key] is valid
+            // Chỉ chèn hàng mới nếu data[key] hợp lệ
             if (data[key]) {
                 const row = table.insertRow();
-                row.insertCell(0).innerText = table.rows.length - 1; // Rank
+                row.insertCell(0).innerText = table.rows.length - 1; // Hạng
                 row.insertCell(1).innerText = data.username;
                 row.insertCell(2).innerText = data[key];
                 row.insertCell(3).innerText = data.timestamp;
 
-                // Sort table by the third column (descending)
+                // Sắp xếp bảng theo cột thứ ba (giảm dần)
                 sortTable(table);
             }
         }
@@ -163,7 +163,7 @@
             const rows = Array.from(table.rows).slice(1);
             rows.sort((a, b) => parseFloat(b.cells[2].innerText) - parseFloat(a.cells[2].innerText));
             rows.forEach((row, index) => {
-                row.cells[0].innerText = index + 1; // Update rank
+                row.cells[0].innerText = index + 1; // Cập nhật hạng
                 table.tBodies[0].appendChild(row);
             });
         }
@@ -194,21 +194,21 @@
 </head>
 <body>
 <center><div class="buttons">
-        <button onclick="showTable('money-table')">Money</button>
-        <button onclick="showTable('spinCount-table')">Spin Count</button>
-        <button onclick="showTable('bestRandom-table')">Best Random</button>
-        <button onclick="showTable('candies-table')">Candies</button>
+        <button onclick="showTable('money-table')">Tiền</button>
+        <button onclick="showTable('spinCount-table')">Số Lần Quay</button>
+        <button onclick="showTable('bestRandom-table')">Ngẫu Nhiên Tốt Nhất</button>
+        <button onclick="showTable('candies-table')">Kẹo</button>
     </div>
     <div class="container active">
-        <h1>Leaderboard - Money</h1>
+        <h1>Bảng Xếp Hạng - Tiền</h1>
         <div id="leaderboard">
             <table id="money-table" class="leaderboard-table active">
                 <thead>
                     <tr>
-                        <th>Rank</th>
-                        <th>Username</th>
-                        <th>Money</th>
-                        <th>Timestamp</th>
+                        <th>Hạng</th>
+                        <th>Tên Người Dùng</th>
+                        <th>Tiền</th>
+                        <th>Thời Gian</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -217,15 +217,15 @@
         </div>
     </div>
     <div class="container active">
-        <h1>Leaderboard - Spin Count</h1>
+        <h1>Bảng Xếp Hạng - Số Lần Quay</h1>
         <div id="leaderboard">
             <table id="spinCount-table" class="leaderboard-table active">
                 <thead>
                     <tr>
-                        <th>Rank</th>
-                        <th>Username</th>
-                        <th>Spin Count</th>
-                        <th>Timestamp</th>
+                        <th>Hạng</th>
+                        <th>Tên Người Dùng</th>
+                        <th>Số Lần Quay</th>
+                        <th>Thời Gian</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -234,15 +234,15 @@
         </div>
     </div>
     <div class="container active">
-        <h1>Leaderboard - Best Random</h1>
+        <h1>Bảng Xếp Hạng - Ngẫu Nhiên Tốt Nhất</h1>
         <div id="leaderboard">
             <table id="bestRandom-table" class="leaderboard-table active">
                 <thead>
                     <tr>
-                        <th>Rank</th>
-                        <th>Username</th>
-                        <th>Best Random</th>
-                        <th>Timestamp</th>
+                        <th>Hạng</th>
+                        <th>Tên Người Dùng</th>
+                        <th>Ngẫu Nhiên Tốt Nhất</th>
+                        <th>Thời Gian</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -251,15 +251,15 @@
         </div>
     </div>
     <div class="container active">
-        <h1>Leaderboard - Candies</h1>
+        <h1>Bảng Xếp Hạng - Kẹo</h1>
         <div id="leaderboard">
             <table id="candies-table" class="leaderboard-table active">
                 <thead>
                     <tr>
-                        <th>Rank</th>
-                        <th>Username</th>
-                        <th>Candies</th>
-                        <th>Timestamp</th>
+                        <th>Hạng</th>
+                        <th>Tên Người Dùng</th>
+                        <th>Kẹo</th>
+                        <th>Thời Gian</th>
                     </tr>
                 </thead>
                 <tbody>
