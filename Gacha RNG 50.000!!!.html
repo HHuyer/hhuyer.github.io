@@ -661,12 +661,18 @@ function loadSavedData() {
     const savedTotalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
     const savedBestRandom = parseInt(localStorage.getItem('bestRandom')) || 0;
     const savedTotalTimePlayed = parseInt(localStorage.getItem('totalTimePlayed')) || 0;
+    const savedLevel = parseInt(localStorage.getItem('level')) || 1;
+    const savedCurrentXP = parseInt(localStorage.getItem('currentXP')) || 0;
+    const savedRequiredXP = parseInt(localStorage.getItem('requiredXP')) || 100;
 
     money = savedMoney;
     spinCount = savedSpinCount;
     totalCoins = savedTotalCoins;
     bestRandom = savedBestRandom;
     totalTimePlayed = savedTotalTimePlayed;
+    level = savedLevel;
+    currentXP = savedCurrentXP;
+    requiredXP = savedRequiredXP;
 
     document.getElementById('money').innerText = money;
     document.getElementById('spin-count').innerText = `Tổng số lần quay: ${spinCount}`;
@@ -676,6 +682,7 @@ function loadSavedData() {
     });
 
     updateSpinCount();
+    updateLevelProgress();
 
 // Tải dữ liệu từ LocalStorage khi trang được tải
 setInterval(() => {
@@ -710,6 +717,9 @@ function saveData() {
     localStorage.setItem('totalCoins', totalCoins);
     localStorage.setItem('bestRandom', bestRandom);
     localStorage.setItem('totalTimePlayed', totalTimePlayed);
+    localStorage.setItem('level', level);
+    localStorage.setItem('currentXP', currentXP);
+    localStorage.setItem('requiredXP', requiredXP);
 }
 
 function showDailyNotification() {
@@ -1376,6 +1386,7 @@ function updateLevelProgress() {
     const progress = (currentXP / requiredXP) * 100;
     document.getElementById('level-progress').style.width = `${progress}%`;
     document.getElementById('level-text').innerText = `LV ${level} - ${currentXP}/${requiredXP} XP`;
+    saveData(); // Save data after updating level progress
 }
 
 function addExperience(xp) {
