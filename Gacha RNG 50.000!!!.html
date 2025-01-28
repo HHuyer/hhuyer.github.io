@@ -249,7 +249,33 @@
     .modal button:hover {
         background-color: #00ee00;
     }
-
+    .level-container {
+        margin-top: 20px;
+        text-align: center;
+    }
+    .level-bar {
+        width: 50px;
+        height: 20px;
+        background-color: #ddd;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+    .level-progress {
+        height: 100%;
+        background-color: #4caf50;
+        width: 0;
+        transition: width 0.3s;
+    }
+    .level-text {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        top: 0;
+        left: 0;
+        line-height: 20px;
+        font-weight: bold;
+    }
 </style>
 </head>
 <body>
@@ -272,7 +298,13 @@
 <button onclick="submitCode()">Đổi thưởng</button>
         </div>
     </div>
-    <div class="history">
+    <div class="history" id="history">
+        <div class="level-container">
+            <div class="level-bar" id="level-bar">
+                <div class="level-progress" id="level-progress"></div>
+                <div class="level-text" id="level-text">LV 1 - 0/100 XP</div>
+            </div>
+        </div>
         <div class="history-header">
             <h2>Thú Cưng Đã Nhận</h2>
             <div id="money-container" style="position: relative;">
@@ -468,7 +500,7 @@ pubnub.subscribe({ channels: [channel] });
     { name: 'Batmobile', probability: 1/91000, image: 'https://images-na.ssl-images-amazon.com/images/I/51z8aERZykL.jpg' },
     { name: 'Mjolnir', probability: 1/92000, image: 'https://grimfrost.com/cdn/shop/products/thorshammare-1.jpg?v=1579590708' },
     { name: 'Stormbreaker', probability: 1/93000, image: 'https://i.etsystatic.com/19286482/r/il/80ce40/2461978162/il_fullxfull.2461978162_bxra.jpg' },
-    { name: 'Vibranium Shield', probability: 1/94000, image: 'https://physicsinmarvel.wordpress.com/wp-content/uploads/2018/02/caps-shield-vibranium.jpg?w=1200' },
+    { name: 'Vibranium Shield', probability: 1/94000, image: 'https://physicsinmarvel.wordpress.com/wp-content/uploads/2018/02/caps-shield-vibranium.jpg' },
     { name: 'Arc Reactor', probability: 1/95000, image: 'https://images-na.ssl-images-amazon.com/images/I/91jDE-Ah8SL.jpg' },
     { name: 'Web Shooters', probability: 1/96000, image: 'https://static.wikia.nocookie.net/marvelcinematicuniverse/images/5/54/Right_Web-Shooter_%28HoCo%29.png/revision/latest?cb=20171018172549' },
     { name: 'Adamantium Claws', probability: 1/97000, image: 'https://static1.cbrimages.com/wordpress/wp-content/uploads/2024/08/wolverine-in-his-suit-with-claws.jpg' },
@@ -592,6 +624,18 @@ let totalCoins = 0; // Tổng số coin đã có từ trước đến nay
 let bestRandom = 0; // Lần random may nhất
 let totalTimePlayed = 0; // Tổng thời gian đã chơi từ trước đến nay
 let startTime = Date.now(); // Thời gian bắt đầu chơi
+let level = 1;
+let currentXP = 0;
+let requiredXP = 100;
+
+function updateLevelBarWidth() {
+    const historyElement = document.getElementById('history');
+    if (historyElement) {
+        const levelBarElement = document.getElementById('level-bar');
+        const newWidth = historyElement.offsetHeight * 1.5; // Điều chỉnh hệ số nhân nếu cần
+        levelBarElement.style.width = `${newWidth}px`;
+    }
+}
 
 // Load data from localStorage
 window.onload = function() {
@@ -606,12 +650,20 @@ window.onload = function() {
             }
         });
     }
+
     loadSavedData();
     // Nếu chưa có thông tin lưu trữ trong localStorage, gọi hàm để thông báo lần đầu
     if (!localStorage.getItem('lastVisit')) {
         showDailyNotification();
     }
+
+    updateLevelBarWidth(); // Gọi hàm này sau khi tất cả các phần tử DOM đã được tải
+    updateLevelProgress();
 };
+
+window.onresize = function() {
+        updateLevelBarWidth();
+    };
 
 function loadSavedData() {
     const savedPets = JSON.parse(localStorage.getItem('petsHistory')) || [];
@@ -855,6 +907,7 @@ function showFinalPet() {
     addPetToHistory(selectedPet, selectedProbability, selectedImage);
     updateSpinCount();
     addMoney(selectedProbability);
+    addExperience(selectedProbability);
     saveData();
 
     // Cập nhật lần random may nhất
@@ -1328,6 +1381,22 @@ function startAutoGenerate() {
     autoGenerateInterval = setInterval(() => {
         generateRandomPet(); // Gọi hàm quay thú cưng
     }, 1000); // Thay đổi 1000 thành khoảng thời gian bạn muốn (tính bằng ms)
+}
+
+function updateLevelProgress() {
+    const progress = (currentXP / requiredXP) * 100;
+    document.getElementById('level-progress').style.width = `${progress}%`;
+    document.getElementById('level-text').innerText = `LV ${level} - ${currentXP}/${requiredXP} XP`;
+}
+
+function addExperience(xp) {
+    currentXP += xp;
+    while (currentXP >= requiredXP) {
+        currentXP -= requiredXP;
+        level++;
+        requiredXP = Math.floor(requiredXP * 1.25);
+    }
+    updateLevelProgress();
 }
 </script>
 </body>
