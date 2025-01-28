@@ -134,6 +134,7 @@
             updateLeaderboard('spinCount-table', data, 'spinCount');
             updateLeaderboard('bestRandom-table', data, 'bestRandom');
             updateLeaderboard('candies-table', data, 'candies');
+            removeEmptyRows();
         }
 
         function updateLeaderboard(tableId, data, key) {
@@ -145,15 +146,17 @@
                     break;
                 }
             }
-            // Insert new row
-            const row = table.insertRow();
-            row.insertCell(0).innerText = table.rows.length - 1; // Rank
-            row.insertCell(1).innerText = data.username;
-            row.insertCell(2).innerText = data[key];
-            row.insertCell(3).innerText = data.timestamp;
+            // Only insert new row if data[key] is valid
+            if (data[key]) {
+                const row = table.insertRow();
+                row.insertCell(0).innerText = table.rows.length - 1; // Rank
+                row.insertCell(1).innerText = data.username;
+                row.insertCell(2).innerText = data[key];
+                row.insertCell(3).innerText = data.timestamp;
 
-            // Sort table by the third column (descending)
-            sortTable(table);
+                // Sort table by the third column (descending)
+                sortTable(table);
+            }
         }
 
         function sortTable(table) {
@@ -162,6 +165,18 @@
             rows.forEach((row, index) => {
                 row.cells[0].innerText = index + 1; // Update rank
                 table.tBodies[0].appendChild(row);
+            });
+        }
+
+        function removeEmptyRows() {
+            const tables = document.querySelectorAll('table');
+            tables.forEach(table => {
+                for (let i = table.rows.length - 1; i > 0; i--) {
+                    const row = table.rows[i];
+                    if (!row.cells[1].innerText || !row.cells[2].innerText) {
+                        table.deleteRow(i);
+                    }
+                }
             });
         }
 
