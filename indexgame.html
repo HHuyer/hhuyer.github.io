@@ -214,6 +214,7 @@
         let candyExchanges = parseInt(localStorage.getItem('candyExchanges')) || 0;
         let username = localStorage.getItem('username') || 'Guest';
         let equippedRank = localStorage.getItem('equippedRank') || 'No rank';
+        let level = parseInt(localStorage.getItem('level')) || 1; // Add this line
 
         function loadSavedData() {
             updateUI();
@@ -248,18 +249,20 @@
             document.getElementById('coin-count').innerText = coins;
             document.getElementById('candy-count').innerText = candies;
             document.getElementById('username-display').innerText = username;
-            document.getElementById('rank-display').innerText = `Rank: ${equippedRank}`;
+            document.getElementById('rank-display').innerText = `Rank: ${equippedRank} | Lv: ${level}`; // Update this line
         }
 
         function saveData() {
             localStorage.setItem('money', coins);
             localStorage.setItem('candies', candies);
             localStorage.setItem('candyExchanges', candyExchanges);
+            localStorage.setItem('level', level); // Add this line
         }
 
         setInterval(() => {
             coins = parseInt(localStorage.getItem('money')) || 0;
             candies = parseInt(localStorage.getItem('candies')) || 0;
+            level = parseInt(localStorage.getItem('level')) || 1; // Add this line
             updateUI();
         }, 1000);
 
@@ -278,7 +281,7 @@
             <span id="username-display">${username}</span>
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png" alt="User Image">
         </div>
-        <span id="rank-display">Rank: ${equippedRank}</span><a href="Rank.html">Mua Rank?</a>
+        <span id="rank-display">Rank: ${equippedRank}     Lv: ${level}</span><a href="Rank.html">Mua Rank?</a>
     </div><br><br><br><br>
     <div class="container">
         <img src="Trên trái 2.png" class="corner-image top-left" alt="Top Left">
