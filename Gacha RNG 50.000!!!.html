@@ -250,11 +250,14 @@
         background-color: #00ee00;
     }
     .level-container {
+        display: flex;
+        justify-content: center; /* Căn giữa theo chiều ngang */
         margin-top: 20px;
+        margin-bottom: 20px; /* Thêm khoảng cách dưới */
         text-align: center;
     }
     .level-bar {
-        width: 50px;
+        width: 65vw;
         height: 20px;
         background-color: #ddd;
         border-radius: 10px;
@@ -299,12 +302,12 @@
         </div>
     </div>
     <div class="history" id="history">
-        <div class="level-container">
+<center><div class="level-container">
             <div class="level-bar" id="level-bar">
                 <div class="level-progress" id="level-progress"></div>
                 <div class="level-text" id="level-text">LV 1 - 0/100 XP</div>
             </div>
-        </div>
+        </div></center>
         <div class="history-header">
             <h2>Thú Cưng Đã Nhận</h2>
             <div id="money-container" style="position: relative;">
@@ -628,15 +631,6 @@ let level = 1;
 let currentXP = 0;
 let requiredXP = 100;
 
-function updateLevelBarWidth() {
-    const historyElement = document.getElementById('history');
-    if (historyElement) {
-        const levelBarElement = document.getElementById('level-bar');
-        const newWidth = historyElement.offsetHeight * 1.5; // Điều chỉnh hệ số nhân nếu cần
-        levelBarElement.style.width = `${newWidth}px`;
-    }
-}
-
 // Load data from localStorage
 window.onload = function() {
     const joinChatButton = document.getElementById('join-chat');
@@ -657,13 +651,8 @@ window.onload = function() {
         showDailyNotification();
     }
 
-    updateLevelBarWidth(); // Gọi hàm này sau khi tất cả các phần tử DOM đã được tải
     updateLevelProgress();
 };
-
-window.onresize = function() {
-        updateLevelBarWidth();
-    };
 
 function loadSavedData() {
     const savedPets = JSON.parse(localStorage.getItem('petsHistory')) || [];
