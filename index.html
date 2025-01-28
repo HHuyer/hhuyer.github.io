@@ -352,6 +352,15 @@ height: 60px;
 .spin {
 animation: spin 4s linear infinite;
 }
+.repeating-gif {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 100px; /* Adjust the size as needed */
+    height: 100px; /* Adjust the size as needed */
+    z-index: 998; /* Ensure it is above other elements */
+    display: none; /* Initially hidden */
+}
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -426,6 +435,15 @@ const philosophies = [
             const originalUrl = link.getAttribute('href');
             link.addEventListener('click', (event) => handleLinkClick(event, originalUrl));
         });
+
+        // Function to show and hide the GIF
+        function toggleGif() {
+            const gifElement = document.getElementById('repeating-gif');
+            gifElement.style.display = 'block'; // Show the GIF
+        }
+
+        // Show the GIF every 10 seconds
+        setInterval(toggleGif, 10000);
     });
 </script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6138079895042375"
@@ -1005,5 +1023,6 @@ function updateBpm(newBpm) {
     currentBpm = newBpm;
 }
 </script>
+<img src="lá đào.gif" id="repeating-gif" class="repeating-gif" alt="Repeating GIF">
 </body>
 </html>
