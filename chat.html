@@ -84,8 +84,6 @@ document.getElementById('join-chat').addEventListener('click', function() {
     const username = document.getElementById('username').value;
     if (username) {
         localStorage.setItem('username', username); // Lưu tên người dùng
-        localStorage.setItem('equippedRank', localStorage.getItem('equippedRank') || 'Novice'); // Đặt giá trị mặc định cho rank nếu chưa có
-        localStorage.setItem('level', localStorage.getItem('level') || 1); // Đặt giá trị mặc định cho level nếu chưa có
         document.getElementById('name-container').style.display = 'none'; // Ẩn ô nhập tên
         document.getElementById('chat-container').style.display = 'block'; // Hiển thị giao diện chat
     }
@@ -106,13 +104,11 @@ document.getElementById('form').addEventListener('submit', function(e) {
     e.preventDefault();
     const input = document.getElementById('input');
     const username = document.getElementById('username').value; // Lấy tên người dùng
-    const equippedRank = localStorage.getItem('equippedRank') || 'Novice'; // Lấy rank của người dùng
-    const level = localStorage.getItem('level') || 1; // Lấy level của người dùng
     if (input.value) {
         const currentTime = new Date().toLocaleTimeString(); // Lấy thời gian hiện tại
         pubnub.publish({
             channel: channel,
-            message: { text: `${username} [${equippedRank}] Lv${level} : ${input.value}`, time: currentTime } // Gửi tin nhắn với tên người dùng, rank, level và thời gian
+            message: { text: `${username}: ${input.value}`, time: currentTime } // Gửi tin nhắn với tên người dùng và thời gian
         });
         input.value = '';
     }
@@ -125,12 +121,10 @@ document.getElementById('image-input').addEventListener('change', function() {
         reader.onload = function(e) {
             const base64Image = e.target.result;
             const username = document.getElementById('username').value;
-            const equippedRank = localStorage.getItem('equippedRank') || 'Novice'; // Lấy rank của người dùng
-            const level = localStorage.getItem('level') || 1; // Lấy level của người dùng
             const currentTime = new Date().toLocaleTimeString();
             pubnub.publish({
                 channel: channel,
-                message: { text: `${username} [${equippedRank}] Lv${level} đã gửi một ảnh:`, image: base64Image, time: currentTime }
+                message: { text: `${username} đã gửi một ảnh:`, image: base64Image, time: currentTime }
             });
         };
         reader.readAsDataURL(file);
@@ -141,9 +135,9 @@ pubnub.addListener({
     message: function(event) {
         const messages = document.getElementById('messages');
         const item = document.createElement('li');
-        const username = event.message.text.split(' [')[0]; // Lấy tên người dùng từ tin nhắn
+        const username = event.message.text.split(':')[0]; // Lấy tên người dùng từ tin nhắn
         const userColor = userColors[username] || '#000'; // Mặc định màu đen nếu không tìm thấy
-        const messageText = event.message.text.split(' : ')[1]; // Lấy nội dung tin nhắn
+        const messageText = event.message.text.split(': ')[1]; // Lấy nội dung tin nhắn
         const messageTime = event.message.time; // Lấy thời gian gửi tin nhắn
 
         // Kiểm tra xem tin nhắn có chứa "đã tham gia chat!" và không có ":"
@@ -244,9 +238,9 @@ function ShowInfo() {
                         response.messages.forEach(function(message) {
                             const messages = document.getElementById('messages');
                             const item = document.createElement('li');
-                            const username = message.entry.text.split(' [')[0]; // Lấy tên người dùng từ tin nhắn
+                            const username = message.entry.text.split(':')[0]; // Lấy tên người dùng từ tin nhắn
                             const userColor = userColors[username] || '#000'; // Mặc định màu đen nếu không tìm thấy
-                            const messageText = message.entry.text.split(' : ')[1]; // Lấy nội dung tin nhắn
+                            const messageText = message.entry.text.split(': ')[1]; // Lấy nội dung tin nhắn
                             const messageTime = message.entry.time; // Lấy thời gian gửi tin nhắn
 
                             if (message.entry.image) {
