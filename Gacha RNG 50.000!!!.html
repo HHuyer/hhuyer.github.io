@@ -1399,7 +1399,6 @@ function addExperience(xp) {
         // Grant random XP between 1% and 50% of the new level's required XP
         const randomXP = Math.floor(Math.random() * 0.75 * requiredXP) + 1;
         currentXP += randomXP;
-        alert(`Chúc mừng! Bạn đã lên cấp ${level} và nhận được thêm ${randomXP} XP!`);
     }
     updateLevelProgress();
 }
