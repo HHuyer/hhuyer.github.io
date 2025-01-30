@@ -79,9 +79,22 @@ button:hover {
 
     <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.29.9.js"></script>
 <script>
+// Function to sanitize user input to prevent XSS
+function sanitizeInput(input) {
+    const div = document.createElement('div');
+    div.textContent = input;
+    return div.innerHTML;
+}
+
+// Function to decode HTML entities
+function decodeHtmlEntities(input) {
+    const div = document.createElement('div');
+    div.innerHTML = input;
+    return div.textContent;
+}
 
 document.getElementById('join-chat').addEventListener('click', function() {
-    const username = document.getElementById('username').value;
+    const username = sanitizeInput(document.getElementById('username').value);
     if (username) {
         localStorage.setItem('username', username); // Lưu tên người dùng
         document.getElementById('name-container').style.display = 'none'; // Ẩn ô nhập tên
@@ -102,15 +115,15 @@ pubnub.subscribe({ channels: [channel] });
 
 document.getElementById('form').addEventListener('submit', function(e) {
     e.preventDefault();
-    const input = document.getElementById('input');
-    const username = document.getElementById('username').value; // Lấy tên người dùng
-    if (input.value) {
+    const input = sanitizeInput(document.getElementById('input').value);
+    const username = sanitizeInput(document.getElementById('username').value); // Lấy tên người dùng
+    if (input) {
         const currentTime = new Date().toLocaleTimeString(); // Lấy thời gian hiện tại
         pubnub.publish({
             channel: channel,
-            message: { text: `${username}: ${input.value}`, time: currentTime } // Gửi tin nhắn với tên người dùng và thời gian
+            message: { text: `${username}: ${input}`, time: currentTime } // Gửi tin nhắn với tên người dùng và thời gian
         });
-        input.value = '';
+        document.getElementById('input').value = '';
     }
 });
 
@@ -120,7 +133,7 @@ document.getElementById('image-input').addEventListener('change', function() {
         const reader = new FileReader();
         reader.onload = function(e) {
             const base64Image = e.target.result;
-            const username = document.getElementById('username').value;
+            const username = sanitizeInput(document.getElementById('username').value);
             const currentTime = new Date().toLocaleTimeString();
             pubnub.publish({
                 channel: channel,
@@ -135,14 +148,14 @@ pubnub.addListener({
     message: function(event) {
         const messages = document.getElementById('messages');
         const item = document.createElement('li');
-        const username = event.message.text.split(':')[0]; // Lấy tên người dùng từ tin nhắn
+        const username = sanitizeInput(event.message.text.split(':')[0]); // Lấy tên người dùng từ tin nhắn
         const userColor = userColors[username] || '#000'; // Mặc định màu đen nếu không tìm thấy
-        const messageText = event.message.text.split(': ')[1]; // Lấy nội dung tin nhắn
+        const messageText = decodeHtmlEntities(sanitizeInput(event.message.text.split(': ')[1])); // Lấy nội dung tin nhắn
         const messageTime = event.message.time; // Lấy thời gian gửi tin nhắn
 
         // Kiểm tra xem tin nhắn có chứa "đã tham gia chat!" và không có ":"
         if (event.message.text.includes("đã tham gia chat!") && !event.message.text.includes(":")) {
-            item.innerHTML = `<span style="color: red; font-weight: bold;">${event.message.text}</span> <span style="font-size: 0.8em; color: gray;">(${messageTime})</span>`;
+            item.innerHTML = `<span style="color: red; font-weight: bold;">${decodeHtmlEntities(sanitizeInput(event.message.text))}</span> <span style="font-size: 0.8em; color: gray;">(${messageTime})</span>`;
         } else {
             // Kiểm tra xem tin nhắn có màu sắc không
             if (event.message.color) {
@@ -163,7 +176,7 @@ pubnub.addListener({
 
 document.addEventListener('DOMContentLoaded', function() {
     // Kiểm tra xem tên người dùng đã được lưu chưa
-    const savedUsername = localStorage.getItem('username');
+    const savedUsername = sanitizeInput(localStorage.getItem('username'));
     if (savedUsername) {
         document.getElementById('username').value = savedUsername; // Tự động điền tên
         document.getElementById('name-container').style.display = 'none'; // Ẩn ô nhập tên
@@ -195,7 +208,7 @@ function sendUserInfo(username) {
 
 // Hàm hiển thị thông tin người dùng
 function ShowInfo() {
-    const username = document.getElementById('username').value; // Lấy tên người dùng
+    const username = sanitizeInput(document.getElementById('username').value); // Lấy tên người dùng
     const savedMoney = parseInt(localStorage.getItem('money')) || 0;
     const savedSpinCount = parseInt(localStorage.getItem('spinCount')) || 0;
     const savedBestRandom = parseInt(localStorage.getItem('bestRandom')) || 0;
@@ -238,9 +251,9 @@ function ShowInfo() {
                         response.messages.forEach(function(message) {
                             const messages = document.getElementById('messages');
                             const item = document.createElement('li');
-                            const username = message.entry.text.split(':')[0]; // Lấy tên người dùng từ tin nhắn
+                            const username = sanitizeInput(message.entry.text.split(':')[0]); // Lấy tên người dùng từ tin nhắn
                             const userColor = userColors[username] || '#000'; // Mặc định màu đen nếu không tìm thấy
-                            const messageText = message.entry.text.split(': ')[1]; // Lấy nội dung tin nhắn
+                            const messageText = decodeHtmlEntities(sanitizeInput(message.entry.text.split(': ')[1])); // Lấy nội dung tin nhắn
                             const messageTime = message.entry.time; // Lấy thời gian gửi tin nhắn
 
                             if (message.entry.image) {
