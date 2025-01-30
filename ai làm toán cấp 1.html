@@ -47,16 +47,17 @@
     <script>
         function getAnswer() {
             const question = document.getElementById('question').value;
+            const sanitizedQuestion = sanitizeInput(question);
             const answerElement = document.getElementById('answer');
             const stepsElement = document.getElementById('steps');
             const stepByStepEnabled = document.getElementById('stepByStepToggle').checked;
             try {
-                const answer = eval(question);
+                const answer = safeEval(sanitizedQuestion);
                 answerElement.textContent = `Đáp án: ${answer}`;
                 if (stepByStepEnabled) {
                     stepsElement.textContent = 'Đang tính...(khả năng cao bị treo máy)';
                     setTimeout(() => {
-                        stepsElement.innerHTML = `Các bước:<br>${getSteps(question).replace(/\n/g, '<br>')}`;
+                        stepsElement.innerHTML = `Các bước:<br>${getSteps(sanitizedQuestion).replace(/\n/g, '<br>')}`;
                     }, 100); // Delay to prevent UI freezing
                 } else {
                     stepsElement.textContent = '';
@@ -65,6 +66,15 @@
                 answerElement.textContent = 'Nhập sai ký tự hoặc có lỗi';
                 stepsElement.textContent = '';
             }
+        }
+
+        function sanitizeInput(input) {
+            return input.replace(/[^0-9+\-*/().]/g, '');
+        }
+
+        function safeEval(expression) {
+            // Use a safer method to evaluate the expression
+            return Function(`'use strict'; return (${expression})`)();
         }
 
         function getSteps(question) {
