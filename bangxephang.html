@@ -83,6 +83,7 @@
                 spinCount: localStorage.getItem('spinCount'),
                 bestRandom: localStorage.getItem('bestRandom'),
                 candies: localStorage.getItem('candies'),
+                level: localStorage.getItem('level'),
                 timestamp: new Date().toLocaleString()
             };
 
@@ -134,6 +135,7 @@
             updateLeaderboard('spinCount-table', data, 'spinCount');
             updateLeaderboard('bestRandom-table', data, 'bestRandom');
             updateLeaderboard('candies-table', data, 'candies');
+            updateLeaderboard('level-table', data, 'level');
             removeEmptyRows();
         }
 
@@ -198,6 +200,7 @@
         <button onclick="showTable('spinCount-table')">Số Lần Quay</button>
         <button onclick="showTable('bestRandom-table')">Ngẫu Nhiên Tốt Nhất</button>
         <button onclick="showTable('candies-table')">Kẹo</button>
+        <button onclick="showTable('level-table')">Level</button>
     </div>
     <div class="container active">
         <h1>Bảng Xếp Hạng - Tiền</h1>
@@ -266,6 +269,24 @@
                 </tbody>
             </table>
         </div>
-    </div></center>
+    </div>
+    <div class="container active">
+        <h1>Bảng Xếp Hạng - Level</h1>
+        <div id="leaderboard">
+            <table id="level-table" class="leaderboard-table active">
+                <thead>
+                    <tr>
+                        <th>Hạng</th>
+                        <th>Tên Người Dùng</th>
+                        <th>Level</th>
+                        <th>Thời Gian</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</center>
 </body>
 </html>
