@@ -1,0 +1,152 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monkey's Casino</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="header-container">
+        <h1>Monkey's Casino</h1>
+        <div id="user-info">
+          <div class="balance">
+            Balance: $<span id="balance">1000.00</span>
+          </div>
+          <button class="faucet-button" onclick="claimFaucet()">
+            <i class="fa-solid fa-faucet"></i>
+            Faucet
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <nav class="centered-nav">
+      <button onclick="switchGame('mines')" class="active">Mines</button>
+      <button onclick="switchGame('towers')">Towers</button>
+      <button onclick="switchGame('coinflip')">Coinflip</button>
+      <button onclick="switchGame('blackjack')">Blackjack</button>
+      <button onclick="switchGame('cases')" disabled>Cases</button>
+      <button onclick="switchGame('slide')" disabled>Slide</button>
+      <button onclick="switchGame('crossy')" disabled>Mission Uncrossable</button>
+    </nav>
+
+    <main>
+      <div id="mines" class="game active">
+        <h2 class="game-title">Mines</h2>
+        <div class="game-header">
+          <div class="multiplier-display" id="mines-multiplier-container" style="display:none;">
+            Multiplier: <span id="mines-multiplier">1.00x</span>
+          </div>
+          <div class="potential-win" id="mines-potential-win" style="display:none;"></div>
+        </div>
+        <div class="controls centered-controls">
+          <div class="input-container">
+            <input type="number" id="mines-bet" value="100" min="1">
+          </div>
+          <select id="mines-count">
+            <option value="1">1 Mine</option>
+            <option value="2">2 Mines</option>
+            <option value="3">3 Mines</option>
+            <option value="4">4 Mines</option>
+            <option value="5">5 Mines</option>
+            <option value="6">6 Mines</option>
+            <option value="7">7 Mines</option>
+            <option value="8">8 Mines</option>
+            <option value="9">9 Mines</option>
+            <option value="10">10 Mines</option>
+            <option value="11">11 Mines</option>
+            <option value="12">12 Mines</option>
+            <option value="13">13 Mines</option>
+            <option value="14">14 Mines</option>
+            <option value="15">15 Mines</option>
+            <option value="16">16 Mines</option>
+            <option value="17">17 Mines</option>
+            <option value="18">18 Mines</option>
+            <option value="19">19 Mines</option>
+            <option value="20">20 Mines</option>
+            <option value="21">21 Mines</option>
+            <option value="22">22 Mines</option>
+            <option value="23">23 Mines</option>
+            <option value="24">24 Mines</option>
+          </select>
+          <button onclick="startMines()" id="mines-start">Start Game</button>
+          <button onclick="cashoutMines()" disabled id="mines-cashout">Cashout</button>
+        </div>
+        <div class="grid mines-grid"></div>
+      </div>
+
+      <div id="towers" class="game">
+        <h2 class="game-title">Towers</h2>
+        <div class="game-header">
+          <div class="multiplier-display" id="towers-multiplier-container" style="display:none;">
+            Multiplier: <span id="towers-multiplier">1.00x</span>
+          </div>
+          <div class="potential-win" id="towers-potential-win" style="display:none;"></div>
+        </div>
+        <div class="controls centered-controls">
+          <div class="input-container">
+            <input type="number" id="towers-bet" value="100" min="1">
+          </div>
+          <select id="towers-difficulty">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option> 
+            <option value="hard">Hard</option>
+          </select>
+          <button onclick="startTowers()" id="towers-start">Start Game</button>
+          <button onclick="cashoutTowers()" disabled id="towers-cashout">Cashout</button>
+        </div>
+        <div class="towers-grid"></div>
+      </div>
+
+      <div id="coinflip" class="game">
+        <h2 class="game-title">Coinflip</h2>
+        <div class="coinflip-container">
+          <!-- Content will be populated by JS -->
+        </div>
+      </div>
+
+      <div id="blackjack" class="game">
+        <h2 class="game-title">Blackjack</h2>
+        <div class="blackjack-container">
+          <!-- Content will be populated by JS -->
+        </div>
+      </div>
+
+      <div id="cases" class="game">
+        <h2 class="game-title">Cases</h2>
+        <div class="controls centered-controls">
+          <div class="input-container">
+            <input type="number" id="cases-bet" value="100" min="1">
+          </div>
+          <button onclick="startCases()" id="cases-start">Open Case</button>
+        </div>
+        <div class="cases-display"></div>
+      </div>
+
+      <div id="slide" class="game">
+        <h2 class="game-title">Slide</h2>
+        <div class="slide-container">
+          <!-- Content will be populated by JS -->
+        </div>
+      </div>
+
+      <div id="crossy" class="game">
+        <h2 class="game-title">Mission Uncrossable</h2>
+        <div class="controls centered-controls">
+          <div class="input-container">
+            <input type="number" id="crossy-bet" value="100" min="1">
+          </div>
+        </div>
+        <div class="crossy-container">
+          <!-- Content will be populated by JS -->
+        </div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
