@@ -1,1207 +1,1028 @@
-<html lang="en">
+<!DOCTYPE html>
+<html lang="vi">
 <head>
-  <style>
-  :root {
-    --primary: #2a2a2a;
-    --secondary: #3a3a3a; 
-    --accent: #4a90e2;
-    --text: #ffffff;
-  }
-  
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: Arial, sans-serif;
-    background: var(--primary);
-    color: var(--text);
-    min-height: 100vh;
-  }
-  
-  #app {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 10px;
-  }
-  
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-    padding: 15px;
-    background: var(--secondary);
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  }
-  
-  .header-container {
-    width: 100%;
-    text-align: center;
-  }
-  
-  .header-container h1 {
-    margin-bottom: 2px;
-    font-size: 2em;
-  }
-  
-  #user-info {
-    background: rgba(0,0,0,0.2);
-    padding: 8px 16px;
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin: 0 auto !important;
-    max-width: fit-content;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-  }
-  
-  .balance {
-    font-size: 1.2em;
-    font-weight: bold;
-  }
-  
-  nav.centered-nav {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 30px;
-  }
-  
-  nav button {
-    padding: 12px 24px;
-    border: none;
-    background: var(--secondary);
-    color: var(--text);
-    cursor: pointer;
-    border-radius: 25px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  }
-  
-  nav button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-  }
-  
-  nav button.active {
-    background: var(--accent);
-  }
-  
-  nav button[disabled] {
-    position: relative;
-  }
-  
-  nav button[disabled]:hover::after {
-    content: 'Coming Soon';
-    position: absolute;
-    bottom: -30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 16px;
-    white-space: nowrap;
-    z-index: 100;
-  }
-  
-  nav button[disabled]:hover {
-    pointer-events: auto;
-  }
-  
-  .game {
-    display: none;
-  }
-  
-  .game.active {
-    display: block;
-  }
-  
-  .controls {
-    margin: 30px 0 20px 0;
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-  
-  .input-container {
-    width: 180px;
-    position: relative;
-  }
-  
-  .input-container::before {
-    content: '$';
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text);
-    z-index: 1;
-    pointer-events: none;
-    font-size: 1em;
-  }
-  
-  .bet-input, input[type="number"] {
-    width: 180px;
-    padding: 10px 8px 10px 22px;
-    padding-right: 75px;
-    border: none;
-    border-radius: 25px;
-    background: var(--secondary);
-    color: var(--text);
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-    height: 40px;
-    font-size: 1em;
-  }
-  
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  
-  input[type="number"] {
-    -moz-appearance: textfield; /* Firefox */
-  }
-  
-  .bet-modifiers {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    gap: 2px;
-    z-index: 2;
-  }
-  
-  .bet-modifier {
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.8);
-    padding: 3px 5px;
-    border-radius: 12px;
-    font-size: 11px;
-    cursor: pointer;
-    transition: all 0.2s;
-    user-select: none;
-    min-width: 20px;
-    text-align: center;
-  }
-  
-  .bet-modifier:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
-  
-  button {
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 20px;
-    border: none;
-    background: var(--accent);
-    color: var(--text);
-    cursor: pointer;
-    border-radius: 25px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  }
-  
-  button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-  }
-  
-  button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background: var(--secondary);
-  }
-  
-  select {
-    height: 40px;
-    padding: 8px 20px;
-    border: none;
-    border-radius: 25px;
-    background: var(--secondary);
-    color: var(--text);
-    cursor: pointer;
-    min-width: 100px;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-  }
-  
-  select option {
-    background: var(--primary);
-    color: var(--text);
-  }
-  
-  .game-title {
-    text-align: center;
-    font-size: 2em;
-    margin: 35px 0 30px 0;
-    font-weight: bold;
-  }
-  
-  /* Mines Game */
-  .mines-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    max-width: 500px;
-    margin: 0 auto;
-  }
-  
-  .mines-grid .cell {
-    aspect-ratio: 1;
-    background: var(--secondary);
-    border-radius: 5px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-  }
-  
-  /* Towers Game */
-  .towers-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-  
-  .towers-grid.three-columns {
-    grid-template-columns: repeat(3, 1fr);
-    max-width: 450px;
-  }
-  
-  .towers-grid .cell {
-    aspect-ratio: 1;
-    background: var(--secondary);
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  /* Cases Display */
-  .cases-display {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 300px;
-    background: var(--secondary);
-    border-radius: 10px;
-    margin: 0 auto;
-    max-width: 500px;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .case {
-    width: 150px;
-    height: 150px;
-    background: var(--accent);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    transition: transform 0.3s;
-    cursor: pointer;
-  }
-  
-  .case.opening {
-    animation: openCase 1s forwards;
-  }
-  
-  .case-result {
-    font-size: 24px;
-    text-align: center;
-    line-height: 1.5;
-  }
-  
-  @keyframes openCase {
-    0% { transform: scale(1) rotate(0deg); }
-    50% { transform: scale(1.2) rotate(180deg); }
-    100% { transform: scale(1) rotate(360deg); }
-  }
-  
-  .potential-win {
-    color: #44ff44;
-    font-size: 0.9em;
-    margin-left: 10px;
-  }
-  
-  /* Keno Grid */
-  .keno-grid {
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    gap: 5px;
-    max-width: 500px;
-    margin: 0 auto;
-  }
-  
-  .keno-grid .cell {
-    aspect-ratio: 1;
-    background: var(--secondary);
-    border-radius: 5px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  /* Slide Styles */
-  .slide-container {
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc Mừng Năm Mới 2025!</title>
+    <link rel="icon" href="favicon.ico" type="favicon">
+    <style>
+        /* CSS như trước */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  .timer {
-    text-align: center;
-    font-size: 1.5em;
-    margin-bottom: 20px;
-  }
-  
-  .roulette-slide {
-    position: relative;
-    width: 100%;
-    height: 80px;
-    background: var(--secondary);
-    overflow: hidden;
-    margin-bottom: 20px;
-    border-radius: 5px;
-  }
-  
-  .slide-inner {
-    display: flex;
-    position: absolute;
-    height: 100%;
-    left: 0;
-  }
-  
-  .slide-spot {
-    width: 80px;
-    height: 80px;
-    flex-shrink: 0;
-    margin: 0 2px;
-  }
-  
-  .center-line {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: rgba(255, 255, 255, 0.8);
-    transform: translateX(-50%);
-    z-index: 2;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-  }
-  
-  .betting-spots {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    margin-bottom: 20px;
-    width: 100%;
-  }
-  
-  .bet-spot {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    width: 150px;
-  }
-  
-  .bet-spot .multiplier {
-    color: white;
-    font-weight: bold;
-    margin-bottom: 10px;
-    font-size: 1.2em;
-  }
-  
-  .place-bets-btn {
-    display: block;
-    margin: 0 auto;
-    padding: 15px 30px;
-    font-size: 1.2em;
-    margin-bottom: 20px;
-  }
-  
-  .history {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 20px;
-  }
-  
-  .history-dot {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-  }
-  
-  /* Bets List Styles */
-  .bets-list {
-    display: flex;
-    gap: 20px;
-    margin: 20px 0;
-    justify-content: center;
-  }
-  
-  .bets-column {
-    flex: 1;
-    max-width: 250px;
-  }
-  
-  .bets-column h3 {
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  
-  .bet-entries {
-    background: var(--secondary);
-    border-radius: 5px;
-    padding: 10px;
-    min-height: 100px;
-    max-height: 300px;
-    overflow-y: auto;
-  }
-  
-  .bet-entry {
-    display: flex;
-    justify-content: space-between;
-    padding: 5px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-  }
-  
-  .bet-entry:last-child {
-    border-bottom: none;
-  }
-  
-  .bet-username {
-    color: var(--accent);
-  }
-  
-  .bet-amount {
-    font-weight: bold;
-  }
-  
-  /* Coinflip Styles */
-  .coin {
-    width: 200px;
-    height: 200px;
-    margin: 50px auto;
-    position: relative;
-    transform-style: preserve-3d;
-    cursor: pointer;
-    perspective: 1000px;
-  }
-  
-  .heads, .tails {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 40px;
-    font-weight: bold;
-    backface-visibility: hidden;
-    box-shadow: 
-      0 0 10px rgba(0,0,0,0.2),
-      inset 0 0 50px rgba(0,0,0,0.1);
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-  }
-  
-  .heads {
-    background: linear-gradient(45deg, #f4b942, #ffd700);
-    border: 8px solid #e6a937;
-  }
-  
-  .tails {
-    background: linear-gradient(45deg, #42a5f4, #2196F3);
-    border: 8px solid #3c94db;
-    transform: rotateX(180deg);
-  }
-  
-  .coinflip-controls {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 20px;
-  }
-  
-  #avatar {
-    border: 2px solid var(--accent);
-  }
-  
-  .username {
-    color: var(--accent);
-    font-weight: bold;
-  }
-  
-  .centered-nav {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  
-  .centered-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  
-  .game-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    margin: 25px 0;
-    height: 30px;
-  }
-  
-  .multiplier-display, .potential-win {
-    background: var(--secondary);
-    padding: 12px 24px;
-    border-radius: 25px;
-    font-weight: bold;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    text-align: center;
-  }
-  
-  #towers-multiplier {
-    font-weight: bold;
-  }
-  
-  #towers-multiplier::after {
-    content: 'x';
-  }
-  
-  .cases-selector {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 30px;
-  }
-  
-  .case-option {
-    width: 120px;
-    height: 120px;
-    background: var(--secondary);
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s;
-    padding: 10px;
-    text-align: center;
-  }
-  
-  .case-option:hover {
-    transform: translateY(-5px);
-  }
-  
-  .case-option.selected {
-    background: var(--accent);
-  }
-  
-  .case-option .case-price {
-    margin-top: 8px;
-    font-size: 0.9em;
-    opacity: 0.8;
-  }
-  
-  .case-option .case-name {
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-  
-  .faucet-button {
-    background: var(--secondary);
-    color: var(--text);
-    border: none;
-    border-radius: 20px;
-    padding: 8px 16px;
-    cursor: pointer;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.9em;
-    position: relative;
-  }
-  
-  .faucet-button:not(:disabled) {
-    background: var(--accent);
-  }
-  
-  .faucet-button:not(:disabled):hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  }
-  
-  .faucet-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background: var(--secondary);
-  }
-  
-  .faucet-button:disabled:hover::after {
-    content: attr(title);
-    position: absolute;
-    bottom: -40px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 5px;
-    font-size: 14px;
-    white-space: nowrap;
-    z-index: 100;
-  }
-  
-  .blackjack-container {
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-  
-  .blackjack-table {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 50px;
-    justify-content: center;
-    min-height: 500px;
-  }
-  
-  .dealer-hand, .player-hand {
-    margin: 20px 0;
-    text-align: center;
-  }
-  
-  .dealer-hand {
-    margin: 0;
-    text-align: center;
-  }
-  
-  .dealer-hand h3, .player-hand h3 {
-    margin-bottom: 15px;
-    color: var(--text);
-    opacity: 0.8;
-  }
-  
-  .cards {
-    display: flex;
-    gap: 10px;
     justify-content: flex-start;
-    min-height: 140px;
-    position: relative;
-    padding: 0 20px;
-  }
-  
-  .card {
-    width: 100px;
-    height: 140px;
-    background: white;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    color: black;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    position: relative;
-  }
-  
-  .dealing-card {
-    position: fixed;
-    width: 100px;
-    height: 140px;
-    background: white;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    z-index: 1000;
-    pointer-events: none;
-    color: black;
-  }
-  
-  .card.hidden {
-    background: var(--accent);
-  }
-  
-  .card-value {
-    font-size: 32px;
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-  
-  .card-suit {
-    font-size: 40px;
-    line-height: 1;
-  }
-  
-  .player-hands {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-  }
-  
-  .player-hand {
-    opacity: 0.7;
-    transition: opacity 0.3s;
-    min-width: 300px;
     margin: 0;
-  }
-  
-  .player-hand.active {
-    opacity: 1;
-  }
-  
-  .card-back {
+    padding: 20px;
+    min-height: 100vh; /* Đảm bảo body kéo dài hết chiều cao màn hình */
+    overflow-x: hidden; /* Prevent horizontal overflow */
+}
+body {
+    background-image: url('https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474064zXQ/background-website-tet_105958087.jpg'); /* Thay đổi đường dẫn tới ảnh của bạn */
+    background-size: cover;
+    background-position: center; /* Để căn giữa ảnh */
+    background-attachment: fixed; /* Giữ hình nền cố định */
+
+}
+.falling-image {
+    position: absolute;
+    bottom: 100%; /* Bắt đầu từ trên cùng */
+    transition: transform 1s linear; /* Hiệu ứng chuyển động */
+    transform-origin: center; /* Đặt gốc xoay ở giữa ảnh */
+    width: 30px; /* Kích thước mặc định nhỏ */
+    height: 30px; /* Kích thước mặc định nhỏ */
+}
+        .container {
+            background-color: #e7241d;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            max-width: 1100px;
+            overflow-y: auto;
+            max-height: 5500px;
+            overflow: hidden;
+    position: relative; /* Để các ảnh có thể được định vị tương đối với container */
+}
+
+.outer-border {
+    position: relative; /* Để định vị border mới */
+border-radius: 12px;
+    border: 5px solid #ff463d; /* Màu viền */
+}
+
+.container {
+    border: 5px solid #ff463d; /* Màu viền */
+    animation: wave 0.5s infinite; /* Thêm hiệu ứng dập dềnh */
+}
+
+.corner-image {
+    position: absolute; /* Định vị tuyệt đối */
+    width: 125px; /* Kích thước ảnh */
+    height: 125px; /* Kích thước ảnh */
+    pointer-events: none; /* Không cho phép tương tác với ảnh */
+}
+
+.top-left {
+    top: -20px; /* Khoảng cách từ trên */
+    left: -5px; /* Khoảng cách từ trái */
+}
+
+.top-right {
+    top: -10px; /* Khoảng cách từ trên */
+    right: 0px; /* Khoảng cách từ phải */
+}
+
+.bottom-left {
+    bottom: -30px; /* Khoảng cách từ dưới */
+    left: 0px; /* Khoảng cách từ trái */
+}
+
+.bottom-right {
+    bottom: -30px; /* Khoảng cách từ dưới */
+    right: 0px; /* Khoảng cách từ phải */
+}
+        }
+        .philosophy {
+            background-color: #ff463d;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-size: 1.4em;
+            color: #333;
+            font-style: italic;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .author {
+            font-size: 1em;
+            text-align: center;
+            margin-top: 10px;
+            font-style: normal;
+        }
+        .link-item {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #ff463d;
+            color: #333;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        .link-item:hover {
+            background-color: #f9f9f9;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+        .rainbow-button {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(90deg, #00C0FF, #FFCF00, #FC4F4F, #00C0FF);
+            background-size: 300% 300%;
+            color: #333;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            animation: rainbow-animation 4s linear infinite;
+        }
+
+        .rainbow-button:hover {
+            animation: rainbow-animation-hover 1.5s linear infinite;
+        }
+
+        .rainbow-text {
+            flex-grow: 1;
+            margin-right: 20px;
+            font-size: 1.1em;
+        }
+
+        .rainbow-image {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .link-text {
+            flex-grow: 1;
+            margin-right: 20px;
+            font-size: 1.1em;
+        }
+        .link-description {
+            font-size: 0.9em;
+            color: ;
+        }
+        .link-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        @keyframes rainbow-animation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes rainbow-animation-hover {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+.update-history-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    background: var(--accent);
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    display: none; /* Ẩn modal mặc định */
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
     border-radius: 10px;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .back-pattern {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-      linear-gradient(45deg, transparent 48%, #ffffff22 49%, #ffffff22 51%, transparent 52%) 0 0/10px 10px,
-      linear-gradient(-45deg, transparent 48%, #ffffff22 49%, #ffffff22 51%, transparent 52%) 0 0/10px 10px;
-    opacity: 0.5;
-  }
-  
-  .back-pattern::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 60px;
-    height: 60px;
-    background: #ffffff22;
-    border-radius: 50%;
-    border: 2px solid #ffffff44;
-  }
-  
-  .insurance-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.3);
+    text-align: center;
+    max-width: 90%;
+}
+
+.info-button {
     display: flex;
     align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    animation: fadeIn 0.3s ease;
-  }
-  
-  .insurance-content {
-    padding: 15px 40px;
-    border-radius: 8px;
-    text-align: center;
-    min-width: 240px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    animation: slideIn 0.3s ease;
-  }
-  
-  .insurance-content p {
-    margin: 10px 0;
-    font-size: 1.2em;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  }
-  
-  .insurance-content.win {
-    background: linear-gradient(135deg, rgba(76, 175, 80, 0.95), rgba(56, 142, 60, 0.95));
-    border: 2px solid rgba(46, 125, 50, 0.5);
-  }
-  
-  .insurance-content.lose {
-    background: linear-gradient(135deg, rgba(244, 67, 54, 0.95), rgba(211, 47, 47, 0.95));
-    border: 2px solid rgba(198, 40, 40, 0.5);
-  }
-  
-  .insurance-buttons {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    margin-top: 15px;
-  }
-  
-  .insurance-buttons button {
-    min-width: 100px;
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.3);
-    transition: all 0.3s ease;
-  }
-  
-  .insurance-buttons button:hover {
-    background: rgba(255,255,255,0.25);
-    transform: translateY(-2px);
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  
-  @keyframes slideIn {
-    from { 
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to { 
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .dealer-hand .cards, .player-hand .cards {
-    display: flex;
-    justify-content: center !important;
-    padding: 0 !important;
-    min-height: 140px;
-    position: relative;
-    gap: 10px;
-  }
-  
-  .coinflip-container {
-    max-width: 800px;
-    margin: 0 auto;
-    text-align: center;
-  }
-  
-  .crossy-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    max-width: 800px;
-    margin: 20px auto;
-    background: #1a1f3d;
-    padding: 10px;
-    border-radius: 10px;
-    height: 140px;
-  }
-  
-  .crossy-row {
-    display: flex;
-    gap: 10px;
-    height: 100%;
-  }
-  
-  .crossy-grid .cell {
-    flex: 1;
-    background: #2a305d;
-    border-radius: 5px;
+    padding: 10px 20px;
+    background-color: #ff564d; /* Màu nền trắng */
+    color: #333; /* Màu chữ tối để dễ đọc */
+    border: 2px solid #ff4137; /* Đường viền màu xám nhạt */
+    border-radius: 12px;
     cursor: pointer;
+    transition: background 0.3s, transform 0.3s, border-color 0.3s;
+    font-size: 1em;
+}
+
+.info-button:hover {
+    background-color: #f0f0f0; /* Màu nền sáng hơn khi hover */
+    border-color: #888; /* Đường viền tối hơn khi hover */
+}
+
+.button-text {
+    margin-left: 10px; /* Khoảng cách giữa biểu tượng và văn bản */
+}
+
+.candy-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 70px; /* Tăng kích thước */
+    height: 70px; /* Tăng kích thước */
+    background: linear-gradient(45deg, #FF6F61, #FF4C3B); /* Màu gradient */
+    color: white; /* Màu chữ */
+    border-radius: 50%; /* Hình tròn */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px; /* Tăng kích thước chữ */
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Đổ bóng */
+    transition: background 0.3s, transform 0.3s; /* Hiệu ứng chuyển đổi */
+    z-index: 987;
+}
+
+.candy-button:hover {
+    background: linear-gradient(45deg, #FF4C3B, #FF6F61); /* Đổi màu khi hover */
+    transform: scale(1.1); /* Phóng to khi hover */
+}
+
+.candy-button:active {
+    transform: scale(0.95); /* Co lại khi nhấn */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.music-player {
+    display: flex;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .music-player {
+        display: flex; /* Hiển thị phần phát nhạc */
+        margin-left: 0; /* Đặt lại lề */
+        margin-top: 20px; /* Thêm khoảng cách trên */
+    }
+}
+#candy-effect span {
+    position: absolute;
+    pointer-events: none; /* Không cho phép tương tác với các biểu tượng */
+}
+.farewell-message {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 1); /* Nền trắng với độ mờ */
+    transition: background-color 1s ease; /* Thêm hiệu ứng chuyển đổi */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    position: relative;
-    transition: all 0.3s ease;
-    overflow: visible;
-    min-width: 80px;
-  }
-  
-  .crossy-coin {
-    position: absolute;
-    font-size: 32px;
-    transition: all 0.3s ease;
-    transform: translateY(0);
-    opacity: 1;
-  }
-  
-  .cell.revealed .crossy-coin {
-    transform: scale(0);
-    opacity: 0;
-  }
-  
-  .road-element {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: #2a305d;
-    z-index: -1;
-  }
-  
-  .lane-marking {
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 4px;
-    top: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-50%);
-  }
-  
-  .cell.revealed.safe {
-    background: #4CAF50;
-  }
-  
-  .cell.revealed.dead {
-    background: #f44336;
-  }
-  
-  .multiplier-tag {
-    position: absolute;
-    top: -25px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 14px;
-    font-weight: bold;
-    z-index: 2;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 4px 8px;
-    border-radius: 10px;
-    white-space: nowrap;
-  }
-  
-  #crossy-difficulty {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    padding: 8px 16px;
-    border-radius: 20px;
+    z-index: 1000; /* Đảm bảo nó nằm trên cùng */
+}
+
+.year-text {
+    font-size: 96px;
+    color: #ff463d; /* Màu sắc nổi bật */
+    margin: 0;
+}
+
+.farewell-text {
+    font-size: 18px;
+    color: #333; /* Màu chữ tối */
+    margin: 10px 0;
+}
+
+.farewell-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #ff564d; /* Màu nền nút */
+    color: white; /* Màu chữ nút */
     border: none;
-  }
-  
-  .result-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    animation: fadeIn 0.3s ease;
-  }
-  
-  .result-content {
-    padding: 15px 40px;
     border-radius: 8px;
-    text-align: center;
-    min-width: 240px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    animation: slideIn 0.3s ease;
-  }
-  
-  .result-content.win {
-    background: linear-gradient(135deg, rgba(76, 175, 80, 0.95), rgba(56, 142, 60, 0.95));
-    border: 2px solid rgba(46, 125, 50, 0.5);
-  }
-  
-  .result-content.lose {
-    background: linear-gradient(135deg, rgba(244, 67, 54, 0.95), rgba(211, 47, 47, 0.95));
-    border: 2px solid rgba(198, 40, 40, 0.5);
-  }
-  
-  .result-modal.fade-out {
-    animation: fadeOut 0.25s ease forwards;
-  }
-  
-  @keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-  }
-  </style>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Monkey's Casino</title>
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.farewell-button:hover {
+    background-color: #f0f0f0; /* Màu nền khi hover */
+    color: #ff564d; /* Màu chữ khi hover */
+}
+
+.fade-out {
+    animation: fadeOut 2s forwards; /* Hiệu ứng mờ dần */
+    opacity: 0; /* Đặt độ mờ thành 0 */
+    transition: opacity 1s ease; /* Thêm hiệu ứng chuyển tiếp */
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50px); /* Bay lên */
+    }
+}
+
+.record-image {
+width: 60px;
+height: 60px;
+}
+
+.spin {
+animation: spin 4s linear infinite;
+}
+.repeating-gif {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 100px; /* Adjust the size as needed */
+    height: 100px; /* Adjust the size as needed */
+    z-index: 998; /* Ensure it is above other elements */
+    display: none; /* Initially hidden */
+}
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Triết lý ngày mới
+const philosophies = [
+    { quote: "Hẹn em Pickleball, vờn nhau Pickleball...", author: "Anh Trai Pickleball" },
+    { quote: "Điều gì không thể giết ta sẽ khiến ta mạnh mẽ hơn.", author: "ACN - Anh Công Nhân - Friedrich Nietzsche" },
+    { quote: "Donate đi donate đi donate đi", author: "Donate đi" },
+    { quote: "Cứ Chill đi", author: "Chill Guys" },
+    { quote: "45 mà mũ 2 là gì?", author: "2025" },
+    { quote: "Chúc mừng năm mới! Năm nay, hãy để mọi điều xui xẻo đi qua như nước chảy!", author: "2025!!" },
+    { quote: "Năm mới, chúc bạn có nhiều tiền hơn, nhưng đừng quên chia sẻ với tôi nhé!", author: "2025!!" },
+    { quote: "Tết này, hãy ăn nhiều bánh chưng, nhưng đừng quên tập thể dục để không bị bánh chưng 'tấn công'!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới phát tài, phát lộc, và phát luôn cả chiều cao!", author: "2025!!" },
+    { quote: "Năm mới, hãy để mọi điều không vui qua đi, và chỉ giữ lại những điều vui vẻ như bánh kẹo!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới như một ly trà sữa: ngọt ngào, đầy đủ topping và không bao giờ hết vị!", author: "2025!!" },
+    { quote: "Năm mới, hãy sống như một chiếc bánh mì: giòn bên ngoài, mềm bên trong và luôn được yêu thương!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới không chỉ có tiền, mà còn có nhiều 'điểm' để tiêu!", author: "2025!!" },
+    { quote: "Tết này, hãy để mọi điều xui xẻo đi qua như một chiếc xe buýt, và chỉ đón những điều tốt đẹp!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới vui vẻ như một chú mèo được vuốt ve!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới như một chiếc bánh chưng: đầy đặn và không bao giờ thiếu vị!", author: "2025!!" },
+    { quote: "Năm mới, chúc bạn có nhiều niềm vui như số lượng bánh kẹo trong mâm cỗ Tết!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới phát tài phát lộc, và đừng quên mời tôi ăn Tết nhé!", author: "2025!!" },
+    { quote: "Năm mới, hãy để mọi điều không vui qua đi như một chiếc xe đẩy hàng!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới không chỉ có tiền mà còn có nhiều bạn bè để chia sẻ!", author: "2025!!" },
+    { quote: "Tết này, hãy ăn thật nhiều nhưng đừng quên tập thể dục để không bị 'bánh chưng' tấn công!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới như một ly trà sữa: ngọt ngào và đầy đủ topping!", author: "2025!!" },
+    { quote: "Năm mới, hãy sống như một chiếc bánh mì: giòn bên ngoài, mềm bên trong!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới vui vẻ như một chú mèo được vuốt ve!", author: "2025!!" },
+    { quote: "Năm mới, hãy để mọi điều xui xẻo đi qua như nước chảy!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới có nhiều tiền hơn, nhưng đừng quên chia sẻ với tôi nhé!", author: "2025!!" },
+    { quote: "Tết này, hãy để mọi điều không vui qua đi và chỉ giữ lại những điều vui vẻ!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới như một chiếc xe hơi: luôn chạy nhanh và không bao giờ hỏng hóc!", author: "2025!!" },
+    { quote: "Năm mới, hãy để mọi điều xui xẻo đi qua như một chiếc xe buýt, và chỉ đón những điều tốt đẹp!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới không chỉ có tiền, mà còn có nhiều 'điểm' để tiêu!", author: "2025!!" },
+    { quote: "Năm mới, hãy sống như một chiếc bánh mì: giòn bên ngoài, mềm bên trong và luôn được yêu thương!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới vui vẻ như một chú chó được cưng chiều!", author: "2025!!" },
+    { quote: "Năm mới, hãy để mọi điều không vui qua đi như một cơn gió!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới phát tài, phát lộc, và phát luôn cả chiều cao!", author: "2025!!" },
+    { quote: "Tết này, hãy ăn nhiều bánh chưng, nhưng đừng quên tập thể dục để không bị bánh chưng 'tấn công'!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới như một ly trà sữa: ngọt ngào, đầy đủ topping và không bao giờ hết vị!", author: "2025!!" },
+    { quote: "Năm mới, hãy sống như một chiếc bánh mì: giòn bên ngoài, mềm bên trong và luôn được yêu thương!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới không chỉ có tiền, mà còn có nhiều 'điểm' để tiêu!", author: "2025!!" },
+    { quote: "Tết này, hãy để mọi điều xui xẻo đi qua như một chiếc xe buýt, và chỉ đón những điều tốt đẹp!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới vui vẻ như một chú mèo được vuốt ve!", author: "2025!!" },
+    { quote: "Năm mới, hãy để mọi điều không vui qua đi như một chiếc xe đẩy hàng!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới có nhiều niềm vui như số lượng bánh kẹo trong mâm cỗ Tết!", author: "2025!!" },
+    { quote: "Năm mới, chúc bạn luôn giữ được nụ cười trên môi và không bao giờ thiếu niềm vui!", author: "2025!!" },
+    { quote: "Chúc bạn năm mới như một chiếc bánh chưng: đầy đặn và không bao giờ thiếu vị!", author: "2025!!" },
+    { quote: "Năm mới, hãy để mọi điều không vui qua đi và chỉ giữ lại những điều vui vẻ!", author: "2025!!" }
+];
+            const randomIndex = Math.floor(Math.random() * philosophies.length);
+            document.querySelector('.philosophy').textContent = philosophies[randomIndex].quote;
+            document.querySelector('.author').textContent = `- ${philosophies[randomIndex].author}`;
+        });
+
+    function handleLinkClick(event, originalUrl) {
+        event.preventDefault();
+        const randomChance = Math.random();
+        if (randomChance < 0.1) {
+            window.location.href = `AYouIsHuman.html?redirect=${encodeURIComponent(originalUrl)}`;
+        } else {
+            window.location.href = originalUrl;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // ...existing code...
+
+        // Attach event listeners to all link items
+        document.querySelectorAll('.link-item, .rainbow-button').forEach(link => {
+            const originalUrl = link.getAttribute('href');
+            link.addEventListener('click', (event) => handleLinkClick(event, originalUrl));
+        });
+
+        // Function to show and hide the GIF
+        function toggleGif() {
+            const gifElement = document.getElementById('repeating-gif');
+            gifElement.style.display = 'block'; // Show the GIF
+        }
+
+        // Show the GIF every 10 seconds
+        setInterval(toggleGif, 10000);
+    });
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6138079895042375"
+     crossorigin="anonymous"></script>
 </head>
 <body>
-  <div id="app">
-    <header>
-      <div class="header-container">
-        <h1>Monkey's Casino</h1>
-        <div id="user-info">
-          <div class="balance">
-            Balance: $<span id="balance">1000.00</span>
-          </div>
-          <button class="faucet-button" onclick="claimFaucet()">
-            <i class="fa-solid fa-faucet"></i>
-            Faucet
-          </button>
+<div class="farewell-message" id="farewell-message">
+    <h1 class="year-text">2024</h1>
+    <p class="farewell-text">Năm 2024 sắp kết thúc, hãy cùng nói lời tạm biệt với cậu ấy nhé!</p>
+    <p class="farewell-text"><small>Tết v1.5</small></p>
+    <button class="farewell-button" id="farewell-button">Tạm biệt nhé 👋</button>
+<div class="new-message" id="new-message" style="display: none; text-align: center;">
+</div>
+</div>
+    <div class="philosophy"></div>
+    <div class="author"></div>
+<br><i><big><strong id="countdown"></strong></big></i></br>
+    <!-- Phần phát nhạc-->
+    <div class="music-player" style="display: flex; align-items: right; margin-left: 0px; margin-top: 0px;">
+<img src="nút phát nhạc-tạm dừng.png" alt="Phát/Tạm Dừng" class="pause-song-button" onclick="togglePlayPause()" style="cursor: pointer; width: 30px; height: 30px; margin-left: 10px;">
+<div alt="Đã dừng" class="music-status-image paused" style="display: none; width: 60px; height: 60px;">Đã dừng</div>
+        <img src="nút tiếp theo.png" alt="Chuyển bài" class="next-song-button" onclick="playRandomSong()" style="cursor: pointer; width: 30px; height: 30px; margin-left: 10px;">
+        <div class="song-info" style="margin-left: 10px;">
+            <span class="song-title">Bấm để phát</span>
         </div>
-      </div>
-    </header>
+<center><div class="spin">
+        <img src="đĩa nhạc.png" class="record-image" alt="Đĩa nhạc">
+</div></center>
+    </div>
+</div>
+<div class="container">
+    <div>
+        <div class="candy-button" onclick="claimCandy()">
+            <div id="candy-effect" style="position: relative; overflow: hidden;"></div>
+                <img src="https://png.pngtree.com/png-vector/20230111/ourmid/pngtree-lucky-money-new-year-png-image_6559428.png" style="width: 50px; height: 50px;">
+            </div>
+        <marquee>🎉Tết 2025 Chúc Bạn Và Gia Đình Luôn Mạnh Khỏe Giàu Có Và Không Quên Quay Lại Donate Cho Chúng Tớ Nhé!🇻🇳</marquee>
+        <img src="trên trái.png" class="corner-image top-left" alt="Top Left">
+        <img src="trên phải.png" class="corner-image top-right" alt="Top Right">
+        <button class="info-button" onclick="showUpdateHistoryModal()">
+            <img src="https://media.lordicon.com/icons/system/regular/162-update.svg" alt="Update History" style="width: 30px; height: 30px;">
+            <span class="button-text">Lịch Sử Cập Nhật</span>
+        </button>
+    </div>
+        <!-- Danh sách liên kết -->
+        <a href="indexgame.html" class="rainbow-button" target="_blank">
+            <div class="rainbow-text">
+                Trò chơi trong phòng tin (Mới)
+                <div class="link-description">Chơi đê:)</div>
+            </div>
+            <img src="https://png.pngtree.com/png-vector/20191028/ourlarge/pngtree-game-control-line-icon-vector-png-image_1904129.jpg" class="rainbow-image">
+        </a>
+            <a href="chat.html" class="link-item" target="_blank">
+            <div class="link-text">
+                Chat (Đã có lưu chat!!!)
+                <div class="link-description">Let's Go!</div>
+            </div>
+        </a>
+                <a href="CatGPT.html" class="link-item" target="_blank">
+            <div class="link-text">
+                CatGPT
+                <div class="link-description">Meow Meow</div>
+            </div>
+            <img src="https://i.pinimg.com/236x/8c/58/6c/8c586c41d99178a502903d6c13c0f040.jpg" class="link-image">
+        </a>
+            <a href="ai làm toán cấp 1.html" class="link-item" target="_blank">
+            <div class="link-text">
+                Ai làm toán
+                <div class="link-description">Giải được từng bước! (Ai này mới học cấp 1)</div>
+            </div>
+            <img src="https://images.kienthuc.net.vn/zoom/800/uploaded/ctvcongdongtre/2020_05_27/8/toan-khong-gian-noi-am-anh-khung-khiep-cua-dan-hoc-sinh-cuoi-cap.jpg" class="link-image">
+        </a>
+        <a href="https://patorjk.com/software/taag/#p=display&f=Crawford2&t=%F0%9F%91%89hhuyer.github.io%F0%9F%91%88" class="link-item" target="_blank">
+            <div class="link-text">
+                Chuyển chữ thành kí tự đẹp
+                <div class="link-description">Nếu biết dùng thì rất tuyệt đấy!</div>
+            </div>
+            <img src="https://scipython.com/static/media/uploads/blog/ascii-art/saturn-ascii-i.png" class="link-image">
+        </a>
+        <a href="tulw.html" class="link-item" target="_blank">
+            <div class="link-text">
+                Web vô dụng
+                <div class="link-description">Vâng rất hữu dụng!</div>
+            </div>
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRB09DY5udNeNIfZJXG988PSaZhc7-47wRYsg&s" class="link-image">
+        </a>
+        <a href="https://www.youtube.com/watch?v=z6b8fMrOQD4" class="link-item" target="_blank">
+            <div class="link-text">
+                Lì Xì Năm Mới
+                <div class="link-description">Bấm vào đây để nhận quà</div>
+            </div>
+        </a>
+    <img src="dưới trái.png" class="corner-image bottom-left" alt="Bottom Left">
+    <img src="dưới phải.png" class="corner-image bottom-right" alt="Bottom Right">
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<div>
+<div>
+    <p>Chào mừng bạn đến với trang web của chúng tôi! Đây không chỉ là một trang web thông thường mà là một không gian sáng tạo, nơi bạn có thể tìm thấy nhiều thông tin hữu ích, giải trí và những trải nghiệm độc đáo. Hãy cùng khám phá những điều thú vị mà chúng tôi đã chuẩn bị cho bạn!</p>
 
-    <nav class="centered-nav">
-      <button onclick="switchGame('mines')" class="active">Mines</button>
-      <button onclick="switchGame('towers')">Towers</button>
-      <button onclick="switchGame('coinflip')">Coinflip</button>
-      <button onclick="switchGame('blackjack')">Blackjack</button>
-      <button onclick="switchGame('cases')" disabled>Cases</button>
-      <button onclick="switchGame('slide')" disabled>Slide</button>
-      <button onclick="switchGame('crossy')" disabled>Mission Uncrossable</button>
-    </nav>
+    <p><strong>1. Mục tiêu của Trang Web</strong></p>
+    <p>Cung cấp thông tin: Chúng tôi mong muốn trở thành nguồn thông tin đáng tin cậy cho người dùng. Từ các bài viết về triết lý sống đến các liên kết hữu ích, mọi thứ đều được thiết kế để phục vụ bạn. Chúng tôi tin rằng thông tin là sức mạnh, và việc cung cấp thông tin chính xác, kịp thời sẽ giúp bạn đưa ra những quyết định đúng đắn trong cuộc sống.</p>
+    <p>Giải trí: Không chỉ dừng lại ở việc cung cấp thông tin, chúng tôi còn mang đến những trò chơi thú vị và âm nhạc để bạn thư giãn sau những giờ làm việc căng thẳng. Những trò chơi này không chỉ giúp bạn giải trí mà còn kích thích tư duy và sáng tạo, mang lại những giây phút thư giãn tuyệt vời.</p>
+    <p>Kết nối cộng đồng: Chúng tôi hy vọng trang web này sẽ trở thành nơi kết nối những người có cùng sở thích, từ những người yêu thích triết lý sống đến những người đam mê công nghệ. Chúng tôi khuyến khích bạn tham gia vào các diễn đàn thảo luận, nơi bạn có thể chia sẻ ý kiến và học hỏi từ những người khác.</p>
 
-    <main>
-      <div id="mines" class="game active">
-        <h2 class="game-title">Mines</h2>
-        <div class="game-header">
-          <div class="multiplier-display" id="mines-multiplier-container" style="display:none;">
-            Multiplier: <span id="mines-multiplier">1.00x</span>
-          </div>
-          <div class="potential-win" id="mines-potential-win" style="display:none;"></div>
-        </div>
-        <div class="controls centered-controls">
-          <div class="input-container">
-            <input type="number" id="mines-bet" value="100" min="1">
-          </div>
-          <select id="mines-count">
-            <option value="1">1 Mine</option>
-            <option value="2">2 Mines</option>
-            <option value="3">3 Mines</option>
-            <option value="4">4 Mines</option>
-            <option value="5">5 Mines</option>
-            <option value="6">6 Mines</option>
-            <option value="7">7 Mines</option>
-            <option value="8">8 Mines</option>
-            <option value="9">9 Mines</option>
-            <option value="10">10 Mines</option>
-            <option value="11">11 Mines</option>
-            <option value="12">12 Mines</option>
-            <option value="13">13 Mines</option>
-            <option value="14">14 Mines</option>
-            <option value="15">15 Mines</option>
-            <option value="16">16 Mines</option>
-            <option value="17">17 Mines</option>
-            <option value="18">18 Mines</option>
-            <option value="19">19 Mines</option>
-            <option value="20">20 Mines</option>
-            <option value="21">21 Mines</option>
-            <option value="22">22 Mines</option>
-            <option value="23">23 Mines</option>
-            <option value="24">24 Mines</option>
-          </select>
-          <button onclick="startMines()" id="mines-start">Start Game</button>
-          <button onclick="cashoutMines()" disabled id="mines-cashout">Cashout</button>
-        </div>
-        <div class="grid mines-grid"></div>
-      </div>
+    <p><strong>2. Các Tính Năng Nổi Bật</strong></p>
+    <p>Triết lý Ngày Mới: Mỗi ngày, bạn sẽ được truyền cảm hứng từ những câu nói nổi tiếng của các nhân vật vĩ đại. Những câu nói này không chỉ mang tính chất động viên mà còn giúp bạn suy ngẫm về cuộc sống. Chúng tôi tin rằng một câu nói hay có thể thay đổi cách nhìn nhận của bạn về thế giới.</p>
+    <p>Danh sách Liên kết Hữu ích: Chúng tôi đã tổng hợp một danh sách các liên kết đến những trang web thú vị và hữu ích, từ trò chơi đến các công cụ trực tuyến, giúp bạn tiết kiệm thời gian tìm kiếm. Bạn sẽ không còn phải mất thời gian tìm kiếm thông tin trên internet, mà chỉ cần truy cập vào danh sách của chúng tôi.</p>
+    <p>Phát Nhạc: Với tính năng phát nhạc, bạn có thể thưởng thức những bản nhạc yêu thích trong khi duyệt web. Âm nhạc không chỉ giúp bạn thư giãn mà còn tạo ra bầu không khí vui vẻ. Chúng tôi đã chọn lọc những bản nhạc phù hợp với nhiều tâm trạng khác nhau, từ những giai điệu nhẹ nhàng đến những bản nhạc sôi động.</p>
 
-      <div id="towers" class="game">
-        <h2 class="game-title">Towers</h2>
-        <div class="game-header">
-          <div class="multiplier-display" id="towers-multiplier-container" style="display:none;">
-            Multiplier: <span id="towers-multiplier">1.00x</span>
-          </div>
-          <div class="potential-win" id="towers-potential-win" style="display:none;"></div>
-        </div>
-        <div class="controls centered-controls">
-          <div class="input-container">
-            <input type="number" id="towers-bet" value="100" min="1">
-          </div>
-          <select id="towers-difficulty">
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option> 
-            <option value="hard">Hard</option>
-          </select>
-          <button onclick="startTowers()" id="towers-start">Start Game</button>
-          <button onclick="cashoutTowers()" disabled id="towers-cashout">Cashout</button>
-        </div>
-        <div class="towers-grid"></div>
-      </div>
+    <p><strong>3. Giao Diện Thân Thiện</strong></p>
+    <p>Thiết kế Responsive: Trang web được thiết kế để hoạt động tốt trên mọi thiết bị, từ máy tính để bàn đến điện thoại di động. Bạn có thể truy cập mọi lúc, mọi nơi mà không gặp khó khăn. Chúng tôi cam kết mang đến trải nghiệm người dùng tốt nhất, bất kể bạn đang sử dụng thiết bị nào.</p>
+    <p>Màu sắc Tươi Sáng: Với màu sắc tươi sáng và hình ảnh bắt mắt, trang web không chỉ thu hút mà còn tạo cảm giác thoải mái cho người dùng. Chúng tôi tin rằng một giao diện đẹp mắt sẽ giúp bạn cảm thấy thoải mái hơn khi khám phá nội dung của trang web.</p>
 
-      <div id="coinflip" class="game">
-        <h2 class="game-title">Coinflip</h2>
-        <div class="coinflip-container">
-          <script src="coinflip.js"></script>
-        </div>
-      </div>
+    <p><strong>4. Những Điều Thú Vị Khác</strong></p>
+    <p>Câu Chuyện Về Kẹo: Chúng tôi có một tính năng thú vị cho phép bạn nhận kẹo và xu mỗi ngày. Đây là một cách để khuyến khích bạn quay lại trang web thường xuyên và tham gia vào các hoạt động thú vị. Bạn có thể sử dụng kẹo và xu để tham gia vào các trò chơi hoặc nhận những phần thưởng hấp dẫn.</p>
+    <p>Lịch Sử Cập Nhật: Bạn có thể theo dõi các bản cập nhật mới nhất của trang web thông qua tính năng lịch sử cập nhật. Điều này giúp bạn không bỏ lỡ bất kỳ thông tin quan trọng nào. Chúng tôi luôn nỗ lực để mang đến cho bạn những nội dung mới mẻ và hấp dẫn.</p>
+    <p>Chia Sẻ Cảm Xúc: Chúng tôi khuyến khích bạn chia sẻ cảm xúc và ý kiến của mình về trang web. Những phản hồi của bạn sẽ giúp chúng tôi cải thiện và phát triển hơn nữa. Chúng tôi luôn lắng nghe ý kiến của người dùng để tạo ra một không gian trực tuyến tốt nhất cho mọi người.</p>
 
-      <div id="blackjack" class="game">
-        <h2 class="game-title">Blackjack</h2>
-        <div class="blackjack-container">
-          <!-- Content will be populated by JS -->
-        </div>
-      </div>
+    <p><strong>5. Một Chút Về Chúng Tôi</strong></p>
+    <p>Đội Ngũ Phát Triển: Chúng tôi là một nhóm những người đam mê công nghệ và sáng tạo, luôn tìm kiếm cách để mang đến những trải nghiệm tốt nhất cho người dùng. Mỗi thành viên trong đội ngũ đều có những kỹ năng và kinh nghiệm riêng, và chúng tôi làm việc cùng nhau để hiện thực hóa tầm nhìn của mình.</p>
+    <p>Tầm Nhìn Tương Lai: Chúng tôi không ngừng mở rộng và cải thiện trang web. Trong tương lai, chúng tôi dự định thêm nhiều tính năng mới và nội dung phong phú hơn nữa. Chúng tôi hy vọng sẽ tạo ra một cộng đồng trực tuyến mạnh mẽ và gắn kết, nơi mọi người có thể học hỏi và phát triển cùng nhau.</p>
 
-      <div id="cases" class="game">
-        <h2 class="game-title">Cases</h2>
-        <div class="controls centered-controls">
-          <div class="input-container">
-            <input type="number" id="cases-bet" value="100" min="1">
-          </div>
-          <button onclick="startCases()" id="cases-start">Open Case</button>
-        </div>
-        <div class="cases-display"></div>
-      </div>
+    <p><strong>6. Kết Luận</strong></p>
+    <p>Trang web của chúng tôi không chỉ là một nơi để tìm kiếm thông tin mà còn là một không gian để bạn khám phá, học hỏi và kết nối. Chúng tôi hy vọng bạn sẽ tìm thấy những điều thú vị và hữu ích tại đây. Hãy tham gia cùng chúng tôi trong hành trình này và đừng quên quay lại thường xuyên để không bỏ lỡ những điều mới mẻ! Chúng tôi luôn chào đón bạn và mong muốn mang đến cho bạn những trải nghiệm tuyệt vời nhất.</p>
 
-      <div id="slide" class="game">
-        <h2 class="game-title">Slide</h2>
-        <div class="slide-container">
-          <!-- Content will be populated by JS -->
-        </div>
-      </div>
+    <p>Cảm ơn bạn đã ghé thăm trang web của chúng tôi! Chúc bạn có những trải nghiệm tuyệt vời!</p>
+</div>
+    </div>
+<div class="update-history-modal" id="update-history-modal" onclick="closeModal('update-history-modal')">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h2>Lịch Sử Cập Nhật</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ngày</th>
+                    <th>Nội Dung</th>
+                </tr>
+            </thead>
+            <tbody id="update-history-body">
+                <!-- Các bản cập nhật sẽ được thêm vào đây -->
+            </tbody>
+        </table>
+        <button onclick="closeModal('update-history-modal')">Đóng</button>
+    </div>
+<script>
+function showUpdateHistoryModal() {
+    const updateHistoryBody = document.getElementById('update-history-body');
+    updateHistoryBody.innerHTML = ''; // Xóa nội dung cũ
 
-      <div id="crossy" class="game">
-        <h2 class="game-title">Mission Uncrossable</h2>
-        <div class="controls centered-controls">
-          <div class="input-container">
-            <input type="number" id="crossy-bet" value="100" min="1">
-          </div>
-        </div>
-        <div class="crossy-container">
-          <!-- Content will be populated by JS -->
-        </div>
-      </div>
-    </main>
-  </div>
+    // Thêm các bản cập nhật vào bảng
+    const updates = [
+        { date: '24/1/2025', content: 'Update Tết Nguyên Đán 2025 - v1.5' },
+        { date: '9/1/2025', content: 'Thêm chat(tốn phết), cập nhật UI,...' },
+        { date: '1-31/1/2025', content: 'UPDATE TẾT! 😄 - v1' },
+        { date: '21/12/2024', content: 'Chuẩn bị cho Update tết, thêm tính năng cho người chơi test, tối ưu' },
+        { date: '20/12/2024', content: 'Update tài xỉu...🤨, thêm nút tự động quay, update shop, tối ưu' },
+        { date: '19/12/2024', content: 'Thêm nút Lịch sử cập nhật, update Pet RNG(hiệu ứng, nút), shop và minigame(tiện lợi hơn)' },
+        { date: '69/96/SayGex', content: 'Mấy cái Update cũ thằng Admin không ghi chép lại nên không có đâu' },
+        // Thêm nhiều bản cập nhật hơn nếu cần
+    ];
+
+    updates.forEach(update => {
+        const row = updateHistoryBody.insertRow();
+        const dateCell = row.insertCell(0);
+        const contentCell = row.insertCell(1);
+        dateCell.innerText = update.date;
+        contentCell.innerText = update.content;
+    });
+
+    document.getElementById('update-history-modal').style.display = 'flex';
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+    let candies = parseInt(localStorage.getItem('candies')) || 0;
+    let coins = parseInt(localStorage.getItem('money')) || 0; // Thêm biến xu
+    let lastClaimDate = localStorage.getItem('lastClaimDate'); // Lấy ngày từ localStorage
+
+function claimCandy() {
+    createCandyEffect();
+    const currentDate = new Date();
+    const today = currentDate.toDateString();
+    const lastClaimDateStored = lastClaimDate ? new Date(lastClaimDate).toDateString() : null; // Chuyển đổi lastClaimDate thành chuỗi ngày
+    const startDate = new Date('2025-01-29');
+    const endDate = new Date('2025-02-30');
+
+    // Kiểm tra xem thời gian có nằm trong tháng 1 năm 2025 không
+    if (currentDate < startDate || currentDate > endDate) {
+        alert("Bạn chỉ có thể nhận vào mùng 1 tháng 1 năm 2025. Hãy đăng nhập vào 29/1(1/1 Âm) để nhận quà khủng nhé! 💥");
+        return;
+    }
+
+    // Kiểm tra xem đã qua ngày mới chưa
+    if (lastClaimDateStored === today) {
+        alert("Bạn đã nhận kẹo hôm nay rồi! Nếu bạn đã qua hôm sau thì bạn hãy thử tắt trang đi bật lại xem.");
+        return;
+    }
+
+    // Kiểm tra xem có phải là ngày 1/1/2025 không
+    if (currentDate.toDateString() === startDate.toDateString()) {
+        // Tính số kẹo và xu nhận được cho ngày 1/1/2025
+        let candiesToClaim = Math.floor(Math.random() * 10000) + 1; // Số kẹo ngẫu nhiên từ 1-1000
+        let coinsToClaim = Math.floor(Math.random() * 10000000) + 1; // Số xu ngẫu nhiên từ 1-1000000
+
+        // Cập nhật số kẹo và xu
+        candies += candiesToClaim;
+        coins += coinsToClaim; // Cập nhật xu
+        lastClaimDate = today;
+
+        // Lưu trữ lại vào localStorage
+        localStorage.setItem('lastClaimDate', lastClaimDate); // Lưu ngày nhận kẹo
+        localStorage.setItem('candies', candies); // Lưu số kẹo vào localStorage
+        localStorage.setItem('money', coins); // Lưu số xu vào localStorage
+
+        alert(`Bạn đã nhận được ${candiesToClaim} kẹo và ${coinsToClaim} xu!`);
+        updateUI(); // Cập nhật giao diện
+        return; // Kết thúc hàm
+    }
+
+    // Tính số kẹo và xu nhận được cho các ngày khác
+    let candiesToClaim = Math.floor(Math.random() * 100) + 1; // Số kẹo ngẫu nhiên từ 1-10
+    let coinsToClaim = Math.floor(Math.random() * 10000) + 1; // Số xu ngẫu nhiên từ 1-50
+
+    // Kiểm tra xem có phải là ngày tiếp theo không
+    if (lastClaimDate) {
+        const lastDate = new Date(lastClaimDate);
+        const daysDiff = Math.floor((currentDate - lastDate) / (1000 * 60 * 60 * 24));
+
+        if (daysDiff === 1) {
+            candiesToClaim *= 2; // Nhận gấp đôi nếu là ngày tiếp theo
+            coinsToClaim *= 2; // Nhận gấp đôi xu nếu là ngày tiếp theo
+        } else if (daysDiff > 1) {
+            alert("Bạn đã bỏ lỡ ngày nhận kẹo. Còn bỏ nữa là tớ phạt đấy 😢"); // Thông báo khi bỏ lỡ ngày
+        }
+    }
+
+    // Cập nhật số kẹo và xu
+    candies += candiesToClaim;
+    coins += coinsToClaim; // Cập nhật xu
+    lastClaimDate = today;
+
+    // Lưu trữ lại vào localStorage
+    localStorage.setItem('lastClaimDate', lastClaimDate); // Lưu ngày nhận kẹo
+    localStorage.setItem('candies', candies); // Lưu số kẹo vào localStorage
+    localStorage.setItem('money', coins); // Lưu số xu vào localStorage
+
+    alert(`Bạn đã nhận được ${candiesToClaim} kẹo và ${coinsToClaim} xu! Hãy tiếp tục đăng nhập vào ngày mai để không mất chuỗi bạn nhé! 😄`);
+    updateUI(); // Cập nhật giao diện
+}
+
+function createCandyEffect() {
+    const candyEffectContainer = document.getElementById('candy-effect');
+
+    for (let i = 0; i < 20; i++) { // Tạo 20 biểu tượng kẹo
+        const candy = document.createElement('span');
+        candy.textContent = '🧧';
+        candy.style.position = 'absolute';
+        candy.style.fontSize = Math.random() * 30 + 20 + 'px'; // Kích thước ngẫu nhiên
+        candy.style.left = Math.random() * 100 + 'vw'; // Vị trí ngẫu nhiên trên màn hình
+        candy.style.bottom = '0';
+        candy.style.opacity = '1';
+        candy.style.transition = 'transform 2s ease, opacity 2s ease';
+        
+        // Thêm biểu tượng vào container
+        candyEffectContainer.appendChild(candy);
+
+        // Tạo hiệu ứng bay lên
+        setTimeout(() => {
+            candy.style.transform = 'translateY(-100vh)'; // Bay lên trên
+            candy.style.opacity = '0'; // Biến mất
+        }, 10);
+
+        // Xóa biểu tượng sau khi hiệu ứng hoàn tất
+        setTimeout(() => {
+            candyEffectContainer.removeChild(candy);
+        }, 2000);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const countdownElement = document.getElementById('countdown');
+    const newYear = new Date('2025-01-29T00:00:00'); // Thay đổi ngày Tết
+    const updateCountdown = () => {
+        const now = new Date();
+        const timeDiff = newYear - now;
+
+        if (timeDiff <= 0) {
+            countdownElement.textContent = "Chúc Mừng 2025!"; // Hiển thị "2025" khi đến Tết
+            clearInterval(countdownInterval); // Dừng đếm ngược
+        } else {
+            const seconds = Math.floor((timeDiff / 1000) % 60);
+            const minutes = Math.floor((timeDiff / 1000 / 60) % 60);
+            const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+
+            countdownElement.textContent = `${days} ngày ${hours} giờ ${minutes} phút ${seconds} giây đến Tết!`;
+        }
+    };
+
+    updateCountdown(); // Cập nhật ngay lần đầu
+    const countdownInterval = setInterval(updateCountdown, 1000); // Cập nhật mỗi giây
+});
+
+const songs = [
+    { title: "Happickleball (Pickleball X Happy New Year) | NHẠC TẾT 2025", url: "Happickleball (Pickleball X Happy New Year)  NHẠC TẾT 2025.mp3" },
+    { title: "SKIBIDI TẾT  nhạc tết 2025", url: "SKIBIDI TẾT  nhạc tết giáp thìn 2025.mp3" },
+    { title: "Nhật Chàm x Hoàng  Ngày Xuân Long Phụng Sum Vầy VITAS  BẢN FULL  TẾT 2025", url: "Nhật Chàm x Hoàng  Ngày Xuân Long Phụng Sum Vầy VITAS  BẢN FULL  TẾT 2025.mp3" },
+    { title: "Nhạc Tết 2025  Ma Gaming x Bing Chilling x Hóc Xương Cá Remix", url: "Nhạc Tết 2025  Ma Gaming x Bing Chilling x Hóc Xương Cá Remix.mp3" },
+    { title: "Nhạc Xổ Số 2025 Remix", url: "nhạc xổ số rm.MP3" },
+    { title: "bao giờ lấy chồng.m4a", url: "bao giờ lấy chồng.m4a" },
+    { title: "Đoản Xuân Ca Remix.mp3", url: "Đoản Xuân Ca Remix.mp3" },
+    { title: "Hoa Cỏ Mùa Xuân 2025 Remix.mp3", url: "Hoa Cỏ Mùa Xuân 2025 Remix.mp3" },
+    { title: "Nàng Xuân Remix.mp3", url: "Nàng Xuân Remix.mp3" },
+    { title: "NỤ CƯỜI XUÂN REMIX.mp3", url: "NỤ CƯỜI XUÂN REMIX.mp3" },
+    { title: "Ngày Xuân Long Phụng Sum Vầy - Nhạc Tết Remix 2025.mp3", url: "Ngày Xuân Long Phụng Sum Vầy - Nhạc Tết Remix 2025.mp3" },
+    { title: "Rồi Nâng Cái Ly.mp3", url: "Rồi Nâng Cái Ly.mp3" },
+    { title: "TẾT BÌNH AN REMIX.mp3", url: "TẾT BÌNH AN REMIX.mp3" },
+    { title: "Tết Đong Đầy.mp3", url: "Tết Đong Đầy.mp3" },
+    { title: "Tết Là Tết Remix.mp3", url: "Tết Là Tết Remix.mp3" },
+    { title: "Tết Tết Tết Tết đến rồi Ngày Tết Quê Em Remix 2025.mp3", url: "Tết Tết Tết Tết đến rồi Ngày Tết Quê Em Remix 2025.mp3" },
+    { title: "Thần Tài Đến Remix.mp3", url: "Thần Tài Đến Remix.mp3" },
+    { title: "Xuân này con không về Remix.mp3", url: "Xuân này con không về Remix.mp3" },
+    // Thêm nhiều bài hát khác nếu cần
+];
+
+let audio; // Biến toàn cục để lưu trữ audio
+let audioContext; // Biến để lưu trữ AudioContext
+let analyser; // Biến để lưu trữ AnalyserNode
+
+function playRandomSong() {
+    const randomIndex = Math.floor(Math.random() * songs.length);
+    const selectedSong = songs[randomIndex];
+
+    // Cập nhật tên bài hát
+    document.querySelector('.song-title').textContent = selectedSong.title;
+
+    // Nếu có bài hát đang phát, tạm dừng nó
+    if (audio) {
+        audio.pause();
+        audio.currentTime = 0; // Đặt lại thời gian phát
+    }
+
+    // Tạo audio mới và phát bài hát
+    audio = new Audio(selectedSong.url); // Đảm bảo audio là HTMLMediaElement
+    audio.volume = 0; // Đặt âm lượng ban đầu là 0
+
+    // Khởi tạo AudioContext và Analyser
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioContext.createAnalyser();
+    const source = audioContext.createMediaElementSource(audio); // Sử dụng audio ở đây
+    source.connect(analyser);
+    analyser.connect(audioContext.destination);
+
+const dataArray = new Uint8Array(analyser.frequencyBinCount);
+analyser.getByteFrequencyData(dataArray);
+
+// Hàm để thực hiện hiệu ứng viền
+function animateBorder() {
+    requestAnimationFrame(animateBorder);
+    analyser.getByteFrequencyData(dataArray); // Lấy dữ liệu tần số
+    const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+    const scale = 1 + average / 256; // Điều chỉnh tỷ lệ theo âm thanh
+    document.querySelector('.record-image').style.transform = `scale(${scale})`; // Thay đổi kích thước
+}
+
+    // Bắt đầu phát nhạc và gọi hàm animateBorder
+    audioContext.resume().then(() => {
+        audio.play();
+        animateBorder(); // Bắt đầu hiệu ứng viền
+
+        // Cập nhật BPM theo nhạc
+        updateBpm(120); // Ví dụ: cập nhật BPM theo bài hát hiện tại
+
+        // Hiệu ứng Fade In
+        let fadeInInterval = setInterval(() => {
+            if (audio.volume < 1) {
+                audio.volume = Math.min(audio.volume + 0.1, 1); // Tăng âm lượng
+            } else {
+                clearInterval(fadeInInterval); // Dừng hiệu ứng khi âm lượng đạt 1
+            }
+        }, 100); // Tăng âm lượng mỗi 100ms
+    });
+}
+
+let isPlaying = false; // Biến để theo dõi trạng thái phát nhạc
+
+function togglePlayPause() {
+    if (isPlaying) {
+        pauseSong(); // Nếu đang phát, tạm dừng
+    } else {
+        if (audio) {
+            audio.play(); // Nếu không có bài hát mới, tiếp tục phát
+            isPlaying = true; // Đánh dấu là đang phát
+
+            // Thay đổi hình ảnh khi tiếp tục phát
+            document.querySelector('.music-status-image').style.display = 'block'; // Hiện hình ảnh đang phát
+            document.querySelector('.music-status-image.paused').style.display = 'none'; // Ẩn hình ảnh tạm dừng
+
+            // Hiệu ứng Fade in
+            let fadeInInterval = setInterval(() => {
+                if (audio.volume < 1) {
+                    audio.volume = Math.min(audio.volume + 0.1, 1); // Tăng âm lượng
+                } else {
+                    clearInterval(fadeInInterval); // Dừng hiệu ứng khi âm lượng đạt 1
+                }
+            }, 100); // Tăng âm lượng mỗi 100ms
+        } else {
+            playRandomSong(); // Nếu không có bài hát nào, phát bài hát ngẫu nhiên
+        }
+    }
+}
+
+function pauseSong() {
+    if (audio) {
+        // Hiệu ứng Fade out
+        let fadeOutInterval = setInterval(() => {
+            if (audio.volume > 0) {
+                audio.volume = Math.max(audio.volume - 0.1, 0); // Giảm âm lượng
+            } else {
+                audio.pause(); // Tạm dừng bài hát khi âm lượng đạt 0
+                clearInterval(fadeOutInterval); // Dừng hiệu ứng
+                isPlaying = false; // Đánh dấu là không còn phát
+
+                // Thay đổi hình ảnh khi tạm dừng
+                document.querySelector('.music-status-image').style.display = 'none'; // Ẩn hình ảnh đang phát
+                document.querySelector('.music-status-image.paused').style.display = 'block'; // Hiện hình ảnh tạm dừng
+            }
+        }, 100); // Giảm âm lượng mỗi 100ms
+    }
+}
+
+function phatnhac() {
+    playRandomSong(); // phát bài hát ngẫu nhiê
+    
+    audio.addEventListener('ended', () => {
+    setTimeout(playRandomSong, 1000); // Đợi 1 giây trước khi phát bài hát mới
+});
+
+// Tạo hiệu ứng rơi liên tục
+setInterval(createFallingImage, 500); // Tạo ảnh mới mỗi 500ms
+}
+
+document.getElementById('farewell-button').addEventListener('click', function() {
+    const randomChance = Math.random(); // Tạo một số ngẫu nhiên từ 0 đến 1
+    if (randomChance < 0.01) { // Kiểm tra xem số ngẫu nhiên có nhỏ hơn 0.01 (1%) không
+        window.location.href = 'petspin.html'; // Chuyển đến trang petspin.html
+    } else {
+        // Thực hiện các hành động khác nếu không chuyển trang
+        const yearText = document.querySelector('.year-text');
+        const farewellText = document.querySelector('.farewell-text');
+        const newMessage = document.getElementById('new-message');
+        const farewellMessage = document.getElementById('farewell-message'); // Thêm biến để tham chiếu đến nền trắng
+        const farewellButton = document.getElementById('farewell-button'); // Thêm biến để tham chiếu đến nút
+
+        // Gọi hàm phát nhạc ngẫu nhiên
+        phatnhac(); // Thêm dòng này để phát nhạc
+
+        // Kiểm tra xem có đang hiển thị icon và dòng chữ mới không
+        if (newMessage.style.display === 'none') {
+            yearText.classList.add('fade-out'); // Thêm lớp để bắt đầu hiệu ứng bay đi
+            farewellText.classList.add('fade-out'); // Thêm lớp để bắt đầu hiệu ứng bay đi
+            farewellMessage.classList.add('fade-out'); // Thêm lớp để mờ dần nền trắng
+            farewellButton.classList.add('fade-out'); // Thêm lớp để mờ dần nút
+
+            // Ẩn phần tử sau khi hiệu ứng hoàn tất
+            setTimeout(() => {
+                yearText.style.display = 'none'; // Ẩn dòng chữ "2024"
+                farewellText.style.display = 'none'; // Ẩn dòng chữ nhỏ
+                farewellMessage.style.display = 'none'; // Ẩn nền trắng
+                farewellButton.style.display = 'none'; // Ẩn nút "Tạm biệt nhé 👋"
+                // Xóa tất cả các ảnh đang rơi
+                document.querySelectorAll('.falling-image').forEach(img => img.remove());
+            }, 1000); // Thêm thời gian cho hiệu ứng fade-out
+        }
+    }
+});
+
+const imageUrls = [
+    'lá đào1.png', 'lá đào2.png', 'lá đào3.png', 'lá đào4.png', 
+    'lá đào5.png', 'lá đào6.png', 'lá đào7.png', 'lá đào8.png', 
+    'lá đào9.png', 'lá đào10.png', 'lá đào11.png', 'lá đào12.png'
+]; // Danh sách đường dẫn đến ảnh
+const defaultBpm = 1; // BPM mặc định siêu chậm
+let currentBpm = defaultBpm; // BPM hiện tại
+
+function createFallingImage() {
+    const img = document.createElement('img');
+    const randomImageUrl = imageUrls[Math.floor(Math.random() * imageUrls.length)];
+    img.src = randomImageUrl;
+    img.className = 'falling-image';
+
+    // Đặt vị trí ngẫu nhiên từ trên bên phải
+    const randomX = window.innerWidth * (0.5 + Math.random() * 0.5); // Chỉ từ giữa đến phải
+    img.style.left = `${randomX}px`;
+    img.style.top = '0'; // Bắt đầu từ trên cùng
+    img.style.opacity = '0'; // Bắt đầu với độ mờ 0
+
+    // Chọn góc rơi ngẫu nhiên từ -60 đến 60 độ
+    const randomAngle = (Math.random() * 120 - 60); // Góc từ -60 đến 60 độ
+    const fallDistance = window.innerHeight + 50; // Khoảng cách rơi
+
+    document.body.appendChild(img);
+
+    // Tính toán thời gian rơi
+    const speedFactor = 100 / (currentBpm / 60); // Giảm tốc độ rơi
+    const fallDuration = speedFactor * (5 / 100) * 1000; // Tốc độ rơi tương ứng với chiều cao (đơn vị ms)
+
+    // Chọn hướng rơi ngẫu nhiên
+    const directions = ['left', 'right', 'down-left', 'down-right'];
+    const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+    let translateX, rotateAngle;
+
+    // Bắt đầu hiệu ứng rơi
+    setTimeout(() => {
+        img.style.transition = 'opacity 1s, transform 1s linear'; // Thêm hiệu ứng chuyển đổi độ mờ
+        img.style.opacity = '1'; // Hiển thị dần dần
+
+        let translateX = 0;
+        let translateY = fallDistance;
+        let rotateAngle = 0;
+
+        switch (randomDirection) {
+        case 'left':
+            translateX = -fallDistance / 2;
+            rotateAngle = randomAngle;
+            break;
+        case 'right':
+            translateX = fallDistance / 2;
+            rotateAngle = randomAngle;
+            break;
+        case 'down-left':
+            translateX = -fallDistance / 2;
+            rotateAngle = randomAngle;
+            break;
+        case 'down-right':
+            translateX = fallDistance / 2;
+            rotateAngle = randomAngle;
+            break;
+    }
+
+        img.style.transform = `translate(${translateX}px, ${translateY}px) rotate(${rotateAngle}deg)`; // Rơi xuống theo hướng ngẫu nhiên và xoay
+    }, 100); // Thời gian chờ trước khi bắt đầu rơi
+
+    // Xóa ảnh sau khi rơi xong hoặc ra khỏi màn hình
+    const removeImage = () => {
+        img.remove();
+    };
+
+    img.addEventListener('transitionend', () => {
+        const rect = img.getBoundingClientRect();
+        if (rect.left < 0 || rect.right > window.innerWidth) {
+            removeImage();
+        }
+    });
+
+    setTimeout(removeImage, fallDuration + 700); // Thêm thời gian để đảm bảo ảnh đã rơi xong
+}
+
+// Hàm để cập nhật BPM theo nhạc
+function updateBpm(newBpm) {
+    currentBpm = newBpm;
+}
+</script>
+<img src="lá đào.gif" id="repeating-gif" class="repeating-gif" alt="Repeating GIF">
 </body>
 </html>
