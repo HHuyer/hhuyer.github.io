@@ -1,0 +1,1159 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Pet Generator</title>
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+        margin: 0;
+      overflow: hidden
+    }
+    .container {
+        text-align: center;
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+        margin: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 90%;
+    }
+    .generate-button {
+        position: relative;
+        margin-top: 20px;
+        cursor: pointer;
+        background: #EE0000; 
+        border: none;
+        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: background 0.3s, box-shadow 0.3s;
+        box-shadow: 0 0 10px rgba(255, 20, 20, 0.8); /* Thêm bóng để tăng sự nổi bật */
+    }
+    .generate-button:hover {
+        background: #FF0000; /* Màu xanh lá cây đậm hơn khi hover */
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.8); /* Tăng bóng khi hover */
+    }
+    .dice-icon {
+        width: 175px;
+        height: 175px;
+    }
+    .countdown-bar {
+        width: 100%;
+        height: 10px;
+        background-color: #00ee00;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        transition: width 2s linear;
+    }
+    .history {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-height: 400px;
+        overflow-y: auto;
+        margin-top: 20px;
+        width: 100%;
+        position: relative;
+    }
+    .history-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .info-button {
+        width: 30px;
+        height: 30px;
+        background: url('https://static.thenounproject.com/png/2392586-200.png') no-repeat center center;
+        background-size: cover;
+        cursor: pointer;
+        border: none;
+        border-radius: 50%;
+    }
+    .info-modal, .pet-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        display: none;
+    }
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        max-width: 90%;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 12px;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    input[type="text"] {
+        padding: 10px;
+        margin-top: 20px;
+        font-size: 16px;
+        width: calc(100% - 22px);
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+    button {
+        padding: 10px 20px;
+        margin-top: 10px;
+        font-size: 16px;
+        background-color: #00ee00;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    button:hover {
+        background-color: #00ee00;
+    }
+#money-container {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    flex-direction: column; /* Thay đổi chiều sắp xếp thành cột */
+    position: static; /* Thay đổi vị trí thành static */
+}
+   .coin {
+        position: absolute;
+        font-size: 25px;
+        animation: fly 1s ease-out forwards;
+    }
+    @keyframes fly {
+        0% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        100% {
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+    }
+    .pet-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        margin-top: 10px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .luck-icon {
+        width: 20px;
+        height: 20px;
+        margin-left: 5px;
+    }
+
+    /* Media Query cho thiết bị nhỏ */
+    @media (max-width: 600px) {
+        .container {
+            padding: 10px;
+            margin: 10px;
+        }
+        .pet-image {
+            width: 60px;
+            height: 60px;
+        }
+        input[type="text"] {
+            font-size: 14px;
+        }
+    #money-container {
+        font-size: 18px; /* Giảm kích thước chữ nếu cần */
+        align-items: flex-start; /* Căn trái cho phần tử bên trong */
+    }
+    }
+
+    /* CSS cho bảng thông báo */
+    .notification {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        padding: 20px;
+    }
+
+    .modal {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        width: 90%;
+        max-width: 400px;
+        box-sizing: border-box;
+    }
+
+    .modal img {
+        width: 100%;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .modal h2 {
+        margin-bottom: 10px;
+        font-weight: bold;
+        font-size: 1.2em;
+    }
+
+    .modal p {
+        margin-bottom: 20px;
+        font-size: 1em;
+    }
+
+    .modal button {
+        padding: 10px 20px;
+        background-color: #00ee00;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+    }
+
+    .modal button:hover {
+        background-color: #00ee00;
+    }
+    .level-container {
+        display: flex;
+        justify-content: center; /* Căn giữa theo chiều ngang */
+        margin-top: 20px;
+        margin-bottom: 20px; /* Thêm khoảng cách dưới */
+        text-align: center;
+    }
+    .level-bar {
+        width: 65vw;
+        height: 20px;
+        background-color: #ddd;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+    .level-progress {
+        height: 100%;
+        background-color: #4caf50;
+        width: 0;
+        transition: width 0.3s;
+    }
+    .level-text {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        top: 0;
+        left: 0;
+        line-height: 20px;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <b><i>I’m a budding programmer, subscribe to support my growth ❤️</b><p>If you want to play the full version, click on the link in the description.</p><br>
+        <center><div class="generate-button" onclick="generateRandomPet(event), createFlyingIcon(event)">
+            <img src="nút quay tết.png" alt="Dice Icon" class="dice-icon"></cener>
+        </div>
+        <button class="auto-generate-button" onclick="startAutoGenerate()">Auto Spin</button><br>
+              <big><b>Sub or Like = Spin</b></big>
+        <p id="result"></p>
+        <br>
+        <img id="pet-image" class="pet-image" src="" alt="Pet Image">
+        <p id="probability"></p>
+        <p id="spin-count"></p>
+        <p id="next-luck"></p>
+        <div class="countdown-bar" id="countdown-bar"></div>
+        <div>
+            <input type="text" id="code-input" placeholder="Enter redemption code" oninput="normalizeCode(this)">
+            <button onclick="submitCode()">Redeem</button>
+        </div>
+    </div>
+    <div class="history" id="history">
+        <center><div class="level-container">
+            <div class="level-bar" id="level-bar">
+                <div class="level-progress" id="level-progress"></div>
+                <div class="level-text" id="level-text">LV 1 - 0/100 XP</div>
+            </div>
+        </div></center>
+        <div class="history-header">
+            <h2>Received Pets</h2>
+            <div id="money-container" style="position: relative;">
+                <img id="money-image" src="https://i.ibb.co/7khs8rR/Screenshot-2024-12-21-12-15-07-10-db6c32ae4bfb64518b0ba7966d8bb512-Photoroom.jpg" alt="money icon" style="width: 175px; height: 75px;">
+                <span id="money" style="position: absolute; top: 31px; right: 85px; color: white; font-size: 20px;">0</span>
+                <div>
+                    <button onclick="showShopModal()">
+                        <img src="https://i.ibb.co/7xf90dD/Shop-Icon.webp" style="width: 20px; height: 20px;">
+                    </button>
+                    <button onclick="showMiniGameModal()">
+                        <img src="https://png.pngtree.com/png-vector/20191028/ourlarge/pngtree-game-control-line-icon-vector-png-image_1904129.jpg" style="width: 20px; height: 20px;">
+                    </button>
+                    <button onclick="showChatModal()">
+                        <img src="https://cdn-icons-png.flaticon.com/512/5962/5962463.png" style="width: 20px; height: 20px;">
+                    </button>
+                    <button onclick="showbxhModal()">
+                        <img src="https://icons.iconarchive.com/icons/thesquid.ink/free-flat-sample/512/cup-icon.png" style="width: 20px; height: 20px;">
+                    </button>
+                </div>
+            </div>
+        </div>
+        <table id="history-table">
+            <thead>
+                <tr>
+                    <th>Pet</th>
+                    <th>Probability</th>
+                    <th>Timer</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Random pets will be added here -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pet-modal" id="pet-modal" onclick="closeModal('pet-modal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <img id="pet-modal-image" src="" alt="Pet Image" class="pet-image">
+            <p id="pet-modal-info"></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.29.9.js"></script>
+    <script>
+        const pets = [
+            { name: 'Cat', probability: 1/20, image: 'https://ih1.redbubble.net/image.5524686591.1356/raf,360x360,075,t,fafafa:ca443f4786.jpg' },
+            { name: 'Dog', probability: 1/10, image: 'https://fagopet.vn/storage/dq/36/dq365u8lutu3hcfnfzyrck2lamjm_cho-poodle-nau.webp' },
+            { name: 'Rabbit', probability: 1/15, image: 'https://images.ctfassets.net/rt5zmd3ipxai/189GnSsegQkBWUqGJGED6E/c0108e32656d5f4714187a9a58f75295/AdobeStock_247330858.jpeg?fit=fill&fm=webp&h=480&w=782&q=72,%20https://images.ctfassets.net/rt5zmd3ipxai/189GnSsegQkBWUqGJGED6E/c0108e32656d5f4714187a9a58f75295/AdobeStock_247330858.jpeg?fit=fill&fm=webp&h=960&w=1564&q=72' },
+            { name: 'Hamster', probability: 1/25, image: 'https://lolipet.net/wp-content/uploads/2023/11/z4857310072695_728959d9bec5acddc5a04e389c77c113.jpg' },
+            { name: 'Fish', probability: 1/5, image: 'https://i.natgeofe.com/n/18708334-6fce-40b5-ade6-a7e2db7035f2/01-goldfish-nationalgeographic_1567132.jpg?wp=1&w=1084.125&h=721.875' },
+            { name: 'Parrot', probability: 1/30, image: 'https://blog.nature.org/wp-content/uploads/2019/09/5466780476_47f0336213_o.jpg?w=1024' },
+            { name: 'ĐỖ PHÚ QUÍ (PICKLEBALL)', probability: 1/4100000, image: 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/5/d/a/7/5da7072eaf8a8cf3350ee91fb2544221.jpg'},
+            { name: 'Turtle', probability: 1/50, image: 'https://ih1.redbubble.net/image.1123475296.4646/flat,750x,075,f-pad,750x1000,f8f8f8.jpg' },
+            { name: 'MeoBeo', probability: 1/999, image: 'https://cdn.tuoitre.vn/thumb_w/480/471584752817336320/2024/5/20/meo-beo-1716184689176563233778.jpg' },
+            { name: 'Guinea Pig', probability: 1/35, image: 'https://i.pinimg.com/736x/96/ae/9e/96ae9eab678fc1a50af63acd5e5ab2dd.jpg' },
+            { name: 'Chinchilla', probability: 1/45, image: 'https://cdn1.tedsby.com/storage/1/1/5/1159559/mouse-chinchilla-by-ekaterina-usenko.jpg' },
+            { name: 'Horse', probability: 1/100, image: 'https://i.redd.it/cz32nm0l7i771.jpg' },
+            { name: 'Panda', probability: 1/200, image: 'https://ih1.redbubble.net/image.907812001.1782/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.jpg' },
+            { name: 'Koala', probability: 1/150, image: 'https://i.pinimg.com/236x/90/de/ac/90deaced0f9448c83c4f7fd0ffdacdcd.jpg' },
+            { name: 'Penguin', probability: 1/120, image: 'https://images.twinkl.co.uk/tw1n/image/private/t_630/u/ux/emperor-penguin-facts-for-kids-cute_ver_3.jpg' },
+            { name: 'Fox', probability: 1/80, image: 'https://s.abcnews.com/images/Lifestyle/ht_pudding_the_fox_03_mt_140821_16x9_992.jpg' },
+            { name: 'Lion', probability: 1/110, image: 'https://preview.redd.it/what-does-the-lion-say-meow-meow-v0-5u9et6m5rrac1.jpg?width=640&crop=smart&auto=webp&s=2827ce8acdb2968df56233a9acbbc2b1e7cb0d84' },
+            { name: 'Tiger', probability: 1/130, image: 'https://www.lionstigersandbears.org/wp-content/uploads/2024/03/Exposing-the-Cruel-Reality-of-White-Tigers-in-Captivity-2024.jpg' },
+            { name: 'Elephant', probability: 1/140, image: 'https://i.pinimg.com/474x/dd/51/d7/dd51d787de66c7fce0a7c84962491e84.jpg' },
+            { name: 'Giraffe', probability: 1/160, image: 'https://i.pinimg.com/736x/ee/a6/91/eea691adc0698f0792d4efb40032771c.jpg' },
+            { name: 'Chill Guy', probability: 1/420, image: 'https://static.toiimg.com/thumb/msid-115690235,width-400,resizemode-4/115690235.jpg' },
+            { name: ' uncHill gal', probability: 1/419, image: 'https://assets.coingecko.com/coins/images/51981/large/IMG_9410.jpeg?1732289439' },
+    // Hoa quả phổ biến
+    { name: 'Banana', probability: 1/31000, image: 'https://www.shutterstock.com/image-vector/banana-cat-isolated-on-white-260nw-2353794733.jpg' },
+    { name: 'Apple', probability: 1/32000, image: 'https://assets.coingecko.com/coins/images/36349/large/acat.png?1711188328' },
+    { name: 'Orange', probability: 1/33000, image: 'https://images-handler.kamereo.vn/eyJidWNrZXQiOiJpbWFnZS1oYW5kbGVyLXByb2QiLCJrZXkiOiJzdXBwbGllci82NTQvUFJPRFVDVF9JTUFHRS8zMzBkYWQwYi01M2U0LTQ0MGItYjNlMC1kMjYxOTJjMTE1YzYucG5nIn0=' },
+    { name: 'Strawberry', probability: 1/34000, image: 'https://www.calgiant.com/wp-content/uploads/2021/08/berry-iso-straw-1-878x1024.png' },
+    { name: 'Watermelon', probability: 1/35000, image: 'https://ih1.redbubble.net/image.1320803020.3540/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.u2.jpg' },
+    { name: 'Pineapple', probability: 1/36000, image: 'https://img.wattpad.com/daaae6be9230e3457ff7b3a5be356cbf60814bc5/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f443239554d707536766a364d51513d3d2d3536333930323332332e313532373364356533626166383761333837383439383036393338392e6a7067?s=fit&w=720&h=720' },
+    { name: 'Mango', probability: 1/37000, image: 'https://i.pinimg.com/originals/13/35/64/1335641b1ea07ba362d09e941fad28c9.jpg' },
+    { name: 'Grapes', probability: 1/38000, image: 'https://static.vecteezy.com/system/resources/previews/027/254/790/non_2x/grapes-isolated-on-transparent-background-file-cut-out-ai-generated-png.png' },
+    { name: 'Cherry', probability: 1/39000, image: 'https://images3.memedroid.com/images/UPLOADED390/598851c34322d.jpeg' },
+    { name: 'Peach', probability: 1/40000, image: 'https://i.chzbgr.com/full/9102040832/h1E529CE6/a-cigarette-supposed-to-be-princess-peach-saying-she-hasnt-heard-the-names-mario-and-luigi-in-years' },
+    { name: 'Avocado', probability: 1/41000, image: 'https://i.chzbgr.com/full/9196866816/h46E2A6DC/did-you-knowthe-aztec-word-for-avocado-means-testicle-tree' },
+    { name: 'Coconut', probability: 1/42000, image: 'https://i.pinimg.com/736x/d5/be/56/d5be56bdff6f7e88bb8ac80a8d924baf.jpg' },
+    { name: 'Kiwi', probability: 1/43000, image: 'https://ih1.redbubble.net/image.5047482046.3553/raf,360x360,075,t,fafafa:ca443f4786.jpg' },
+    { name: 'Lemon', probability: 1/44000, image: 'https://i.redd.it/42558pgcj7zc1.png' },
+    { name: 'Lime', probability: 1/45000, image: 'https://m.media-amazon.com/images/I/81KoXfeCD1L.jpg' },
+    { name: 'Blueberry', probability: 1/46000, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRT7A9xxm3GXrCTjqrkepIR0V_W86gfQXh0-A&s' },
+    { name: 'Raspberry', probability: 1/47000, image: 'https://i.pinimg.com/736x/d4/4b/69/d44b697d1b0da0f857364f71db2d08bd.jpg' },
+    { name: 'Blackberry', probability: 1/48000, image: 'https://i.pinimg.com/736x/d0/56/a9/d056a9870343c8e4e7e9e794b9abbce8.jpg' },
+    { name: 'Dragon Fruit', probability: 1/49000, image: 'https://img.ifunny.co/images/551dc2c59732ebfc75838dc5ec997ccf56d33e2337cf2fa4dffb6a8761f4bcbf_1.jpg' },
+    { name: 'Papaya', probability: 1/50000, image: 'https://ih1.redbubble.net/image.2657849200.5846/raf,360x360,075,t,fafafa:ca443f4786.jpg' },
+    // Meme
+    { name: 'Doge', probability: 1/500, image: 'https://kenh14cdn.com/zoom/594_371/203336854389633024/2024/5/26/photo1716706342049-17167063421621541902854.jpg' },
+    { name: 'Pepe', probability: 1/1000, image: 'https://static01.nyt.com/images/2016/09/28/us/28xp-pepefrog/28xp-pepefrog-superJumbo.jpg' },
+    { name: 'Grumpy Cat', probability: 1/2000, image: 'https://ew.com/thmb/0_PyYU_Nym5fWeedIxPb6WHiuRQ=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/b31-92532f841b9349638d226a6c62aa9e85.jpg' },
+    { name: 'Nyan Cat', probability: 1/3000, image: 'https://upload.wikimedia.org/wikipedia/vi/b/b7/Nyan_Cat_250px.png' },
+    { name: 'Trollface', probability: 1/4000, image: 'https://upload.wikimedia.org/wikipedia/en/7/73/Trollface.png' },
+    { name: 'Success Kid', probability: 1/5000, image: 'https://upload.wikimedia.org/wikipedia/en/f/ff/SuccessKid.jpg' },
+    { name: 'Bad Luck Brian', probability: 1/6000, image: 'https://www-s3-live.kent.edu/s3fs-root/s3fs-public/styles/fixed_width_1200/public/syiviojoq72a1_0.jpg?VersionId=DM4DX1t4FsSOHDesXvmUlI52c_TFW9iR&itok=YAqV2OUS' },
+    { name: 'Dancing Baby', probability: 1/7000, image: 'https://i.pinimg.com/originals/a4/27/98/a42798da3846ddfc1a8a13e3d114e696.gif' },
+    { name: 'Salt Bae', probability: 1/8000, image: 'https://media-cldnry.s-nbcnews.com/image/upload/t_fit-760w,f_auto,q_auto:best/newscms/2017_05/1890591/170203-salt-bae-mn-1530.jpg' },
+    { name: 'Distracted Boyfriend', probability: 1/9000, image: 'https://media.wired.com/photos/59a459d3b345f64511c5e3d4/master/pass/MemeLoveTriangle_297886754.jpg' },
+    // Nhân vật nổi tiếng
+    { name: 'Elon Musk', probability: 1/10000, image: 'https://cdn-images.vtv.vn/zoom/640_400/66349b6076cb4dee98746cf1/2024/11/12/elon-musk-97432930993441922212990-05400702350001787647929.webp' },
+    { name: 'Albert Einstein', probability: 1/11000, image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Albert_Einstein_sticks_his_tongue_1951.jpg/189px-Albert_Einstein_sticks_his_tongue_1951.jpg' },
+    { name: 'Isaac Newton', probability: 1/12000, image: 'https://upload.wikimedia.org/wikipedia/commons/3/3b/Portrait_of_Sir_Isaac_Newton%2C_1689.jpg' },
+    { name: 'Nikola Tesla', probability: 1/13000, image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Tesla_circa_1890.jpeg/800px-Tesla_circa_1890.jpeg' },
+    { name: 'Marie Curie', probability: 1/14000, image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Marie_Curie_c._1920s.jpg/800px-Marie_Curie_c._1920s.jpg' },
+    { name: 'Leonardo da Vinci', probability: 1/15000, image: 'https://www.misa.vn/wp-content/uploads/2020/06/MISA_bai_hoc_nghe_nghiep.jpg' },
+    { name: 'Steve Jobs', probability: 1/16000, image: 'https://vcdn1-sohoa.vnecdn.net/2021/02/16/v2-4f48da9ef042a1915ebfedd0682-6733-6243-1613447924.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=IMz9OQIgjN-kBBfTL-MJFQ' },
+    { name: 'Bill Gates', probability: 1/17000, image: 'https://yt3.googleusercontent.com/WuPodYLA22bumFSAnf654wJ8cE7n2Zb8M2KEF5B3RiyziqLTXQpp6JXBYOSH8zifY_jihWVq=s900-c-k-c0x00ffffff-no-rj' },
+    { name: 'Mark Zuckerberg', probability: 1/18000, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRG9OyOlAU8bvwAbAYiegM42OYvOI6m5yaKA&s' },
+    { name: 'Oprah Winfrey', probability: 1/19000, image: 'https://hips.hearstapps.com/hmg-prod/images/oprah-winfrey-arrives-at-the-premiere-of-owns-david-makes-news-photo-1678107564.jpg?crop=0.989xw:0.851xh;0.00489xw,0.0112xh&resize=1200:*' },
+    // Phim
+    { name: 'Shrek', probability: 1/20000, image: 'https://m.media-amazon.com/images/M/MV5BZDE2ZjIxYzUtZTJjYS00OWQ0LTk2NGEtMDliYmI3MzMwYjhkXkEyXkFqcGdeQWFsZWxvZw@@._V1_.jpg' },
+    { name: 'SpongeBob', probability: 1/21000, image: 'https://upload.wikimedia.org/wikipedia/en/thumb/3/3b/SpongeBob_SquarePants_character.svg/800px-SpongeBob_SquarePants_character.svg.png' },
+    { name: 'Minion', probability: 1/22000, image: 'https://i.ytimg.com/vi/IGJVbIHTTqs/maxresdefault.jpg' },
+    { name: 'Pikachu', probability: 1/23000, image: 'https://media.wired.com/photos/5f87340d114b38fa1f8339f9/master/w_1600%2Cc_limit/Ideas_Surprised_Pikachu_HD.jpg' },
+    { name: 'Iron Man', probability: 1/24000, image: 'https://media.pinatafarm.com/protected/9CB33540-63CA-4013-AD4C-17771C92EDC4/4300f891-6628-4b9c-af27-766d8e8adbe1-1720020684038-pfarm-with-png-watermarked.webp' },
+    { name: 'Batman', probability: 1/25000, image: 'https://static1.cbrimages.com/wordpress/wp-content/uploads/2019/02/Batman-slapping-Robin-Meme-Blank.jpg' },
+    { name: 'Superman', probability: 1/26000, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRizsNvFaMGhKbGOIT4urkyg-QOdam7FH7S6A&s' },
+    { name: 'Goku', probability: 1/27000, image: 'https://i.kym-cdn.com/photos/images/newsfeed/001/975/756/46f.jpg' },
+    { name: 'Naruto', probability: 1/28000, image: 'https://preview.redd.it/what-scene-character-or-arc-did-you-cringe-the-most-about-v0-qi84d684eohb1.png?auto=webp&s=92c344acfce0c621001a3f60818bf9b205b4c5d3' },
+    { name: 'Mario', probability: 1/29000, image: 'https://media.tenor.com/aQQT2lV_XcsAAAAe/mario.png' },
+    { name: 'Luigi', probability: 1/30000, image: 'https://a.pinatafarm.com/640x562/7ed117e72b/luigi-dance.jpg' },
+    { name: 'Yoda', probability: 1/31000, image: 'https://ae01.alicdn.com/kf/S2c36fb9be2944a3fa2bafa087462ebadJ.jpg_960x960.jpg' },
+    { name: 'Darth Vader', probability: 1/32000, image: 'https://lumiere-a.akamaihd.net/v1/images/darth-vader-main_4560aff7.jpeg?region=71%2C0%2C1139%2C854' },
+    { name: 'Harry Potter', probability: 1/33000, image: 'https://cdn.tuoitre.vn/zoom/640_400/2019/9/3/17988102-7420621-the8bookpotterseriesandotherrelatedstoriesaudiorecordi-a-61567460030727-15674958768921527956477.jpg' },
+    { name: 'Hermione', probability: 1/34000, image: 'https://wizardmagazines.wordpress.com/wp-content/uploads/2020/08/hermionegranger.jpg?w=1400' },
+    { name: 'Ron Weasley', probability: 1/35000, image: 'https://upload.wikimedia.org/wikipedia/vi/thumb/5/5e/Ron_Weasley_poster.jpg/250px-Ron_Weasley_poster.jpg' },
+    { name: 'Frodo', probability: 1/36000, image: 'https://www.looper.com/img/gallery/frodo-baggins-12-best-moments-in-the-lord-of-the-rings-franchise-ranked/intro-1663422318.jpg' },
+    { name: 'Gandalf', probability: 1/37000, image: 'https://i.kym-cdn.com/entries/icons/facebook/000/042/690/Screen_Shot_2022-11-16_at_2.24.03_PM.jpg' },
+    { name: 'Legolas', probability: 1/38000, image: 'https://i.imgflip.com/hja17.jpg?a482208' },
+    { name: 'Aragorn', probability: 1/39000, image: 'https://i.ytimg.com/vi/TPBq1khnb-w/sddefault.jpg' },
+    { name: 'Thanos', probability: 1/40000, image: 'https://pbs.twimg.com/media/EnYMpr8XMAw5GFt.jpg' },
+    { name: 'Captain America', probability: 1/41000, image: 'https://platform.polygon.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/10857121/so_meme.jpg?quality=90&strip=all&crop=7.860824742268,0,84.278350515464,100' },
+    { name: 'Thor', probability: 1/42000, image: 'https://upload.wikimedia.org/wikipedia/en/3/3c/Chris_Hemsworth_as_Thor.jpg' },
+    { name: 'Hulk', probability: 1/43000, image: 'https://i.pinimg.com/736x/6d/60/3f/6d603f0dd948a093d2596001788c26e5.jpg' },
+    { name: 'Black Widow', probability: 1/44000, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQib7qH9qJUmNW1ORLVVQZFc_kD4Xo1Pg3HKA&s' },
+    { name: 'Spider-Man', probability: 1/45000, image: 'https://content.imageresizer.com/images/memes/same-spider-man-7-meme-4.jpg' },
+    { name: 'Wolverine', probability: 1/46000, image: 'https://m.media-amazon.com/images/M/MV5BNzg1MDQxMTQ2OF5BMl5BanBnXkFtZTcwMTk3MjAzOQ@@._V1_.jpg' },
+    { name: 'Deadpool', probability: 1/47000, image: 'https://imgflip.com/s/meme/Deadpool-Surprised.jpg' },
+    { name: 'Joker', probability: 1/48000, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRet8lwKN1kTlz6XhIXORQiUHHzBOrL06Kkng&s' },
+    // Easter egg
+    { name: 'Golden Snitch', probability: 1/78000, image: 'https://static1.srcdn.com/wordpress/wp-content/uploads/2017/09/Daniel-Radcliffe-in-Harry-Potter-and-the-Sorcerers-Stone-Golden-Snitch.png' },
+    { name: 'Infinity Gauntlet', probability: 1/79000, image: 'https://static.wikia.nocookie.net/marvelcinematicuniverse/images/0/00/InfinityGauntletProfilePicture.jpg/revision/latest?cb=20210816221827' },
+    { name: 'One Ring', probability: 1/80000, image: 'https://lotrpremiumstore.com/cdn/shop/files/Screenshot2023-05-26at23.24.38.png?v=1709227877&width=1445' },
+    { name: 'Lightsaber', probability: 1/81000, image: 'https://lumiere-a.akamaihd.net/v1/images/Lightsaber_853fb596.jpeg?region=178%2C0%2C813%2C812' },
+    { name: 'Triforce', probability: 1/82000, image: 'https://www.zeldadungeon.net/wp-content/uploads/2018/02/TriforceDD2.jpg' },
+    { name: 'Master Sword', probability: 1/83000, image: 'https://vn.acejinkatana.com/cdn/shop/files/3-Photoroom-Photoroom_ec22754b-f718-4fd2-b76d-c9ed26a33152.webp?v=1713022589&width=1445' },
+    { name: 'Portal Gun', probability: 1/84000, image: 'https://i.etsystatic.com/19250147/r/il/93f649/6388948925/il_fullxfull.6388948925_jbzh.jpg' },
+    { name: 'Hoverboard', probability: 1/85000, image: 'https://shop-ourkids.com/cdn/shop/products/hoverboard-6-5-inch-ourkids-oko-1050461256099-1.jpg?v=1729536674' },
+    { name: 'DeLorean', probability: 1/86000, image: 'https://img-cdn.inc.com/image/upload/f_webp,q_auto,c_fit/images/panoramic/delorean_523807_erm0b0.jpg' },
+    { name: 'Flux Capacitor', probability: 1/87000, image: 'https://unicun.com/wp-content/uploads/2020/04/Flux-Capacitor-USB-Car-Charger.png' },
+    { name: 'TARDIS', probability: 1/88000, image: 'https://static.wikia.nocookie.net/kardashev/images/6/65/Tardis-doctor-who-900x506.jpg/revision/latest?cb=20210427213901' },
+    { name: 'Batmobile', probability: 1/91000, image: 'https://images-na.ssl-images-amazon.com/images/I/51z8aERZykL.jpg' },
+    { name: 'Mjolnir', probability: 1/92000, image: 'https://grimfrost.com/cdn/shop/products/thorshammare-1.jpg?v=1579590708' },
+    { name: 'Stormbreaker', probability: 1/93000, image: 'https://i.etsystatic.com/19286482/r/il/80ce40/2461978162/il_fullxfull.2461978162_bxra.jpg' },
+    { name: 'Vibranium Shield', probability: 1/94000, image: 'https://physicsinmarvel.wordpress.com/wp-content/uploads/2018/02/caps-shield-vibranium.jpg' },
+    { name: 'Arc Reactor', probability: 1/95000, image: 'https://images-na.ssl-images-amazon.com/images/I/91jDE-Ah8SL.jpg' },
+    { name: 'Web Shooters', probability: 1/96000, image: 'https://static.wikia.nocookie.net/marvelcinematicuniverse/images/5/54/Right_Web-Shooter_%28HoCo%29.png/revision/latest?cb=20171018172549' },
+    { name: 'Adamantium Claws', probability: 1/97000, image: 'https://static1.cbrimages.com/wordpress/wp-content/uploads/2024/08/wolverine-in-his-suit-with-claws.jpg' },
+    { name: 'Chimichanga', probability: 1/98000, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVFDi4r2alpIm1WYNsGSbQkfBgplaAeJYSZw&s' },
+    { name: 'Batarang', probability: 1/99000, image: 'https://noblecollection.co.uk/wp-content/uploads/2018/07/The-Batarang-1200x1200.png' },
+    { name: 'Utility Belt', probability: 1/100000, image: 'https://i.etsystatic.com/11385722/r/il/3578d2/3834494701/il_fullxfull.3834494701_dr8u.jpg' },
+    { name: 'Bat Signal', probability: 1/110000, image: 'https://example.com/batsignal.png' },
+    { name: 'Kryptonite', probability: 1/120000, image: 'https://example.com/kryptonite.png' },
+    { name: 'Daily Planet', probability: 1/130000, image: 'https://example.com/dailyplanet.png' },
+    { name: 'Fortress of Solitude', probability: 1/140000, image: 'https://example.com/fortressofsolitude.png' },
+    { name: 'Bat Cave', probability: 1/150000, image: 'https://example.com/batcave.png' },
+    { name: 'Wayne Manor', probability: 1/160000, image: 'https://example.com/waynemanor.png' },
+    { name: 'Hall of Justice', probability: 1/170000, image: 'https://example.com/hallofjustice.png' },
+    { name: 'Watchtower', probability: 1/180000, image: 'https://example.com/watchtower.png' },
+    { name: 'Invisible Jet', probability: 1/190000, image: 'https://example.com/invisiblejet.png' },
+    { name: 'Lasso of Truth', probability: 1/200000, image: 'https://example.com/lassooftruth.png' },
+    { name: 'Bracelets of Submission', probability: 1/210000, image: 'https://example.com/braceletsofsubmission.png' },
+    { name: 'Wonder Woman\'s Tiara', probability: 1/220000, image: 'https://example.com/wonderwomanstiara.png' },
+    { name: 'Green Lantern Ring', probability: 1/230000, image: 'https://example.com/greenlanternring.png' },
+    { name: 'Power Ring', probability: 1/240000, image: 'https://example.com/powerring.png' },
+    { name: 'Mother Box', probability: 1/250000, image: 'https://example.com/motherbox.png' },
+    { name: 'Boom Tube', probability: 1/260000, image: 'https://example.com/boomtube.png' },
+    { name: 'Omega Beam', probability: 1/270000, image: 'https://example.com/omegabeam.png' },
+    { name: 'Bat Signal', probability: 1/280000, image: 'https://example.com/batsignal.png' },
+    { name: 'Kryptonite', probability: 1/290000, image: 'https://example.com/kryptonite.png' },
+    { name: 'Daily Planet', probability: 1/300000, image: 'https://example.com/dailyplanet.png' },
+    { name: 'Fortress of Solitude', probability: 1/310000, image: 'https://example.com/fortressofsolitude.png' },
+    { name: 'Bat Cave', probability: 1/320000, image: 'https://example.com/batcave.png' },
+    { name: 'Wayne Manor', probability: 1/330000, image: 'https://example.com/waynemanor.png' },
+    { name: 'Hall of Justice', probability: 1/340000, image: 'https://example.com/hallofjustice.png' },
+    { name: 'Watchtower', probability: 1/350000, image: 'https://example.com/watchtower.png' },
+    { name: 'Invisible Jet', probability: 1/360000, image: 'https://example.com/invisiblejet.png' },
+    //meme shiny
+    { name: 'Doge shiny', probability: 1/999999, image: 'https://example.com/doge.png' },
+    { name: 'Pepe shiny', probability: 1/2000000, image: 'https://example.com/pepe.png' },
+    { name: 'Grumpy Cat shiny', probability: 1/3000000, image: 'https://example.com/grumpycat.png' },
+    { name: 'Nyan Cat shiny', probability: 1/4000000, image: 'https://example.com/nyancat.png' },
+    { name: 'Trollface shiny', probability: 1/5000000, image: 'https://example.com/trollface.png' },
+    { name: 'Success Kid shiny', probability: 1/6000000, image: 'https://example.com/successkid.png' },
+    { name: 'Bad Luck Brian shiny', probability: 1/7000000, image: 'https://example.com/badluckbrian.png' },
+    { name: 'Dancing Baby shiny', probability: 1/8000000, image: 'https://example.com/dancingbaby.png' },
+    { name: 'Salt Bae shiny', probability: 1/9000000, image: 'https://example.com/saltbae.png' },
+    { name: 'Distracted Boyfriend shiny', probability: 1/10000000, image: 'https://example.com/distractedboyfriend.png' },
+    { name: 'Hide the Pain Harold shiny', probability: 1/11000000, image: 'https://example.com/hidethepainharold.png' },
+    { name: 'Philosoraptor shiny', probability: 1/12000000, image: 'https://example.com/philosoraptor.png' },
+    { name: 'Overly Attached Girlfriend shiny', probability: 1/13000000, image: 'https://example.com/overlyattachedgirlfriend.png' },
+    { name: 'Scumbag Steve shiny', probability: 1/14000000, image: 'https://example.com/scumbagsteve.png' },
+    { name: 'Y U No Guy shiny', probability: 1/15000000, image: 'https://example.com/yunoguy.png' },
+    { name: 'Condescending Wonka shiny', probability: 1/16000000, image: 'https://example.com/condescendingwonka.png' },
+    { name: 'Ermahgerd Girl shiny', probability: 1/17000000, image: 'https://example.com/ermahgerdgirl.png' },
+    { name: 'First World Problems shiny', probability: 1/18000000, image: 'https://example.com/firstworldproblems.png' },
+    { name: 'Futurama Fry shiny', probability: 1/19000000, image: 'https://example.com/futuramafry.png' },
+    { name: 'Good Guy Greg shiny', probability: 1/20000000, image: 'https://example.com/goodguygreg.png' },
+    { name: 'Roll Safe shiny', probability: 1/21000000, image: 'https://example.com/rollsafe.png' },
+    { name: 'Mocking SpongeBob shiny', probability: 1/22000000, image: 'https://example.com/mockingspongebob.png' },
+    { name: 'Arthur Fist shiny', probability: 1/23000000, image: 'https://example.com/arthurfist.png' },
+    { name: 'Expanding Brain shiny', probability: 1/24000000, image: 'https://example.com/expandingbrain.png' },
+    { name: 'Is This a Pigeon? shiny', probability: 1/25000000, image: 'https://example.com/isthisapigeon.png' },
+    { name: 'Surprised Pikachu shiny', probability: 1/26000000, image: 'https://example.com/surprisedpikachu.png' },
+    { name: 'Epic Sax Guy shiny', probability: 1/27000000, image: 'https://example.com/epicsaxguy.png' },
+    { name: 'Disaster Girl shiny', probability: 1/28000000, image: 'https://example.com/disastergirl.png' },
+    { name: 'Ancient Aliens shiny', probability: 1/29000000, image: 'https://example.com/ancientaliens.png' },
+    { name: 'Hide the Pain Harold shiny', probability: 1/30000000, image: 'https://example.com/hidethepainharold.png' },
+    { name: 'Philosoraptor shiny', probability: 1/31000000, image: 'https://example.com/philosoraptor.png' }
+        ];
+        let spinCount = 0;
+        let isGenerating = false;
+        let money = 0;
+        let totalCoins = 0; 
+        let bestRandom = 0; 
+        let totalTimePlayed = 0; 
+        let startTime = Date.now(); 
+        let level = 1;
+        let currentXP = 0;
+        let requiredXP = 100;
+
+        // Load data from localStorage
+        window.onload = function() {
+            loadSavedData();
+        };
+
+        function loadSavedData() {
+            const savedMoney = parseInt(localStorage.getItem('money')) || 0;
+            const savedSpinCount = parseInt(localStorage.getItem('spinCount')) || 0;
+            const savedTotalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
+            const savedBestRandom = parseInt(localStorage.getItem('bestRandom')) || 0;
+            const savedTotalTimePlayed = parseInt(localStorage.getItem('totalTimePlayed')) || 0;
+            const savedLevel = parseInt(localStorage.getItem('level')) || 1;
+            const savedCurrentXP = parseInt(localStorage.getItem('currentXP')) || 0;
+            const savedRequiredXP = parseInt(localStorage.getItem('requiredXP')) || 100;
+
+            money = savedMoney;
+            spinCount = savedSpinCount;
+            totalCoins = savedTotalCoins;
+            bestRandom = savedBestRandom;
+            totalTimePlayed = savedTotalTimePlayed;
+            level = savedLevel;
+            currentXP = savedCurrentXP;
+            requiredXP = savedRequiredXP;
+
+            document.getElementById('money').innerText = money;
+            document.getElementById('spin-count').innerText = `Total spins: ${spinCount}`;
+
+            updateSpinCount();
+            updateLevelProgress();
+        }
+
+        function saveData() {
+            localStorage.setItem('money', money);
+            localStorage.setItem('spinCount', spinCount);
+            localStorage.setItem('totalCoins', totalCoins);
+            localStorage.setItem('bestRandom', bestRandom);
+            localStorage.setItem('totalTimePlayed', totalTimePlayed);
+            localStorage.setItem('level', level);
+            localStorage.setItem('currentXP', currentXP);
+            localStorage.setItem('requiredXP', requiredXP);
+        }
+
+        function addPetToHistory(pet, probability, image) {
+            const tableBody = document.getElementById('history-table').getElementsByTagName('tbody')[0];
+            
+            // Create new row
+            const newRow = tableBody.insertRow();
+            const petCell = newRow.insertCell(0);
+            const probabilityCell = newRow.insertCell(1);
+            const timerCell = newRow.insertCell(2);
+            
+            petCell.innerText = pet;
+            probabilityCell.innerText = `1 in ${probability}`;
+            
+            // Add countdown timer
+            const duration = probability;
+            timerCell.innerText = duration;
+            
+            let timeLeft = duration;
+            const timer = setInterval(() => {
+                timeLeft--;
+                timerCell.innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    newRow.remove();
+                }
+            }, 1000);
+
+            // Sort table rows by probability (highest to lowest)
+            const rows = Array.from(tableBody.rows);
+            rows.sort((a, b) => {
+                const probA = parseInt(a.cells[1].innerText.split(' ')[2]);
+                const probB = parseInt(b.cells[1].innerText.split(' ')[2]);
+                return probB - probA;
+            });
+
+            // Clear and re-add sorted rows
+            while (tableBody.firstChild) {
+                tableBody.removeChild(tableBody.firstChild);
+            }
+            rows.forEach(row => tableBody.appendChild(row));
+        }
+
+        function showFinalPet() {
+            spinCount++;
+            let selectedPet = '';
+            let selectedProbability = 0;
+            let selectedImage = '';
+            
+            let luckFactor = 1; 
+
+            while (!selectedPet) {
+                const random = Math.random() * luckFactor; 
+                let cumulativeProbability = 0;
+
+                for (const pet of pets) {
+                    cumulativeProbability += pet.probability;
+                    if (random < cumulativeProbability) {
+                        selectedPet = pet.name;
+                        selectedProbability = Math.round(1 / pet.probability);
+                        selectedImage = pet.image;
+                        break;
+                    }
+                }
+            }
+
+            document.getElementById('result').innerText = `You received: ${selectedPet}`;
+            document.getElementById('probability').innerText = `Probability: 1 in ${selectedProbability}`;
+            document.getElementById('pet-image').src = selectedImage;
+
+            addPetToHistory(selectedPet, selectedProbability, selectedImage);
+            updateSpinCount();
+            addMoney(selectedProbability);
+            addExperience(selectedProbability);
+            saveData();
+
+            // Cập nhật lần random may nhất
+            if (bestRandom === 0 || selectedProbability > bestRandom) {
+                bestRandom = selectedProbability;
+            }
+        }
+
+        function updateSpinCount() {
+            document.getElementById('spin-count').innerText = `Total spins: ${spinCount}`;
+            const nextLuck = 10 - (spinCount % 10);
+            document.getElementById('next-luck').innerHTML = `Spins until next luck increase: ${nextLuck} <img src="https://pbs.twimg.com/media/GUmOAk8WMAEqeun.png" alt="Luck Icon" class="luck-icon">`;
+        }
+
+        function addMoney(probability) {
+            const coins = probability; 
+            money += coins;
+            totalCoins += coins;
+            document.getElementById('money').innerText = money;
+
+            // Chỉ hiển thị hiệu ứng tiền bay lên nếu độ hiếm nhỏ hơn 1 trong 600
+            if (probability < 600) {
+                for (let i = 0; i < coins; i++) {
+                    const coin = document.createElement('div');
+                    coin.className = 'coin';
+                    coin.innerText = ''; 
+                    document.body.appendChild(coin);
+                    coin.style.left = `${Math.random() * 100}%`;
+                    setTimeout(() => {
+                        coin.remove();
+                    }, 1000);
+                }
+            }
+
+            saveData(); 
+        }
+
+        function showPetModal(pet, probability, image) {
+            document.getElementById('pet-modal-image').src = image;
+            document.getElementById('pet-modal-info').innerText = `Name: ${pet}\nProbability: 1 in ${probability}`;
+            document.getElementById('pet-modal').style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function showShopModal() {
+            const isMobile = window.innerWidth < 600; 
+            if (isMobile) {
+                // Hiển thị modal như thông báo hàng ngày
+                const notification = document.createElement('div');
+                notification.style.position = 'fixed';
+                notification.style.top = '0';
+                notification.style.left = '0';
+                notification.style.width = '100%';
+                notification.style.height = '100%';
+                notification.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                notification.style.display = 'flex';
+                notification.style.justifyContent = 'center';
+                notification.style.alignItems = 'center';
+                notification.style.zIndex = '1000';
+
+                const modal = document.createElement('div');
+                modal.style.backgroundColor = 'white';
+                modal.style.borderRadius = '10px';
+                modal.style.padding = '20px';
+                modal.style.textAlign = 'center';
+                modal.style.maxWidth = '80%';
+                modal.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+                modal.style.display = 'flex';
+                modal.style.flexDirection = 'column';
+                modal.style.alignItems = 'center';
+
+                const title = document.createElement('h2');
+                title.innerText = 'Shop';
+                
+                const iframe = document.createElement('iframe');
+                iframe.src = 'shop test.html'; 
+                iframe.style.width = '100%';
+                iframe.style.height = '400px'; 
+                iframe.style.border = 'none'; 
+
+                const closeButton = document.createElement('button');
+                closeButton.innerText = 'Close';
+                closeButton.onclick = function() {
+                    notification.remove(); 
+                };
+
+                modal.appendChild(title);
+                modal.appendChild(iframe);
+                modal.appendChild(closeButton);
+                notification.appendChild(modal);
+                document.body.appendChild(notification);
+            } else {
+                // Hiển thị modal như hiện tại
+                const shopModal = document.createElement('div');
+                shopModal.className = 'modal'; 
+                shopModal.style.display = 'flex'; 
+
+                const modalContent = document.createElement('div');
+                modalContent.className = 'modal-content';
+                
+                const iframe = document.createElement('iframe');
+                iframe.src = 'shop test.html'; 
+                iframe.style.width = '100%';
+                iframe.style.height = '400px'; 
+                iframe.style.border = 'none'; 
+
+                const closeButton = document.createElement('button');
+                closeButton.innerText = 'Close';
+                closeButton.onclick = function() {
+                    shopModal.remove(); 
+                };
+
+                modalContent.appendChild(iframe);
+                modalContent.appendChild(closeButton);
+                shopModal.appendChild(modalContent);
+                document.body.appendChild(shopModal);
+            }
+        }
+
+        function showMiniGameModal() {
+            const isMobile = window.innerWidth < 600; 
+            if (isMobile) {
+                // Hiển thị modal như thông báo hàng ngày
+                const notification = document.createElement('div');
+                notification.style.position = 'fixed';
+                notification.style.top = '0';
+                notification.style.left = '0';
+                notification.style.width = '100%';
+                notification.style.height = '100%';
+                notification.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                notification.style.display = 'flex';
+                notification.style.justifyContent = 'center';
+                notification.style.alignItems = 'center';
+                notification.style.zIndex = '1000';
+
+                const modal = document.createElement('div');
+                modal.style.backgroundColor = 'white';
+                modal.style.borderRadius = '10px';
+                modal.style.padding = '20px';
+                modal.style.textAlign = 'center';
+                modal.style.maxWidth = '80%';
+                modal.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+                modal.style.display = 'flex';
+                modal.style.flexDirection = 'column';
+                modal.style.alignItems = 'center';
+
+                const title = document.createElement('h2');
+                title.innerText = 'Mini Game';
+                
+                const iframe = document.createElement('iframe');
+                iframe.src = 'indexMiniGame.html'; 
+                iframe.style.width = '100%';
+                iframe.style.height = '400px'; 
+                iframe.style.border = 'none'; 
+
+                const closeButton = document.createElement('button');
+                closeButton.innerText = 'Close';
+                closeButton.onclick = function() {
+                    notification.remove(); 
+                };
+
+                modal.appendChild(title);
+                modal.appendChild(iframe);
+                modal.appendChild(closeButton);
+                notification.appendChild(modal);
+                document.body.appendChild(notification);
+            } else {
+                // Hiển thị modal như hiện tại
+                const shopModal = document.createElement('div');
+                shopModal.className = 'modal'; 
+                shopModal.style.display = 'flex'; 
+
+                const modalContent = document.createElement('div');
+                modalContent.className = 'modal-content';
+                
+                const iframe = document.createElement('iframe');
+                iframe.src = 'indexMiniGame.html'; 
+                iframe.style.width = '100%';
+                iframe.style.height = '400px'; 
+                iframe.style.border = 'none'; 
+
+                const closeButton = document.createElement('button');
+                closeButton.innerText = 'Close';
+                closeButton.onclick = function() {
+                    shopModal.remove(); 
+                };
+
+                modalContent.appendChild(iframe);
+                modalContent.appendChild(closeButton);
+                shopModal.appendChild(modalContent);
+                document.body.appendChild(shopModal);
+            }
+        }
+        function showChatModal() {
+            const isMobile = window.innerWidth < 600; 
+            if (isMobile) {
+                // Hiển thị modal như thông báo hàng ngày
+                const notification = document.createElement('div');
+                notification.style.position = 'fixed';
+                notification.style.top = '0';
+                notification.style.left = '0';
+                notification.style.width = '100%';
+                notification.style.height = '100%';
+                notification.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                notification.style.display = 'flex';
+                notification.style.justifyContent = 'center';
+                notification.style.alignItems = 'center';
+                notification.style.zIndex = '1000';
+
+                const modal = document.createElement('div');
+                modal.style.backgroundColor = 'white';
+                modal.style.borderRadius = '10px';
+                modal.style.padding = '20px';
+                modal.style.textAlign = 'center';
+                modal.style.maxWidth = '80%';
+                modal.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+                modal.style.display = 'flex';
+                modal.style.flexDirection = 'column';
+                modal.style.alignItems = 'center';
+
+                const title = document.createElement('h2');
+                title.innerText = 'Chat';
+                
+                const iframe = document.createElement('iframe');
+                iframe.src = 'chat.html'; 
+                iframe.style.width = '100%';
+                iframe.style.height = '400px'; 
+                iframe.style.border = 'none'; 
+
+                const closeButton = document.createElement('button');
+                closeButton.innerText = 'Close';
+                closeButton.onclick = function() {
+                    notification.remove(); 
+                };
+
+                modal.appendChild(title);
+                modal.appendChild(iframe);
+                modal.appendChild(closeButton);
+                notification.appendChild(modal);
+                document.body.appendChild(notification);
+            } else {
+                // Hiển thị modal như hiện tại
+                const shopModal = document.createElement('div');
+                shopModal.className = 'modal'; 
+                shopModal.style.display = 'flex'; 
+
+                const modalContent = document.createElement('div');
+                modalContent.className = 'modal-content';
+                
+                const iframe = document.createElement('iframe');
+                iframe.src = 'chat.html'; 
+                iframe.style.width = '100%';
+                iframe.style.height = '400px'; 
+                iframe.style.border = 'none'; 
+
+                const closeButton = document.createElement('button');
+                closeButton.innerText = 'Close';
+                closeButton.onclick = function() {
+                    shopModal.remove(); 
+                };
+
+                modalContent.appendChild(iframe);
+                modalContent.appendChild(closeButton);
+                shopModal.appendChild(modalContent);
+                document.body.appendChild(shopModal);
+            }
+        }
+        function showbxhModal() {
+            const isMobile = window.innerWidth < 600; 
+            if (isMobile) {
+                // Hiển thị modal như thông báo hàng ngày
+                const notification = document.createElement('div');
+                notification.style.position = 'fixed';
+                notification.style.top = '0';
+                notification.style.left = '0';
+                notification.style.width = '100%';
+                notification.style.height = '100%';
+                notification.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                notification.style.display = 'flex';
+                notification.style.justifyContent = 'center';
+                notification.style.alignItems = 'center';
+                notification.style.zIndex = '1000';
+
+                const modal = document.createElement('div');
+                modal.style.backgroundColor = 'white';
+                modal.style.borderRadius = '10px';
+                modal.style.padding = '20px';
+                modal.style.textAlign = 'center';
+                modal.style.maxWidth = '80%';
+                modal.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+                modal.style.display = 'flex';
+                modal.style.flexDirection = 'column';
+                modal.style.alignItems = 'center';
+
+                const title = document.createElement('h2');
+                title.innerText = 'Top';
+                
+                const iframe = document.createElement('iframe');
+                iframe.src = 'bangxephang.html'; 
+                iframe.style.width = '100%';
+                iframe.style.height = '400px'; 
+                iframe.style.border = 'none'; 
+
+                const closeButton = document.createElement('button');
+                closeButton.innerText = 'Close';
+                closeButton.onclick = function() {
+                    notification.remove(); 
+                };
+
+                modal.appendChild(title);
+                modal.appendChild(iframe);
+                modal.appendChild(closeButton);
+                notification.appendChild(modal);
+                document.body.appendChild(notification);
+            } else {
+                // Hiển thị modal như hiện tại
+                const shopModal = document.createElement('div');
+                shopModal.className = 'modal'; 
+                shopModal.style.display = 'flex'; 
+
+                const modalContent = document.createElement('div');
+                modalContent.className = 'modal-content';
+                
+                const iframe = document.createElement('iframe');
+                iframe.src = 'bangxephang.html'; 
+                iframe.style.width = '100%';
+                iframe.style.height = '400px'; 
+                iframe.style.border = 'none'; 
+
+                const closeButton = document.createElement('button');
+                closeButton.innerText = 'Close';
+                closeButton.onclick = function() {
+                    shopModal.remove(); 
+                };
+
+                modalContent.appendChild(iframe);
+                modalContent.appendChild(closeButton);
+                shopModal.appendChild(modalContent);
+                document.body.appendChild(shopModal);
+            }
+        }
+
+        // nhập mã đổi thưởng
+        function normalizeCode(input) {
+            let code = input.value.toLowerCase().replace(/\s+/g, ''); 
+            code = code.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); 
+            input.value = code; 
+        }
+
+        function submitCode() {
+            const code = document.getElementById('code-input').value.trim(); 
+
+            // Kiểm tra mã "pickleball"
+            if (code === "pickleball") {
+                // Tạo số ngẫu nhiên từ 0 đến 99
+                const randomNumber = Math.floor(Math.random() * 100);
+
+                if (randomNumber < 90) { 
+                    if (localStorage.getItem('usedCode_pickleball')) {
+                        alert("Try entering the code again and Đỗ Phú Quí will take you to the next level of pickleball! (99%)");
+                    } else {
+                        alert("Try entering the code again and Đỗ Phú Quí will take you to the next level of pickleball! (99%)");
+                    }
+                } else { 
+                    const pet = "Pickleball"; 
+                    const reward = 100; 
+                    const probability = "Đỗ Phú Quí";
+                    document.getElementById('result').innerText = `You Get: Pickleball`; 
+                    document.getElementById('probability').innerText = `Probability: 1 in Đỗ Phú Quí`;
+                    document.getElementById('pet-image').src = 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/5/d/a/7/5da7072eaf8a8cf3350ee91fb2544221.jpg';
+                    addPetToHistory(pet, probability, 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/5/d/a/7/5da7072eaf8a8cf3350ee91fb2544221.jpg');
+                    money += reward;
+                    document.getElementById('money').innerText = money;
+                    alert(`Congratulations! You have received the Pickleball pet! (1%)`);
+
+                    // Mở tab mới đến đường link mong muốn
+                    const desiredLink = "https://www.youtube.com/watch?v=IzSYlr3VI1A"; 
+                    window.open(desiredLink, '_blank'); 
+
+                    saveData(); 
+                }
+            }
+
+            // Các mã khác
+            else if (code === "meobeothichmcdonald") {
+                const pet = "MeoBeo";
+                const probability = 9999;
+                document.getElementById('result').innerText = `You Get: ${pet}`;
+                document.getElementById('probability').innerText = `Probability: 1 in ${probability}`;
+                document.getElementById('pet-image').src = 'https://phapluatxahoi.kinhtedothi.vn/stores/news_dataimages/2024/052024/10/19/in_article/ebd5c0ee2760fbb97936cb6b2baf9e6d.jpg?rt=20240510194835';
+                addPetToHistory(pet, probability, 'https://phapluatxahoi.kinhtedothi.vn/stores/news_dataimages/2024/052024/10/19/in_article/ebd5c0ee2760fbb97936cb6b2baf9e6d.jpg?rt=20240510194835');
+                addMoney(probability);
+                saveData();
+            }
+            // Mã không hợp lệ
+            else {
+                alert("Invalid code");
+            }
+        }
+
+        let autoGenerateInterval;
+
+        function startAutoGenerate() {
+            if (autoGenerateInterval) {
+                clearInterval(autoGenerateInterval); 
+                autoGenerateInterval = null;
+                document.querySelector('.auto-generate-button').innerText = 'Autospin'; 
+                return;
+            }
+
+            document.querySelector('.auto-generate-button').innerText = '!SPIN = Spin'; 
+            autoGenerateInterval = setInterval(() => {
+                generateRandomPet(); 
+            }, 7500); 
+        }
+
+        function updateLevelProgress() {
+            const progress = (currentXP / requiredXP) * 100;
+            document.getElementById('level-progress').style.width = `${progress}%`;
+            document.getElementById('level-text').innerText = `LV ${level} - ${currentXP}/${requiredXP} XP`;
+            saveData(); 
+        }
+
+        function addExperience(xp) {
+            currentXP += xp;
+            while (currentXP >= requiredXP) {
+                currentXP -= requiredXP;
+                level++;
+                requiredXP = Math.floor(requiredXP * 1.25);
+                
+                // Grant random XP between 1% and 50% of the new level's required XP
+                const randomXP = Math.floor(Math.random() * 0.75 * requiredXP) + 1;
+                currentXP += randomXP;
+            }
+            updateLevelProgress();
+        }
+
+        function generateRandomPet(event) {
+            if (isGenerating) return;
+            isGenerating = true;
+
+            document.getElementById('result').innerText = 'Generating...';
+            document.getElementById('probability').innerText = '';
+
+            const countdownBar = document.getElementById('countdown-bar');
+            countdownBar.style.transition = 'none';
+            countdownBar.style.width = '100%';
+            setTimeout(() => {
+                countdownBar.style.transition = 'width 2s linear';
+                countdownBar.style.width = '0%';
+            }, 10);
+
+            let countdown = 2;
+            let intervalTime = 100;
+            const interval = setInterval(() => {
+                const randomPet = pets[Math.floor(Math.random() * pets.length)];
+                document.getElementById('result').innerText = `Randomizing: ${randomPet.name}`;
+                countdown -= 0.1;
+                intervalTime += 50;
+                if (countdown <= 0) {
+                    clearInterval(interval);
+                    showFinalPet();
+                    isGenerating = false;
+                }
+            }, intervalTime);
+        }
+
+        function createFlyingIcon(event) {
+            const coin = document.createElement('div');
+            coin.className = 'coin';
+            coin.innerText = ''; 
+            document.body.appendChild(coin);
+
+            // Ngăn chặn tương tác với biểu tượng
+            coin.style.pointerEvents = 'none'; 
+
+            // Lấy vị trí click chuột
+            const clickX = event.clientX; 
+            const clickY = event.clientY; 
+
+            // Đặt vị trí bắt đầu cho biểu tượng
+            coin.style.left = `${clickX}px`;
+            coin.style.top = `${clickY}px`;
+            coin.style.position = 'absolute'; 
+
+            // Animation bay lên
+            setTimeout(() => {
+                coin.style.transition = 'transform 1s ease-out, opacity 1s ease-out';
+                coin.style.transform = `translateY(-100px) translateX(${(Math.random() - 0.5) * 100}px)`; 
+                coin.style.opacity = '0'; 
+            }, 10);
+
+            // Xóa icon sau khi hoàn thành animation
+            setTimeout(() => {
+                coin.remove();
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
