@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -8,6 +7,7 @@
             margin: 0;
             font-family: Arial, sans-serif;
             background-color: #0f212e;
+            transition: background-color 0.3s ease;
         }
         #sidebar {
             height: 100%;
@@ -73,62 +73,158 @@
         }
         .upside {
             position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        font-size: 20px;
-        cursor: pointer;
-        background-color: rgba(26,44,56,255);
-        color: white;
-        padding: 11px 15px;
-        border: none;
-        box-shadow: 2px 4px 6px 0px #0c1923;
-        z-index: 1;
-    }
-    #overlay {
-        display: none;
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 1;
-        opacity: 0;
-        transition: opacity 0.5s ease;
-    }
+            top: 0;
+            left: 0;
+            right: 0;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: rgba(26,44,56,255);
+            color: white;
+            padding: 11px 15px;
+            border: none;
+            box-shadow: 2px 4px 6px 0px #0c1923;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .theme-button-container {
+            position: absolute;
+            right: 15px;
+        }
+        #themeButton {
+            background-color: #2a5070;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        #themeButton:hover {
+            background-color: #3a6080;
+        }
+        .theme-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 30px;
+            background-color: #1d3648;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            min-width: 150px;
+        }
+        .theme-category {
+            padding: 8px 12px;
+            color: #7fc3ff;
+            font-weight: bold;
+            border-bottom: 1px solid #2a5070;
+            margin-top: 5px;
+        }
+        .theme-option {
+            padding: 8px 12px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            padding-left: 20px;
+        }
+        .theme-option:hover {
+            background-color: #2a5070;
+        }
+        body.dark-theme {
+            background-color: #121212;
+        }
+        body.dark-theme #sidebar {
+            background-color: #1e1e1e;
+        }
+        body.dark-theme .upside {
+            background-color: #1e1e1e;
+        }
+        body.light-theme {
+            background-color: #f0f0f0;
+        }
+        body.light-theme #sidebar {
+            background-color: #e0e0e0;
+        }
+        body.light-theme .upside {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+        body.tet-theme {
+            background-color: #e7241d;
+        }
+        body.tet-theme #sidebar {
+            background-color: #ff463d;
+        }
+        body.tet-theme .upside {
+            background-color: #ff463d;
+        }
+        body.compact-interface #main {
+            padding: 36px 0px 0px;
+        }
+        body.standard-interface #main {
+            padding: 46px 0px 0px;
+        }
+        body.comfortable-interface #main {
+            padding: 56px 0px 0px;
+        }
+        #overlay {
+            display: none;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
 
-    #overlay.fade-in {
-        display: block;
-        opacity: 0.5;
-    }
+        #overlay.fade-in {
+            display: block;
+            opacity: 0.5;
+        }
 
-    #overlay.fade-out {
-        opacity: 0;
-    }
+        #overlay.fade-out {
+            opacity: 0;
+        }
     </style>
 </head>
 <body>
     <div id="sidebar">
         <a href="javascript:void(0)" class="sidebarBtn" id="closeBtn" onclick="closeNav()">☰ Menu</a>
-        <a href="#">Link 1</a>
-        <a href="#">Link 2</a>
-        <a href="#">Link 3</a>
+        <a href="#" onclick="changeIframe('indext.html')">🏠 Home</a>
+        <a href="#" onclick="changeIframe('indexgame.html')">🎮 Game</a>
+        <a href="#" onclick="changeIframe('info.html')">ℹ️ Info</a>
     </div>
 
     <div id="overlay"></div>
 
     <button class="sidebarBtn" id="openBtn" onclick="toggleNav()">☰</button>
-<div class="upside" id="upside"><center>
-upside
-</center>
-</div>
+    <div class="upside" id="upside">
+        <center>upside</center> 
+        <div class="theme-button-container">
+                      <button id="themeButton" onclick="toggleThemeMenu()">Giao diện 🎨</button>
+            <div id="themeMenu" class="theme-menu">
+                <div class="theme-category">Chủ đề</div>
+                <div class="theme-option" onclick="changeTheme('default')">Mặc định</div>
+                <div class="theme-option" onclick="changeTheme('tet')">Tết</div>
+                <div class="theme-category">Giao diện</div>
+                <div class="theme-option" onclick="changeTheme('dark')">Tối</div>
+                <div class="theme-option" onclick="changeTheme('light')">Sáng</div>
+            </div>
+        </div>
+    </div>
     <div id="main">
-<iframe id="iframe" src="indexf.html"></iframe>
+        <iframe id="iframe" src="indexf.html"></iframe>
     </div>
 
     <script>
         let isOpen = false;
+        let isThemeMenuOpen = false;
 
         function toggleNav() {
             if (isOpen) {
@@ -139,30 +235,139 @@ upside
         }
 
         function openNav() {
-    document.getElementById("sidebar").style.width = "250px";
-    document.getElementById("main").style.marginLeft = "250px";
-    document.getElementById("openBtn").style.display = "none"; // Hide the button
-    let overlay = document.getElementById("overlay");
-    overlay.style.display = "block"; // Show the overlay
-    overlay.classList.remove("fade-out"); // Remove the fade-out class
-    setTimeout(function() {
-        overlay.classList.add("fade-in");
-    }, 10);
-    isOpen = true;
-}
+            document.getElementById("sidebar").style.width = "250px";
+            document.getElementById("main").style.marginLeft = "250px";
+            document.getElementById("openBtn").style.display = "none"; // Hide the button
+            let overlay = document.getElementById("overlay");
+            overlay.style.display = "block"; // Show the overlay
+            overlay.classList.remove("fade-out"); // Remove the fade-out class
+            setTimeout(function() {
+                overlay.classList.add("fade-in");
+            }, 10);
+            isOpen = true;
+        }
 
-function closeNav() {
-    document.getElementById("sidebar").style.width = "0";
-    document.getElementById("main").style.marginLeft = "0";
-    document.getElementById("openBtn").style.display = "block"; // Show the button
-    let overlay = document.getElementById("overlay");
-    overlay.classList.remove("fade-in");
-    overlay.classList.add("fade-out");
-    setTimeout(function() {
-        overlay.style.display = "none"; // Hide the overlay
-    }, 500);
-    isOpen = false;
-}
+        function closeNav() {
+            document.getElementById("sidebar").style.width = "0";
+            document.getElementById("main").style.marginLeft = "0";
+            document.getElementById("openBtn").style.display = "block"; // Show the button
+            let overlay = document.getElementById("overlay");
+            overlay.classList.remove("fade-in");
+            overlay.classList.add("fade-out");
+            setTimeout(function() {
+                overlay.style.display = "none"; // Hide the overlay
+            }, 500);
+            isOpen = false;
+        }
+
+        function toggleThemeMenu() {
+            const themeMenu = document.getElementById('themeMenu');
+            
+            if (isThemeMenuOpen) {
+                themeMenu.style.display = 'none';
+                isThemeMenuOpen = false;
+            } else {
+                themeMenu.style.display = 'block';
+                isThemeMenuOpen = true;
+            }
+        }
+        
+        function changeTheme(theme) {
+            // Remove all theme classes
+            document.body.classList.remove('dark-theme', 'light-theme', 'tet-theme');
+            
+            // Add selected theme class
+            if (theme !== 'default') {
+                document.body.classList.add(`${theme}-theme`);
+            }
+            
+            // Save theme preference
+            localStorage.setItem('selectedTheme', theme);
+            
+            changeIframeBasedOnTheme(theme);
+            
+            // Close theme menu
+            toggleThemeMenu();
+            
+            // Notify iframe about theme change
+            const iframe = document.getElementById('iframe');
+            if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.postMessage({type: 'themeChange', theme: theme}, '*');
+            }
+        }
+        
+        function changeIframeBasedOnTheme(theme) {
+             // Change iframe source based on theme
+            const iframe = document.getElementById('iframe');
+            if (theme === 'tet') {
+                iframe.src = 'indexf.html';
+            } else {
+                iframe.src = 'indext.html';
+            }
+        }
+        
+        function changeInterface(style) {
+            // Remove all interface style classes
+            document.body.classList.remove('compact-interface', 'standard-interface', 'comfortable-interface');
+            
+            // Add selected interface style class
+            document.body.classList.add(`${style}-interface`);
+            
+            // Save interface preference
+            localStorage.setItem('selectedInterface', style);
+            
+            // Close theme menu
+            toggleThemeMenu();
+            
+            // Apply interface changes
+            applyInterfaceStyle(style);
+        }
+        
+        function applyInterfaceStyle(style) {
+            const main = document.getElementById('main');
+            switch(style) {
+                case 'compact':
+                    main.style.padding = "36px 0px 0px";
+                    break;
+                case 'standard':
+                    main.style.padding = "46px 0px 0px";
+                    break;
+                case 'comfortable':
+                    main.style.padding = "56px 0px 0px";
+                    break;
+            }
+            
+            // Notify iframe about interface change
+            const iframe = document.getElementById('iframe');
+            if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.postMessage({type: 'interfaceChange', style: style}, '*');
+            }
+        }
+
+        // Function to change the iframe source
+        function changeIframe(url) {
+            document.getElementById('iframe').src = url;
+            closeNav();
+        }
+
+        // Load saved theme and interface on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('selectedTheme');
+            if (savedTheme) {
+                changeTheme(savedTheme);
+            } else {
+                // Set default iframe source if no theme is saved
+                document.getElementById('iframe').src = 'indext.html';
+            }
+            
+            const savedInterface = localStorage.getItem('selectedInterface');
+            if (savedInterface) {
+                changeInterface(savedInterface);
+            } else {
+                // Default to standard if not set
+                changeInterface('standard');
+            }
+        });
     </script>
 </body>
-</html
+</html>
