@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ</title>
+    <link rel="icon" href="favicon.ico" type="favicon">
+    <style>
+        /* CSS như trước */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f9fb;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh; 
+            overflow-x: hidden; 
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            max-width: 1100px;
+            overflow-y: auto;
+            max-height: 5500px; 
+            overflow: hidden; 
+        }
+        .philosophy {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-size: 1.4em;
+            color: #333;
+            font-style: italic;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .author {
+            font-size: 1em;
+            color: #666;
+            text-align: center;
+            margin-top: 10px;
+            font-style: normal;
+        }
+        .link-item {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #ffffff;
+            color: #333;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        .link-item:hover {
+            background-color: #f9f9f9;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+        .rainbow-button {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(90deg, #00C0FF, #FFCF00, #FC4F4F, #00C0FF);
+            background-size: 300% 300%;
+            color: #333;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            animation: rainbow-animation 4s linear infinite;
+        }
+        .rainbow-button:hover {
+            animation: rainbow-animation-hover 1.5s linear infinite;
+        }
+        .rainbow-text {
+            flex-grow: 1;
+            margin-right: 20px;
+            font-size: 1.1em;
+        }
+        .rainbow-image {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .link-text {
+            flex-grow: 1;
+            margin-right: 20px;
+            font-size: 1.1em;
+        }
+        .link-description {
+            font-size: 0.9em;
+            color: #888;
+        }
+        .link-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        @keyframes rainbow-animation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        @keyframes rainbow-animation-hover {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        .update-history-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none; /* Ẩn modal mặc định */
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 90%;
+        }
+        .info-button {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: white; /* Màu nền trắng */
+            color: #333; /* Màu chữ tối để dễ đọc */
+            border: 2px solid #ccc; /* Đường viền màu xám nhạt */
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s, border-color 0.3s;
+            font-size: 1em;
+        }
+        .info-button:hover {
+            background-color: #f0f0f0; /* Màu nền sáng hơn khi hover */
+            border-color: #888; /* Đường viền tối hơn khi hover */
+        }
+        .button-text {
+            margin-left: 10px; /* Khoảng cách giữa biểu tượng và văn bản */
+        }
+        .candy-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 70px; /* Tăng kích thước */
+            height: 70px; /* Tăng kích thước */
+            background: linear-gradient(45deg, #FF6F61, #FF4C3B); /* Màu gradient */
+            color: white; /* Màu chữ */
+            border-radius: 50%; /* Hình tròn */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px; /* Tăng kích thước chữ */
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Đổ bóng */
+            transition: background 0.3s, transform 0.3s; /* Hiệu ứng chuyển đổi */
+        }
+        .candy-button:hover {
+            background: linear-gradient(45deg, #FF4C3B, #FF6F61); /* Đổi màu khi hover */
+            transform: scale(1.1); /* Phóng to khi hover */
+        }
+        .candy-button:active {
+            transform: scale(0.95); /* Co lại khi nhấn */
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const philosophies = [
+                { quote: "Mỗi buổi sáng đều là cơ hội cho một khởi đầu mới.", author: "Người vô danh" },
+                { quote: "Điều gì không thể giết ta sẽ khiến ta mạnh mẽ hơn.", author: "Friedrich Nietzsche" },
+                { quote: "Đừng đếm những ngày, hãy làm cho những ngày đáng nhớ.", author: "Muhammad Ali" },
+                { quote: "Cuộc sống là điều xảy ra khi bạn đang bận rộn lập kế hoạch khác.", author: "John Lennon" },
+                { quote: "Chiến thắng không phải là tất cả, nhưng khát khao chiến thắng là tất cả.", author: "Vince Lombardi" },
+                { quote: "Hạnh phúc không phải là đích đến, nó là một phương thức du hành.", author: "Margaret Lee Runbeck" },
+                { quote: "Nếu bạn muốn thay đổi thế giới, hãy bắt đầu bằng việc dọn giường ngủ.", author: "William H. McRaven" },
+                { quote: "Nếu bạn không thể bay thì hãy chạy, nếu bạn không thể chạy thì hãy đi, nếu bạn không thể đi thì hãy bò. Nhưng dù bạn làm gì đi nữa, bạn phải tiếp tục tiến về phía trước.", author: "Martin Luther King Jr." },
+                { quote: "Trí tuệ không đến từ tuổi tác, mà đến từ giáo dục và học hỏi.", author: "Anton Chekhov" },
+                { quote: "Mọi thứ bạn có thể tưởng tượng đều có thực.", author: "Pablo Picasso" },
+                { quote: "Trong giờ phút khó khăn, chúng ta không nên quên rằng những cái cây mạnh nhất là những cái đã phải chịu đựng những cơn bão mạnh nhất.", author: "Kahlil Gibran" },
+                { quote: "Tôi chưa bao giờ thất bại. Tôi chỉ tìm thấy 10000 cách không hoạt động.", author: "Thomas Edison" },
+                { quote: "Hãy sống như thể bạn sẽ chết ngày mai. Hãy học hỏi như thể bạn sẽ sống mãi mãi.", author: "Mahatma Gandhi" },
+                { quote: "Đừng để ngày hôm qua chiếm quá nhiều thời gian của ngày hôm nay.", author: "Will Rogers" },
+                { quote: "Cuộc sống không phải là tìm ra bản thân mình. Cuộc sống là tạo ra bản thân mình.", author: "George Bernard Shaw" }
+            ];
+            const randomIndex = Math.floor(Math.random() * philosophies.length);
+            document.querySelector('.philosophy').textContent = philosophies[randomIndex].quote;
+            document.querySelector('.author').textContent = `- ${philosophies[randomIndex].author}`;
+        });
+
+        function handleLinkClick(event, originalUrl) {
+            event.preventDefault();
+            const randomChance = Math.random();
+            if (randomChance < 0.1) {
+                window.location.href = `AYouIsHuman.html?redirect=${encodeURIComponent(originalUrl)}`;
+            } else {
+                window.location.href = originalUrl;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.link-item, .rainbow-button').forEach(link => {
+                const originalUrl = link.getAttribute('href');
+                link.addEventListener('click', (event) => handleLinkClick(event, originalUrl));
+            });
+        });
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6138079895042375"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="philosophy"></div>
+    <div class="author"></div>
+
+    <div class="container">
+        <div>
+            <div class="candy-button" onclick="claimCandy()">
+                <div id="candy-effect" style="position: relative; overflow: hidden;"></div>
+                <img src="https://png.pngtree.com/png-vector/20230111/ourmid/pngtree-lucky-money-new-year-png-image_6559428.png" style="width: 50px; height: 50px;">
+            </div>
+            <marquee> Chào mừng bạn đến với trang web của chúng tôi! </marquee>
+            <button class="info-button" onclick="showUpdateHistoryModal()">
+                <img src="https://media.lordicon.com/icons/system/regular/162-update.svg" alt="Update History" style="width: 30px; height: 30px;">
+                <span class="button-text">Lịch Sử Cập Nhật</span>
+            </button>
+        </div>
+        <a href="indexgame.html" class="rainbow-button" target="_blank">
+            <div class="rainbow-text">
+                Trò chơi trong phòng tin
+                <div class="link-description">Chơi đê:)</div>
+            </div>
+            <img src="https://png.pngtree.com/png-vector/20191028/ourlarge/pngtree-game-control-line-icon-vector-png-image_1904129.jpg" class="rainbow-image">
+        </a>
+        <a href="chat.html" class="link-item" target="_blank">
+            <div class="link-text">
+                Chat (Đã có lưu chat!!!)
+                <div class="link-description">Let's Go!</div>
+            </div>
+        </a>
+        <a href="CatGPT.html" class="link-item" target="_blank">
+            <div class="link-text">
+                CatGPT
+                <div class="link-description">Meow Meow</div>
+            </div>
+            <img src="https://i.pinimg.com/236x/8c/58/6c/8c586c41d99178a502903d6c13c0f040.jpg" class="link-image">
+        </a>
+        <a href="ai làm toán cấp 1.html" class="link-item" target="_blank">
+            <div class="link-text">
+                Ai làm toán
+                <div class="link-description">Giải được từng bước! (Ai này mới học cấp 1)</div>
+            </div>
+            <img src="https://images.kienthuc.net.vn/zoom/800/uploaded/ctvcongdongtre/2020_05_27/8/toan-khong-gian-noi-am-anh-khung-khiep-cua-dan-hoc-sinh-cuoi-cap.jpg" class="link-image">
+        </a>
+        <a href="https://patorjk.com/software/taag/#p=display&f=Crawford2&t=%F0%9F%91%89hhuyer.github.io%F0%9F%91%88" class="link-item" target="_blank">
+            <div class="link-text">
+                Chuyển chữ thành kí tự đẹp
+                <div class="link-description">Nếu biết dùng thì rất tuyệt đấy!</div>
+            </div>
+            <img src="https://scipython.com/static/media/uploads/blog/ascii-art/saturn-ascii-i.png" class="link-image">
+        </a>
+        <a href="tulw.html" class="link-item" target="_blank">
+            <div class="link-text">
+                Web vô dụng
+                <div class="link-description">Vâng rất hữu dụng!</div>
+            </div>
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRB09DY5udNeNIfZJXG988PSaZhc7-47wRYsg&s" class="link-image">
+        </a>
+
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <div>
+            <div>
+                <p>Chào mừng bạn đến với trang web của chúng tôi! Đây không chỉ là một trang web thông thường mà là một không gian sáng tạo, nơi bạn có thể tìm thấy nhiều thông tin hữu ích, giải trí và những trải nghiệm độc đáo. Hãy cùng khám phá những điều thú vị mà chúng tôi đã chuẩn bị cho bạn!</p>
+
+                <p><strong>1. Mục tiêu của Trang Web</strong></p>
+                <p>Cung cấp thông tin: Chúng tôi mong muốn trở thành nguồn thông tin đáng tin cậy cho người dùng. Từ các bài viết về triết lý sống đến các liên kết hữu ích, mọi thứ đều được thiết kế để phục vụ bạn. Chúng tôi tin rằng thông tin là sức mạnh, và việc cung cấp thông tin chính xác, kịp thời sẽ giúp bạn đưa ra những quyết định đúng đắn trong cuộc sống.</p>
+                <p>Giải trí: Không chỉ dừng lại ở việc cung cấp thông tin, chúng tôi còn mang đến những trò chơi thú vị và âm nhạc để bạn thư giãn sau những giờ làm việc căng thẳng. Những trò chơi này không chỉ giúp bạn giải trí mà còn kích thích tư duy và sáng tạo, mang lại những giây phút thư giãn tuyệt vời.</p>
+                <p>Kết nối cộng đồng: Chúng tôi hy vọng trang web này sẽ trở thành nơi kết nối những người có cùng sở thích, từ những người yêu thích triết lý sống đến những người đam mê công nghệ. Chúng tôi khuyến khích bạn tham gia vào các diễn đàn thảo luận, nơi bạn có thể chia sẻ ý kiến và học hỏi từ những người khác.</p>
+
+                <p><strong>2. Các Tính Năng Nổi Bật</strong></p>
+                <p>Triết lý Ngày Mới: Mỗi ngày, bạn sẽ được truyền cảm hứng từ những câu nói nổi tiếng của các nhân vật vĩ đại. Những câu nói này không chỉ mang tính chất động viên mà còn giúp bạn suy ngẫm về cuộc sống. Chúng tôi tin rằng một câu nói hay có thể thay đổi cách nhìn nhận của bạn về thế giới.</p>
+                <p>Danh sách Liên kết Hữu ích: Chúng tôi đã tổng hợp một danh sách các liên kết đến những trang web thú vị và hữu ích, từ trò chơi đến các công cụ trực tuyến, giúp bạn tiết kiệm thời gian tìm kiếm. Bạn sẽ không còn phải mất thời gian tìm kiếm thông tin trên internet, mà chỉ cần truy cập vào danh sách của chúng tôi.</p>
+                <p>Phát Nhạc: Với tính năng phát nhạc, bạn có thể thưởng thức những bản nhạc yêu thích trong khi duyệt web. Âm nhạc không chỉ giúp bạn thư giãn mà còn tạo ra bầu không khí vui vẻ. Chúng tôi đã chọn lọc những bản nhạc phù hợp với nhiều tâm trạng khác nhau, từ những giai điệu nhẹ nhàng đến những bản nhạc sôi động.</p>
+
+                <p><strong>3. Giao Diện Thân Thiện</strong></p>
+                <p>Thiết kế Responsive: Trang web được thiết kế để hoạt động tốt trên mọi thiết bị, từ máy tính để bàn đến điện thoại di động. Bạn có thể truy cập mọi lúc, mọi nơi mà không gặp khó khăn. Chúng tôi cam kết mang đến trải nghiệm người dùng tốt nhất, bất kể bạn đang sử dụng thiết bị nào.</p>
+                <p>Màu sắc Tươi Sáng: Với màu sắc tươi sáng và hình ảnh bắt mắt, trang web không chỉ thu hút mà còn tạo cảm giác thoải mái cho người dùng. Chúng tôi tin rằng một giao diện đẹp mắt sẽ giúp bạn cảm thấy thoải mái hơn khi khám phá nội dung của trang web.</p>
+
+                <p><strong>4. Những Điều Thú Vị Khác</strong></p>
+                <p>Câu Chuyện Về Kẹo: Chúng tôi có một tính năng thú vị cho phép bạn nhận kẹo và xu mỗi ngày. Đây là một cách để khuyến khích bạn quay lại trang web thường xuyên và tham gia vào các hoạt động thú vị. Bạn có thể sử dụng kẹo và xu để tham gia vào các trò chơi hoặc nhận những phần thưởng hấp dẫn.</p>
+                <p>Lịch Sử Cập Nhật: Bạn có thể theo dõi các bản cập nhật mới nhất của trang web thông qua tính năng lịch sử cập nhật. Điều này giúp bạn không bỏ lỡ bất kỳ thông tin quan trọng nào. Chúng tôi luôn nỗ lực để mang đến cho bạn những nội dung mới mẻ và hấp dẫn.</p>
+                <p>Chia Sẻ Cảm Xúc: Chúng tôi khuyến khích bạn chia sẻ cảm xúc và ý kiến của mình về trang web. Những phản hồi của bạn sẽ giúp chúng tôi cải thiện và phát triển hơn nữa. Chúng tôi luôn lắng nghe ý kiến của người dùng để tạo ra một không gian trực tuyến tốt nhất cho mọi người.</p>
+
+                <p><strong>5. Một Chút Về Chúng Tôi</strong></p>
+                <p>Đội Ngũ Phát Triển: Chúng tôi là một nhóm những người đam mê công nghệ và sáng tạo, luôn tìm kiếm cách để mang đến những trải nghiệm tốt nhất cho người dùng. Mỗi thành viên trong đội ngũ đều có những kỹ năng và kinh nghiệm riêng, và chúng tôi làm việc cùng nhau để hiện thực hóa tầm nhìn của mình.</p>
+                <p>Tầm Nhìn Tương Lai: Chúng tôi không ngừng mở rộng và cải thiện trang web. Trong tương lai, chúng tôi dự định thêm nhiều tính năng mới và nội dung phong phú hơn nữa. Chúng tôi hy vọng sẽ tạo ra một cộng đồng trực tuyến mạnh mẽ và gắn kết, nơi mọi người có thể học hỏi và phát triển cùng nhau.</p>
+
+                <p><strong>6. Kết Luận</strong></p>
+                <p>Trang web của chúng tôi không chỉ là một nơi để tìm kiếm thông tin mà còn là một không gian để bạn khám phá, học hỏi và kết nối. Chúng tôi hy vọng bạn sẽ tìm thấy những điều thú vị và hữu ích tại đây. Hãy tham gia cùng chúng tôi trong hành trình này và đừng quên quay lại thường xuyên để không bỏ lỡ những điều mới mẻ! Chúng tôi luôn chào đón bạn và mong muốn mang đến cho bạn những trải nghiệm tuyệt vời nhất.</p>
+
+                <p>Cảm ơn bạn đã ghé thăm trang web của chúng tôi! Chúc bạn có những trải nghiệm tuyệt vời!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="update-history-modal" id="update-history-modal" onclick="closeModal('update-history-modal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2>Lịch Sử Cập Nhật</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ngày</th>
+                        <th>Nội Dung</th>
+                    </tr>
+                </thead>
+                <tbody id="update-history-body">
+                    <!-- Các bản cập nhật sẽ được thêm vào đây -->
+                </tbody>
+            </table>
+            <button onclick="closeModal('update-history-modal')">Đóng</button>
+        </div>
+    </div>
+
+    <script>
+        function showUpdateHistoryModal() {
+            const updateHistoryBody = document.getElementById('update-history-body');
+            updateHistoryBody.innerHTML = ''; 
+
+            const updates = [
+                { date: '20/6/2024', content: 'Phiên bản thường ngày - v1.0' },
+                { date: '15/6/2024', content: 'Thêm tính năng chat' },
+                { date: '1/6/2024', content: 'Ra mắt phiên bản đầu tiên' },
+            ];
+
+            updates.forEach(update => {
+                const row = updateHistoryBody.insertRow();
+                const dateCell = row.insertCell(0);
+                const contentCell = row.insertCell(1);
+                dateCell.innerText = update.date;
+                contentCell.innerText = update.content;
+            });
+
+            document.getElementById('update-history-modal').style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        let candies = parseInt(localStorage.getItem('candies')) || 0;
+        let coins = parseInt(localStorage.getItem('money')) || 0; 
+        let lastClaimDate = localStorage.getItem('lastClaimDate'); 
+
+        function claimCandy() {
+            createCandyEffect();
+            const currentDate = new Date();
+            const today = currentDate.toDateString();
+            const lastClaimDateStored = lastClaimDate ? new Date(lastClaimDate).toDateString() : null;
+
+            if (lastClaimDateStored === today) {
+                alert("Bạn đã nhận kẹo hôm nay rồi! Hãy quay lại vào ngày mai.");
+                return;
+            }
+
+            let candiesToClaim = Math.floor(Math.random() * 10) + 1; 
+            let coinsToClaim = Math.floor(Math.random() * 50) + 1; 
+
+            if (lastClaimDate) {
+                const lastDate = new Date(lastClaimDate);
+                const daysDiff = Math.floor((currentDate - lastDate) / (1000 * 60 * 60 * 24));
+
+                if (daysDiff === 1) {
+                    candiesToClaim *= 2; 
+                    coinsToClaim *= 2; 
+                } else if (daysDiff > 1) {
+                    alert("Bạn đã bỏ lỡ ngày nhận kẹo. Hãy cố gắng quay lại mỗi ngày nhé!"); 
+                }
+            }
+
+            candies += candiesToClaim;
+            coins += coinsToClaim; 
+            lastClaimDate = today;
+
+            localStorage.setItem('lastClaimDate', lastClaimDate); 
+            localStorage.setItem('candies', candies); 
+            localStorage.setItem('money', coins); 
+
+            alert(`Bạn đã nhận được ${candiesToClaim} kẹo và ${coinsToClaim} xu! Hãy tiếp tục đăng nhập vào ngày mai để nhận thưởng gấp đôi!`);
+        }
+
+        function createCandyEffect() {
+            const candyEffectContainer = document.getElementById('candy-effect');
+
+            for (let i = 0; i < 20; i++) { 
+                const candy = document.createElement('span');
+                candy.textContent = '';
+                candy.style.position = 'absolute';
+                candy.style.fontSize = Math.random() * 30 + 20 + 'px'; 
+                candy.style.left = Math.random() * 100 + 'vw'; 
+                candy.style.bottom = '0';
+                candy.style.opacity = '1';
+                candy.style.transition = 'transform 2s ease, opacity 2s ease';
+                
+                candyEffectContainer.appendChild(candy);
+
+                setTimeout(() => {
+                    candy.style.transform = 'translateY(-100vh)'; 
+                    candy.style.opacity = '0'; 
+                }, 10);
+
+                setTimeout(() => {
+                    candyEffectContainer.removeChild(candy);
+                }, 2000);
+            }
+        }
+
+        const songs = [
+            { title: "Happy Day", url: "happy-day.mp3" },
+            { title: "Relaxing Tune", url: "relaxing.mp3" },
+            { title: "Upbeat Melody", url: "upbeat.mp3" },
+        ];
+
+        let audio; 
+        let isPlaying = false; 
+
+        function playRandomSong() {
+            alert("Tính năng phát nhạc hiện đang được phát triển cho phiên bản thường ngày!");
+        }
+
+        function togglePlayPause() {
+            alert("Tính năng phát nhạc hiện đang được phát triển cho phiên bản thường ngày!");
+        }
+    </script>
+</body>
+</html>
