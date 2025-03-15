@@ -1,373 +1,396 @@
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Trang với Sidebar và iFrame</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #0f212e;
-            transition: background-color 0.3s ease;
-        }
-        #sidebar {
-            height: 100%;
-            width: 0;
-            position: fixed;
-            z-index: 2;
-            top: 0;
-            left: 0;
-            background-color: #0f212e;
-            overflow-x: hidden;
-            transition: 0.5s;
-            padding-top: 60px;
-        }
-        #sidebar a {
-            padding: 8px 8px 8px 12px;
-            text-decoration: none;
-            font-size: 25px;
-            color: #818181;
-            display: block;
-            transition: 0.3s;
-        }
-        #sidebar a:hover {
-            color: #f1f1f1;
-        }
-        #main {
-            transition: margin-left .5s;
-            padding: 46px 0px 0px; /* Add 11px padding to the top of #main to create the gap */
-            height: 100vh; /* Make the main div take full viewport height */
-            box-sizing: border-box; /* Include padding in the element's total height */
-            overflow: hidden; /* Hide both scrollbars */
-        }
-        #iframe {
-            width: 100%;
-            height: 100%;
-            border: none; /* Remove default border */
-            z-index: 500;
-        }
-        .sidebarBtn {
-            font-size: 20px;
-            cursor: pointer;
-            background-color: #0f212e;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-        }
-        #closeBtn {
-            position: relative;
-            top: -65px;
-            left: 0;
-            font-size: 25px;
-            box-shadow: 2px 4px 6px 0px #0c1923;
-        }
-        #openBtn {
-            position: fixed;
-            top: -1px;
-            left: 00px;
-            z-index: 100;
-            transition: 0.5s;
-            box-shadow: -1px 4px 6px 0px #0c1923;
-        }
-        .minitext {
-            font-size: 4px;
-        }
-        .upside {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            font-size: 20px;
-            cursor: pointer;
-            background-color: rgba(26,44,56,255);
-            color: white;
-            padding: 11px 15px;
-            border: none;
-            box-shadow: 2px 4px 6px 0px #0c1923;
-            z-index: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .theme-button-container {
-            position: absolute;
-            right: 15px;
-        }
-        #themeButton {
-            background-color: #2a5070;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s;
-        }
-        #themeButton:hover {
-            background-color: #3a6080;
-        }
-        .theme-menu {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 30px;
-            background-color: #1d3648;
-            border-radius: 4px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 10;
-            min-width: 150px;
-        }
-        .theme-category {
-            padding: 8px 12px;
-            color: #7fc3ff;
-            font-weight: bold;
-            border-bottom: 1px solid #2a5070;
-            margin-top: 5px;
-        }
-        .theme-option {
-            padding: 8px 12px;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            padding-left: 20px;
-        }
-        .theme-option:hover {
-            background-color: #2a5070;
-        }
-        body.dark-theme {
-            background-color: #121212;
-        }
-        body.dark-theme #sidebar {
-            background-color: #1e1e1e;
-        }
-        body.dark-theme .upside {
-            background-color: #1e1e1e;
-        }
-        body.light-theme {
-            background-color: #f0f0f0;
-        }
-        body.light-theme #sidebar {
-            background-color: #e0e0e0;
-        }
-        body.light-theme .upside {
-            background-color: #e0e0e0;
-            color: #333;
-        }
-        body.tet-theme {
-            background-color: #e7241d;
-        }
-        body.tet-theme #sidebar {
-            background-color: #ff463d;
-        }
-        body.tet-theme .upside {
-            background-color: #ff463d;
-        }
-        body.compact-interface #main {
-            padding: 36px 0px 0px;
-        }
-        body.standard-interface #main {
-            padding: 46px 0px 0px;
-        }
-        body.comfortable-interface #main {
-            padding: 56px 0px 0px;
-        }
-        #overlay {
-            display: none;
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chill Home Page</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+<style>
+  body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #000; /* fallback background */
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
 
-        #overlay.fade-in {
-            display: block;
-            opacity: 0.5;
-        }
+header h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+}
 
-        #overlay.fade-out {
-            opacity: 0;
-        }
-    </style>
+.content {
+  text-align: center;
+  max-width: 600px;
+  margin: auto;
+}
+
+.content p {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.chill-svg {
+  margin: 20px auto;
+  display: block;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+button#moodButton {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: none;
+  background-color: #ffffff;
+  color: #2575fc;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button#moodButton:hover {
+  background-color: #e0e0e0;
+}
+
+#quote {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  font-style: italic;
+}
+
+.big-time {
+  font-size: 4rem;
+  text-align: center;
+  margin: 0;
+}
+
+.time-spent {
+  font-size: 1rem;
+  text-align: center;
+  margin-top: 0.5rem;
+  opacity: 0.8;
+}
+
+footer {
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+#bgVideo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+
+.nav-buttons {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 15px;
+  z-index: 100;
+}
+
+.nav-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: transparent;
+  color: white;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  text-decoration: none;
+  backdrop-filter: blur(0);
+  box-shadow: none;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-button:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 7px 14px rgba(0, 0, 0, 0.2),
+              0 3px 6px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+.nav-button:active {
+  transform: translateY(1px) scale(0.98);
+  background-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),
+              0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.nav-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.nav-button:hover::after {
+  left: 100%;
+}
+
+.logo {
+  position: fixed;
+  top: 20px;
+  left: 30px;
+  font-family: 'Dancing Script', cursive;
+  font-size: 2rem;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  z-index: 100;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.logo:hover {
+  transform: scale(1.05);
+  text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+}
+
+.audio-controls {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 100;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.audio-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.audio-icon.pause {
+  display: none;
+}
+
+.playing .audio-icon.play {
+  display: none;
+}
+
+.playing .audio-icon.pause {
+  display: block;
+}
+
+.volume-control {
+  width: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 5px;
+  border-radius: 20px;
+  display: none;
+}
+
+.audio-controls:hover .volume-control {
+  display: block;
+}
+
+input[type="range"] {
+  width: 100%;
+  height: 3px;
+  -webkit-appearance: none;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.nav-buttons, .logo, .audio-controls {
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.inactive {
+  opacity: 0;
+  visibility: hidden;
+}
+</style>
 </head>
 <body>
-    <div id="sidebar">
-        <a href="javascript:void(0)" class="sidebarBtn" id="closeBtn" onclick="closeNav()">☰ Menu</a>
-        <a href="#" onclick="changeIframe('indext.html')">🏠 Home</a>
-        <a href="#" onclick="changeIframe('indexgame.html')">🎮 Game</a>
-        <a href="#" onclick="changeIframe('info.html')">ℹ️ Info</a>
+  <a href="https://hhuyer.github.io/" class="logo">hhuyer.github.io</a>
+  <div class="nav-buttons">
+    <a href="https://hhuyer.github.io/indexa" class="nav-button">Home</a>
+    <a href="https://hhuyer.github.io/tools" class="nav-button">Tools</a>
+    <a href="https://hhuyer.github.io/indexgame" class="nav-button">Game</a>
+  </div>
+  <video id="bgVideo" autoplay loop muted playsinline></video>
+  <div class="audio-controls">
+    <button id="toggleAudio" class="nav-button">
+      <svg class="audio-icon play" viewBox="0 0 24 24" width="24" height="24">
+        <path fill="currentColor" d="M8 5v14l11-7z"/>
+      </svg>
+      <svg class="audio-icon pause" viewBox="0 0 24 24" width="24" height="24">
+        <path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+      </svg>
+    </button>
+    <div class="volume-control">
+      <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.5">
     </div>
+  </div>
+  <header>
+    <h1><div id="time-container">
+        <p id="currentTime" class="big-time"></p>
+        <p id="timeSpent" class="time-spent"></p>
+      </div></h1>
+  </header>
+  <main>
+    <section class="content">
+    </section>
+  </main>
+  <footer>
+  </footer>
+  <script>
+    let timeout;
+const uiElements = document.querySelectorAll('.nav-buttons, .logo, .audio-controls');
 
-    <div id="overlay"></div>
+function showUI() {
+  uiElements.forEach(el => el.classList.remove('inactive'));
+  // Reset the timeout
+  clearTimeout(timeout);
+  timeout = setTimeout(hideUI, 2000);
+}
 
-    <button class="sidebarBtn" id="openBtn" onclick="toggleNav()">☰</button>
-    <div class="upside" id="upside">
-        <center>upside</center> 
-        <div class="theme-button-container">
-                      <button id="themeButton" onclick="toggleThemeMenu()">Giao diện 🎨</button>
-            <div id="themeMenu" class="theme-menu">
-                <div class="theme-category">Chủ đề</div>
-                <div class="theme-option" onclick="changeTheme('default')">Mặc định</div>
-                <div class="theme-option" onclick="changeTheme('tet')">Tết</div>
-                <div class="theme-category">Giao diện</div>
-                <div class="theme-option" onclick="changeTheme('dark')">Tối</div>
-                <div class="theme-option" onclick="changeTheme('light')">Sáng</div>
-            </div>
-        </div>
-    </div>
-    <div id="main">
-        <iframe id="iframe" src="indexf.html"></iframe>
-    </div>
+function hideUI() {
+  uiElements.forEach(el => el.classList.add('inactive'));
+}
 
-    <script>
-        let isOpen = false;
-        let isThemeMenuOpen = false;
+// Initial setup
+document.addEventListener('mousemove', showUI);
+document.addEventListener('click', showUI);
+document.addEventListener('keydown', showUI);
 
-        function toggleNav() {
-            if (isOpen) {
-                closeNav();
-            } else {
-                openNav();
-            }
-        }
+// Set initial timeout
+timeout = setTimeout(hideUI, 2000);
 
-        function openNav() {
-            document.getElementById("sidebar").style.width = "250px";
-            document.getElementById("main").style.marginLeft = "250px";
-            document.getElementById("openBtn").style.display = "none"; // Hide the button
-            let overlay = document.getElementById("overlay");
-            overlay.style.display = "block"; // Show the overlay
-            overlay.classList.remove("fade-out"); // Remove the fade-out class
-            setTimeout(function() {
-                overlay.classList.add("fade-in");
-            }, 10);
-            isOpen = true;
-        }
+// Audio functionality
+const audioTracks = [
+  'https://dl.dropboxusercontent.com/s/e93f89s4lrhzy91/lofi-study-112191.mp3',
+  'https://dl.dropboxusercontent.com/s/h7oezsorps6jmod/chill-abstract-intention-12099.mp3',
+  'https://dl.dropboxusercontent.com/s/c0wnlz0n45j3u77/lofi-chill-medium-version-159456.mp3'
+];
 
-        function closeNav() {
-            document.getElementById("sidebar").style.width = "0";
-            document.getElementById("main").style.marginLeft = "0";
-            document.getElementById("openBtn").style.display = "block"; // Show the button
-            let overlay = document.getElementById("overlay");
-            overlay.classList.remove("fade-in");
-            overlay.classList.add("fade-out");
-            setTimeout(function() {
-                overlay.style.display = "none"; // Hide the overlay
-            }, 500);
-            isOpen = false;
-        }
+let currentAudio = new Audio();
+currentAudio.loop = true;
 
-        function toggleThemeMenu() {
-            const themeMenu = document.getElementById('themeMenu');
-            
-            if (isThemeMenuOpen) {
-                themeMenu.style.display = 'none';
-                isThemeMenuOpen = false;
-            } else {
-                themeMenu.style.display = 'block';
-                isThemeMenuOpen = true;
-            }
-        }
-        
-        function changeTheme(theme) {
-            // Remove all theme classes
-            document.body.classList.remove('dark-theme', 'light-theme', 'tet-theme');
-            
-            // Add selected theme class
-            if (theme !== 'default') {
-                document.body.classList.add(`${theme}-theme`);
-            }
-            
-            // Save theme preference
-            localStorage.setItem('selectedTheme', theme);
-            
-            changeIframeBasedOnTheme(theme);
-            
-            // Close theme menu
-            toggleThemeMenu();
-            
-            // Notify iframe about theme change
-            const iframe = document.getElementById('iframe');
-            if (iframe && iframe.contentWindow) {
-                iframe.contentWindow.postMessage({type: 'themeChange', theme: theme}, '*');
-            }
-        }
-        
-        function changeIframeBasedOnTheme(theme) {
-             // Change iframe source based on theme
-            const iframe = document.getElementById('iframe');
-            if (theme === 'tet') {
-                iframe.src = 'indexf.html';
-            } else {
-                iframe.src = 'indext.html';
-            }
-        }
-        
-        function changeInterface(style) {
-            // Remove all interface style classes
-            document.body.classList.remove('compact-interface', 'standard-interface', 'comfortable-interface');
-            
-            // Add selected interface style class
-            document.body.classList.add(`${style}-interface`);
-            
-            // Save interface preference
-            localStorage.setItem('selectedInterface', style);
-            
-            // Close theme menu
-            toggleThemeMenu();
-            
-            // Apply interface changes
-            applyInterfaceStyle(style);
-        }
-        
-        function applyInterfaceStyle(style) {
-            const main = document.getElementById('main');
-            switch(style) {
-                case 'compact':
-                    main.style.padding = "36px 0px 0px";
-                    break;
-                case 'standard':
-                    main.style.padding = "46px 0px 0px";
-                    break;
-                case 'comfortable':
-                    main.style.padding = "56px 0px 0px";
-                    break;
-            }
-            
-            // Notify iframe about interface change
-            const iframe = document.getElementById('iframe');
-            if (iframe && iframe.contentWindow) {
-                iframe.contentWindow.postMessage({type: 'interfaceChange', style: style}, '*');
-            }
-        }
+// Randomly select a track
+const randomTrack = audioTracks[Math.floor(Math.random() * audioTracks.length)];
+currentAudio.src = randomTrack;
 
-        // Function to change the iframe source
-        function changeIframe(url) {
-            document.getElementById('iframe').src = url;
-            closeNav();
-        }
+const toggleAudio = document.getElementById('toggleAudio');
+const volumeSlider = document.getElementById('volumeSlider');
 
-        // Load saved theme and interface on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const savedTheme = localStorage.getItem('selectedTheme');
-            if (savedTheme) {
-                changeTheme(savedTheme);
-            } else {
-                // Set default iframe source if no theme is saved
-                document.getElementById('iframe').src = 'indext.html';
-            }
-            
-            const savedInterface = localStorage.getItem('selectedInterface');
-            if (savedInterface) {
-                changeInterface(savedInterface);
-            } else {
-                // Default to standard if not set
-                changeInterface('standard');
-            }
-        });
-    </script>
+toggleAudio.addEventListener('click', () => {
+  if (currentAudio.paused) {
+    currentAudio.play();
+    toggleAudio.classList.add('playing');
+  } else {
+    currentAudio.pause();
+    toggleAudio.classList.remove('playing');
+  }
+});
+
+volumeSlider.addEventListener('input', (e) => {
+  currentAudio.volume = e.target.value;
+});
+
+// Set initial volume
+currentAudio.volume = volumeSlider.value;
+
+// Set up video background and time display
+window.addEventListener("load", function() {
+  // Set up random video background
+  const videoSources = [
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"
+  ];
+  const bgVideo = document.getElementById("bgVideo");
+  if (bgVideo) {
+    const randomSource = videoSources[Math.floor(Math.random() * videoSources.length)];
+    bgVideo.src = randomSource;
+    bgVideo.load();
+  }
+
+  // Time display functionality
+  const startTime = new Date();
+
+  function updateTime() {
+    const now = new Date();
+    const currentTimeElem = document.getElementById("currentTime");
+    if (currentTimeElem) {
+      currentTimeElem.textContent = now.toLocaleTimeString();
+    }
+    const elapsedMs = now - startTime;
+    const elapsedSec = Math.floor(elapsedMs / 1000);
+    const minutes = Math.floor(elapsedSec / 60);
+    const seconds = elapsedSec % 60;
+    const timeSpentElem = document.getElementById("timeSpent");
+    if (timeSpentElem) {
+      let elapsedText = "";
+      if (minutes > 0) {
+        elapsedText += minutes + " phút ";
+      }
+      elapsedText += seconds + " giây";
+      timeSpentElem.textContent = "Bạn đã ở đây: " + elapsedText;
+    }
+  }
+
+  updateTime();
+  setInterval(updateTime, 1000);
+});
+  </script>
 </body>
 </html>
