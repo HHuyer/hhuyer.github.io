@@ -298,7 +298,6 @@ const uiElements = document.querySelectorAll('.nav-buttons, .logo, .audio-contro
 
 function showUI() {
   uiElements.forEach(el => el.classList.remove('inactive'));
-  // Reset the timeout
   clearTimeout(timeout);
   timeout = setTimeout(hideUI, 2000);
 }
@@ -307,15 +306,12 @@ function hideUI() {
   uiElements.forEach(el => el.classList.add('inactive'));
 }
 
-// Initial setup
 document.addEventListener('mousemove', showUI);
 document.addEventListener('click', showUI);
 document.addEventListener('keydown', showUI);
 
-// Set initial timeout
 timeout = setTimeout(hideUI, 2000);
 
-// Audio functionality
 const audioTracks = [
   '1.mp3', '2.mp3', '3.mp3', '4.mp3', '5.mp3', '6.mp3', '7.mp3', '8.mp3', '9.mp3', '10.mp3',
   '11.mp3', '12.mp3', '13.mp3', '14.mp3', '15.mp3', '16.mp3', '17.mp3', '18.mp3', '19.mp3', '20.mp3',
@@ -326,18 +322,28 @@ const audioTracks = [
 ];
 
 let currentAudio = new Audio();
-currentAudio.loop = true;
+currentAudio.volume = 0.5;
 
-// Randomly select a track
-const randomTrack = audioTracks[Math.floor(Math.random() * audioTracks.length)];
-currentAudio.src = randomTrack;
+function playRandomTrack() {
+  const randomTrack = audioTracks[Math.floor(Math.random() * audioTracks.length)];
+  currentAudio.src = randomTrack;
+  currentAudio.play();
+}
+
+currentAudio.addEventListener('ended', () => {
+  setTimeout(playRandomTrack, 2000);
+});
 
 const toggleAudio = document.getElementById('toggleAudio');
 const volumeSlider = document.getElementById('volumeSlider');
 
 toggleAudio.addEventListener('click', () => {
   if (currentAudio.paused) {
-    currentAudio.play();
+    if (!currentAudio.src) {
+      playRandomTrack();
+    } else {
+      currentAudio.play();
+    }
     toggleAudio.classList.add('playing');
   } else {
     currentAudio.pause();
@@ -349,12 +355,9 @@ volumeSlider.addEventListener('input', (e) => {
   currentAudio.volume = e.target.value;
 });
 
-// Set initial volume
 currentAudio.volume = volumeSlider.value;
 
-// Set up video background and time display
 window.addEventListener("load", function() {
-  // Set up random video background
   const videoSources = [
     "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
@@ -368,7 +371,6 @@ window.addEventListener("load", function() {
     bgVideo.load();
   }
 
-  // Time display functionality
   const startTime = new Date();
 
   function updateTime() {
