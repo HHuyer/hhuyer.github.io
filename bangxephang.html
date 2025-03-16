@@ -3,290 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bảng Xếp Hạng</title>
+    <title>Fullscreen iFrame</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+        * {
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            border: 0;
         }
-        .container {
-            width: 80%;
-            margin: 20px 0;
+        html, body {
+            width: 100%;
+            height: 100%;
             overflow: hidden;
-            display: none;
         }
-        .container.active {
-            display: block;
-            width: 100%;
-            height: 100%;
+        iframe {
+            width: 100vw;
+            height: 100vh;
+            border: none;
         }
-        #leaderboard {
-            padding: 20px;
-            background: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            width: 100%;
-            height: 100%;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .buttons {
-            margin: 20px 0;
-        }
-        .buttons button {
-            padding: 10px 20px;
-            margin: 0 5px;
-            cursor: pointer;
-        }
-        .leaderboard-table {
-            display: none;
-            width: 100%;
-            height: 100%;
-        }
-        .leaderboard-table.active {
-            display: table;
-            width: 100%;
-            height: 100%;
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 75px; /* Điều chỉnh kích thước để che logo */
+            height: 5vh; /* Điều chỉnh kích thước để che logo */
+            background-color: black; /* Màu nền để che */
+            z-index: 10; /* Đảm bảo lớp phủ nằm trên iframe */
         }
     </style>
-    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.29.0.min.js"></script>
-    <script>
-        const publishKey = 'pub-c-65cc624a-532d-4595-b1d5-6dc779baff56';
-        const subscribeKey = 'sub-c-abb94a54-b12d-48b4-8f35-1495a8bd2caa';
-
-        const pubnub = new PubNub({
-            publishKey: publishKey,
-            subscribeKey: subscribeKey
-        });
-
-        function publishData() {
-            const data = {
-                username: localStorage.getItem('username'),
-                money: localStorage.getItem('money'),
-                spinCount: localStorage.getItem('spinCount'),
-                bestRandom: localStorage.getItem('bestRandom'),
-                candies: localStorage.getItem('candies'),
-                level: localStorage.getItem('level'),
-                timestamp: new Date().toLocaleString()
-            };
-
-            pubnub.publish({
-                channel: 'leaderboard',
-                message: data
-            }, function(status, response) {
-                if (status.error) {
-                    console.log(status);
-                } else {
-                    console.log("Tin nhắn đã được gửi với mã thời gian", response.timetoken);
-                }
-            });
-        }
-
-        function fetchHistory() {
-            pubnub.history(
-                {
-                    channel: 'leaderboard',
-                    count: 100, // Điều chỉnh số lượng nếu cần
-                    reverse: false
-                },
-                function(status, response) {
-                    if (status.error) {
-                        console.log(status);
-                    } else {
-                        response.messages.forEach(function(msg) {
-                            updateLeaderboards(msg.entry);
-                        });
-                    }
-                }
-            );
-        }
-
-        setInterval(publishData, 2000); // Gửi dữ liệu mỗi 2 giây
-
-        pubnub.addListener({
-            message: function(event) {
-                updateLeaderboards(event.message);
-            }
-        });
-
-        pubnub.subscribe({
-            channels: ['leaderboard']
-        });
-
-        function updateLeaderboards(data) {
-            updateLeaderboard('money-table', data, 'money');
-            updateLeaderboard('spinCount-table', data, 'spinCount');
-            updateLeaderboard('bestRandom-table', data, 'bestRandom');
-            updateLeaderboard('candies-table', data, 'candies');
-            updateLeaderboard('level-table', data, 'level');
-            removeEmptyRows();
-        }
-
-        function updateLeaderboard(tableId, data, key) {
-            const table = document.getElementById(tableId);
-            // Xóa mục cũ với cùng tên người dùng
-            for (let i = 1, row; row = table.rows[i]; i++) {
-                if (row.cells[1].innerText === data.username) {
-                    table.deleteRow(i);
-                    break;
-                }
-            }
-            // Chỉ chèn hàng mới nếu data[key] hợp lệ
-            if (data[key]) {
-                const row = table.insertRow();
-                row.insertCell(0).innerText = table.rows.length - 1; // Hạng
-                row.insertCell(1).innerText = data.username;
-                row.insertCell(2).innerText = data[key];
-                row.insertCell(3).innerText = data.timestamp;
-
-                // Sắp xếp bảng theo cột thứ ba (giảm dần)
-                sortTable(table);
-            }
-        }
-
-        function sortTable(table) {
-            const rows = Array.from(table.rows).slice(1);
-            rows.sort((a, b) => parseFloat(b.cells[2].innerText) - parseFloat(a.cells[2].innerText));
-            rows.forEach((row, index) => {
-                row.cells[0].innerText = index + 1; // Cập nhật hạng
-                table.tBodies[0].appendChild(row);
-            });
-        }
-
-        function removeEmptyRows() {
-            const tables = document.querySelectorAll('table');
-            tables.forEach(table => {
-                for (let i = table.rows.length - 1; i > 0; i--) {
-                    const row = table.rows[i];
-                    if (!row.cells[1].innerText || !row.cells[2].innerText) {
-                        table.deleteRow(i);
-                    }
-                }
-            });
-        }
-
-        function showTable(tableId) {
-            const containers = document.querySelectorAll('.container');
-            containers.forEach(container => container.classList.remove('active'));
-            document.getElementById(tableId).closest('.container').classList.add('active');
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            fetchHistory();
-            showTable('money-table');
-        });
-    </script>
 </head>
 <body>
-<center><div class="buttons">
-        <button onclick="showTable('money-table')">Tiền</button>
-        <button onclick="showTable('spinCount-table')">Số Lần Quay</button>
-        <button onclick="showTable('bestRandom-table')">Ngẫu Nhiên Tốt Nhất</button>
-        <button onclick="showTable('candies-table')">Kẹo</button>
-        <button onclick="showTable('level-table')">Level</button>
-    </div>
-    <div class="container active">
-        <h1>Bảng Xếp Hạng - Tiền</h1>
-        <div id="leaderboard">
-            <table id="money-table" class="leaderboard-table active">
-                <thead>
-                    <tr>
-                        <th>Hạng</th>
-                        <th>Tên Người Dùng</th>
-                        <th>Tiền</th>
-                        <th>Thời Gian</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="container active">
-        <h1>Bảng Xếp Hạng - Số Lần Quay</h1>
-        <div id="leaderboard">
-            <table id="spinCount-table" class="leaderboard-table active">
-                <thead>
-                    <tr>
-                        <th>Hạng</th>
-                        <th>Tên Người Dùng</th>
-                        <th>Số Lần Quay</th>
-                        <th>Thời Gian</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="container active">
-        <h1>Bảng Xếp Hạng - Ngẫu Nhiên Tốt Nhất</h1>
-        <div id="leaderboard">
-            <table id="bestRandom-table" class="leaderboard-table active">
-                <thead>
-                    <tr>
-                        <th>Hạng</th>
-                        <th>Tên Người Dùng</th>
-                        <th>Ngẫu Nhiên Tốt Nhất</th>
-                        <th>Thời Gian</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="container active">
-        <h1>Bảng Xếp Hạng - Kẹo</h1>
-        <div id="leaderboard">
-            <table id="candies-table" class="leaderboard-table active">
-                <thead>
-                    <tr>
-                        <th>Hạng</th>
-                        <th>Tên Người Dùng</th>
-                        <th>Kẹo</th>
-                        <th>Thời Gian</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="container active">
-        <h1>Bảng Xếp Hạng - Level</h1>
-        <div id="leaderboard">
-            <table id="level-table" class="leaderboard-table active">
-                <thead>
-                    <tr>
-                        <th>Hạng</th>
-                        <th>Tên Người Dùng</th>
-                        <th>Level</th>
-                        <th>Thời Gian</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</center>
+    <div class="overlay"></div>
+    <iframe src="https://websim.ai/@HHuy/b-ng-x-p-h-ng/"></iframe>
 </body>
 </html>
