@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>LuckyBox Opening 3D Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: radial-gradient(circle, #1e2738 0%, #0a0e17 100%);
+      font-family: Arial, sans-serif;
+    }
+
+    #container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230a0e17"/><path d="M0 50 L100 50" stroke="%231e2738" stroke-width="0.5" stroke-opacity="0.3"/><path d="M50 0 L50 100" stroke="%231e2738" stroke-width="0.5" stroke-opacity="0.3"/></svg>');
+    }
+
+    #openButton {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #ff6600;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      z-index: 10;
+      transition: background-color 0.3s, opacity 0.3s;
+    }
+
+    #openButton:hover {
+      background-color: #e65c00;
+    }
+
+    #openButton:disabled {
+      background-color: #999;
+      cursor: not-allowed;
+    }
+
+    #openButton .case-counter-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background-color: #ff6600;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 12px;
+      font-weight: bold;
+      pointer-events: none;
+    }
+
+    #okButton {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #4a85ce;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      z-index: 10;
+      transition: background-color 0.3s;
+      display: none;
+    }
+
+    #okButton:hover {
+      background-color: #3a75be;
+    }
+
+    .glow-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: radial-gradient(circle at center, rgba(74, 133, 206, 0.15) 0%, transparent 70%);
+      z-index: 5;
+      transition: background 0.3s;
+    }
+
+    .light-beam {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 0%, rgba(74, 133, 206, 0.05) 50%, transparent 100%);
+      z-index: 1;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #rewardOverlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #fff;
+      font-size: 24px;
+      background: rgba(30, 39, 56, 0.9);
+      padding: 20px 30px;
+      border-radius: 8px;
+      display: none;
+      z-index: 10;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      border: 2px solid #4a85ce;
+      text-align: center;
+      font-weight: bold;
+      transition: all 0.3s;
+      transform-origin: center;
+    }
+
+    .cs-logo {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: #4a85ce;
+      font-size: 24px;
+      font-weight: bold;
+      opacity: 0.7;
+      z-index: 10;
+    }
+
+    /* Background effect styles */
+    .background-effect-container {
+      overflow: hidden;
+    }
+
+    .background-layer {
+      transform-origin: center;
+    }
+
+    /* Shatter effect for universal rarity */
+    .shatter-fragment {
+      transform-origin: center;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+
+    /* Additional effects animation keyframes */
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* Styles for the Backpack (inventory) display */
+    #backpack {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      max-height: 400px;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      z-index: 15;
+      font-size: 14px;
+      display: none;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+    #backpack h2 {
+      margin: 0 0 8px 0;
+      font-size: 18px;
+      text-align: center;
+      color: #4a85ce;
+    }
+
+    #toggleBackpack {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 15;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(74, 133, 206, 0.8);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #toggleBackpack:hover {
+      background-color: #3a75be;
+    }
+
+    #toggleBackpack svg {
+      width: 24px;
+      height: 24px;
+    }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.152.2/build/three.module.js",
+        "gsap": "https://cdn.skypack.dev/gsap"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="container"></div>
+  <div class="glow-overlay"></div>
+  <div class="light-beam"></div>
+  <div class="cs-logo">LuckyBox</div>
+  <button id="openButton">Open Case</button>
+  <button id="okButton">OK</button>
+  <div id="rewardOverlay"></div>
+  <div id="backpack"></div>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { gsap } from "gsap";
+    import { config } from "./config.js";
+    import { createParticleSystem, emitParticles } from "./case-effects.js";
+    import { animateBoxShaking } from "./animation-manager.js";
+    import { createSmokeSystem, createFireSystem } from "./particle-effects.js";
+    import { selectRewardItem, showReward } from "./item-selection.js";
+    import { 
+      createArmorEffectSystem, 
+      createBookEffectSystem, 
+      createItemEffectSystem, 
+      createSkillEffectSystem 
+    } from "./item-categories.js";
+    import { createGlowSystem, createEnergyRingSystem } from "./pre-effects.js";
+    import { createRarityEffectsSystems, cleanupRarityEffects } from "./rarity-effects.js";
+    import { createEliteEffectsSystems, cleanupEliteEffects } from "./elite-effects.js";
+    import {
+      createTimeEffectsSystems,
+      cleanupTimeEffects
+    } from "./time-effects.js";
+    import {
+      createElementalEffectsSystems,
+      cleanupElementalEffects
+    } from "./elemental-effects.js";
+    import {
+      createMythicalEffectsSystems,
+      cleanupMythicalEffects
+    } from "./mythical-effects.js";
+    import { createRaritySpecificEffects } from "./rarity-specific-effects.js";
+    import { createRaritySounds } from "./rarity-sounds.js";
+
+    // Setup the scene, camera, and renderer
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a0e17);
+
+    function getAdjustedFOV() {
+      // Consider screens smaller than 768px as small screens
+      return window.innerWidth < 768 ? 100 : config.cameraFov;
+    }
+
+    const camera = new THREE.PerspectiveCamera(
+      getAdjustedFOV(),
+      window.innerWidth / window.innerHeight,
+      0.1,
+      100
+    );
+    camera.position.set(
+      config.cameraPosition.x,
+      config.cameraPosition.y,
+      config.cameraPosition.z
+    );
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById("container").appendChild(renderer.domElement);
+
+    // Store camera reference for space-bending effects
+    scene.camera = camera;
+
+    // Create pre-opening effect systems and store globally to avoid re-creation
+    window.glowSystem = createGlowSystem();
+    window.ringsSystem = createEnergyRingSystem();
+    scene.add(window.glowSystem);
+    scene.add(window.ringsSystem);
+
+    // Handle browser resize events
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.fov = getAdjustedFOV();
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Add lighting to the scene
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(5, 10, 7.5);
+    scene.add(directionalLight);
+
+    // Create a floor for the case to land on
+    const floorGeometry = new THREE.PlaneGeometry(40, 40);
+    const floorMaterial = new THREE.MeshStandardMaterial({ 
+      color: 0x1e2738, 
+      side: THREE.DoubleSide,
+      metalness: 0.8,
+      roughness: 0.2,
+      envMapIntensity: 1.0
+    });
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    floor.rotation.x = Math.PI / 2;
+    floor.position.y = -2;
+    scene.add(floor);
+
+    // Add subtle fog to the scene
+    scene.fog = new THREE.Fog(0x0a0e17, 10, 30);
+
+    // Add a subtle glow light to simulate CS:GO case environment
+    const blueLight = new THREE.PointLight(0x4a85ce, 1, 20);
+    blueLight.position.set(5, 5, 5);
+    scene.add(blueLight);
+
+    // Add a subtle spotlight from above
+    const spotlight = new THREE.SpotLight(0xffffff, 0.8);
+    spotlight.position.set(0, 10, 0);
+    spotlight.angle = Math.PI / 6;
+    spotlight.penumbra = 0.3;
+    spotlight.castShadow = true;
+    scene.add(spotlight);
+
+    // Create a group to hold the case components
+    const caseGroup = new THREE.Group();
+    caseGroup.position.y = config.dropHeight; // Start from above
+    scene.add(caseGroup);
+
+    // Create the base of the case
+    let baseGeometry = new THREE.BoxGeometry(
+      config.caseWidth,
+      config.caseHeight,
+      config.caseDepth
+    );
+    let baseMaterial = new THREE.MeshStandardMaterial({ 
+      color: 0x3259a8,
+      metalness: 0.7,
+      roughness: 0.3
+    });
+
+    let baseMesh = new THREE.Mesh(baseGeometry, baseMaterial);
+    caseGroup.add(baseMesh);
+
+    // Create the lid geometry and adjust its pivot.
+    let lidGeometry = new THREE.BoxGeometry(
+      config.lidWidth,
+      config.lidHeight,
+      config.lidDepth
+    );
+    lidGeometry.translate(0, config.lidHeight / 2, config.lidDepth / 2);
+
+    let lidMaterial = new THREE.MeshStandardMaterial({ 
+      color: 0x4a85ce,
+      metalness: 0.7,
+      roughness: 0.3 
+    });
+    let lidMesh = new THREE.Mesh(lidGeometry, lidMaterial);
+    lidMesh.position.set(0, config.caseHeight / 2, -config.caseDepth / 2);
+    caseGroup.add(lidMesh);
+
+    // Create particles system for effects
+    const { particlesGroup, particles } = createParticleSystem();
+    scene.add(particlesGroup);
+
+    // Create smoke and fire particle systems
+    const { smokeGroup, particles: smokeParticles } = createSmokeSystem();
+    const { fireGroup, particles: fireParticles } = createFireSystem();
+    scene.add(smokeGroup);
+    scene.add(fireGroup);
+
+    // Create category effect systems
+    const { group: armorGroup, particles: armorParticles } = createArmorEffectSystem();
+    const { group: bookGroup, particles: bookParticles } = createBookEffectSystem();
+    const { group: itemGroup, particles: itemParticles } = createItemEffectSystem();
+    const { group: skillGroup, particles: skillParticles } = createSkillEffectSystem();
+    scene.add(armorGroup);
+    scene.add(bookGroup);
+    scene.add(itemGroup);
+    scene.add(skillGroup);
+
+    // Store all category effect systems together
+    const categoryEffects = {
+      armorEffects: { group: armorGroup, particles: armorParticles },
+      bookEffects: { group: bookGroup, particles: bookParticles },
+      itemEffects: { group: itemGroup, particles: itemParticles },
+      skillEffects: { group: skillGroup, particles: skillParticles }
+    };
+
+    // Initialize sound effects
+    const audioListener = new THREE.AudioListener();
+    camera.add(audioListener);
+
+    // Store listener for other systems
+    scene.listener = audioListener;
+
+    // Create rarity effects systems
+    const rarityEffects = createRarityEffectsSystems();
+
+    // Create rarity-specific effects systems only once
+    if (!window.raritySpecificEffects) {
+      window.raritySpecificEffects = createRaritySpecificEffects();
+      
+      // Add all rarity effect groups to scene
+      Object.values(window.raritySpecificEffects).forEach(system => {
+        if (system && system.group) {
+          scene.add(system.group);
+        }
+      });
+    }
+
+    // Create rarity sounds only if audio listener exists
+    if (audioListener && !window.raritySounds) {
+      window.raritySounds = createRaritySounds(audioListener);
+    }
+
+    // Physics variables
+    let velocity = 0;
+    let angularVelocity = { x: 0, y: 0, z: 0 };
+    let isDropping = true;
+    let hasLanded = false;
+    let caseOpened = false;
+    let isAnimatingColors = false;
+    let bounceCount = 0;  // Track number of bounces
+
+    // Create sound sources
+    const dropSound = new THREE.Audio(audioListener);
+    const bounceSound = new THREE.Audio(audioListener);
+    const openSound = new THREE.Audio(audioListener);
+    const rewardSound = new THREE.Audio(audioListener);
+
+    // Audio loader
+    const audioLoader = new THREE.AudioLoader();
+
+    // Load audio files
+    audioLoader.load(
+      'https://assets.codepen.io/21542/Click.mp3', 
+      function(buffer) {
+        dropSound.setBuffer(buffer);
+        dropSound.setVolume(config.soundVolume);
+      }
+    );
+
+    audioLoader.load(
+      'https://assets.codepen.io/21542/pop-up-on.mp3', 
+      function(buffer) {
+        bounceSound.setBuffer(buffer);
+        bounceSound.setVolume(config.soundVolume * 0.7);
+      }
+    );
+
+    audioLoader.load(
+      'https://assets.codepen.io/21542/whoosh.mp3', 
+      function(buffer) {
+        openSound.setBuffer(buffer);
+        openSound.setVolume(config.soundVolume);
+      }
+    );
+
+    audioLoader.load(
+      'https://assets.codepen.io/21542/success-1.mp3', 
+      function(buffer) {
+        rewardSound.setBuffer(buffer);
+        rewardSound.setVolume(config.soundVolume);
+      }
+    );
+
+    // Function to open the case - modified to support categories
+    function openCase() {
+      if (caseOpened || isDropping || isAnimatingColors) return;
+      
+      // Disable button to prevent multiple clicks
+      document.getElementById("openButton").disabled = true;
+      
+      // Select the reward item with category, but don't play the effect yet
+      const selectedItem = selectRewardItem(categoryEffects, caseGroup.position);
+      
+      // Start animating case colors based on rarity, passing categoryEffects 
+      isAnimatingColors = true;
+      const animationDuration = animateCaseColor(
+        baseMesh, 
+        lidMesh, 
+        selectedItem, 
+        scene, 
+        camera, 
+        { smokeGroup, particles: smokeParticles }, 
+        { fireGroup, particles: fireParticles},
+        caseGroup,
+        () => {
+          // Animation complete, now open the case
+          caseOpened = true;
+          
+          // Activate visual effects
+          const lightBeam = document.querySelector('.light-beam');
+          gsap.to(lightBeam, {
+            opacity: 0.8,
+            duration: 0.5,
+            ease: "power1.out"
+          });
+          
+          // Play open sound
+          if (openSound.buffer) {
+            openSound.play();
+          }
+
+          // First open the lid
+          gsap.to(lidMesh.rotation, {
+            x: -Math.PI / 2, // Rotate around the X-axis to lift the lid upward.
+            duration: config.lidAnimationDuration / 2,
+            ease: "power2.out",
+            onComplete: () => {
+              // Create particles at the opening point
+              const particlePosition = new THREE.Vector3();
+              lidMesh.getWorldPosition(particlePosition);
+              emitParticles(particles, particlesGroup, particlePosition);
+              
+              // Then detach and launch the lid
+              caseGroup.remove(lidMesh);
+              scene.add(lidMesh);
+              
+              // Calculate world position before detaching
+              const worldPosition = new THREE.Vector3();
+              lidMesh.getWorldPosition(worldPosition);
+              lidMesh.position.copy(worldPosition);
+              
+              // Calculate world rotation before detaching
+              const worldQuaternion = new THREE.Quaternion();
+              lidMesh.getWorldQuaternion(worldQuaternion);
+              lidMesh.setRotationFromQuaternion(worldQuaternion);
+              
+              // Launch the lid with random velocity and rotation
+              gsap.to(lidMesh.position, {
+                x: lidMesh.position.x + (Math.random() - 0.5) * 10,
+                y: lidMesh.position.y + Math.random() * 8 + 4,
+                z: lidMesh.position.z - Math.random() * 10 - 5,
+                duration: 1.5,
+                ease: "power1.out"
+              });
+              
+              gsap.to(lidMesh.rotation, {
+                x: lidMesh.rotation.x + Math.random() * Math.PI * 4,
+                y: lidMesh.rotation.y + Math.random() * Math.PI * 4,
+                z: lidMesh.rotation.z + Math.random() * Math.PI * 4,
+                duration: 1.5,
+                ease: "power1.in"
+              });
+              
+              // Show reward after the lid flies away
+              setTimeout(() => {
+                showReward(selectedItem, rewardSound, particles, particlesGroup, caseGroup.position);
+              }, 500);
+            }
+          });
+        },
+        categoryEffects
+      );
+    }
+
+    // Function to reset the case - include resetting all effect systems
+    function resetCase() {
+      // Remove old case elements
+      scene.remove(lidMesh);
+      while(caseGroup.children.length > 0) {
+        caseGroup.remove(caseGroup.children[0]);
+      }
+      
+      // Create the base of the case again with original colors
+      baseMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x3259a8,
+        metalness: 0.7,
+        roughness: 0.3
+      });
+      const newBaseMesh = new THREE.Mesh(baseGeometry, baseMaterial);
+      caseGroup.add(newBaseMesh);
+      baseMesh = newBaseMesh;
+      
+      // Create new lid with original colors
+      lidMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x4a85ce,
+        metalness: 0.7,
+        roughness: 0.3 
+      });
+      const newLidMesh = new THREE.Mesh(lidGeometry, lidMaterial);
+      newLidMesh.position.set(0, config.caseHeight / 2, -config.caseDepth / 2);
+      caseGroup.add(newLidMesh);
+      lidMesh = newLidMesh;
+      
+      // Reset physics state
+      caseGroup.position.y = config.dropHeight;
+      caseGroup.rotation.set(0, 0, 0);
+      velocity = 0;
+      angularVelocity = { 
+        x: (Math.random() - 0.5) * config.initialRotationForce,
+        y: (Math.random() - 0.5) * config.initialRotationForce,
+        z: (Math.random() - 0.5) * config.initialRotationForce
+      };
+      isDropping = true;
+      hasLanded = false;
+      caseOpened = false;
+      isAnimatingColors = false;
+      bounceCount = 0;
+      
+      // After first box, enable no-bounce mode
+      config.noBounceMode = true;
+      
+      // Hide and reset UI elements
+      document.getElementById("openButton").style.display = "none";
+      document.getElementById("openButton").disabled = false;
+      document.getElementById("okButton").style.display = "none";
+      document.getElementById("rewardOverlay").style.display = "none";
+      
+      // Reset light beam
+      const lightBeam = document.querySelector('.light-beam');
+      gsap.to(lightBeam, {
+        opacity: 0,
+        duration: 0.5
+      });
+      
+      // Remove vignette effect if it exists
+      const vignetteOverlay = document.getElementById('vignetteOverlay');
+      if (vignetteOverlay) {
+        gsap.to(vignetteOverlay, {
+          boxShadow: 'inset 0 0 150px 60px rgba(0, 0, 0, 0)',
+          duration: 0.5
+        });
+      }
+      
+      // Reset any body transform from shake effect
+      document.body.style.transform = 'translate(0, 0)';
+      
+      // Hide category effect particles
+      armorParticles.children.forEach(p => p.visible = false);
+      bookParticles.children.forEach(p => p.visible = false);
+      itemParticles.children.forEach(p => p.visible = false);
+      skillParticles.children.forEach(p => p.visible = false);
+      
+      // Reset rarity-specific effects too
+      for (const key in window.raritySpecificEffects) {
+        if (window.raritySpecificEffects[key] && window.raritySpecificEffects[key].group) {
+          // Hide all particles
+          if (window.raritySpecificEffects[key].particles) {
+            window.raritySpecificEffects[key].particles.forEach(particle => {
+              if (particle) {
+                particle.visible = false;
+                if (particle.material) {
+                  particle.material.opacity = 0;
+                }
+              }
+            });
+          }
+          scene.remove(window.raritySpecificEffects[key].group);
+        }
+      }
+      
+      // Play drop sound
+      if (dropSound.buffer) {
+        dropSound.play();
+      }
+    }
+
+    // Create rarity sounds if not already created and audio listener exists
+    if (!window.raritySounds && scene.listener) {
+      window.raritySounds = createRaritySounds(scene.listener);
+    }
+
+    // Physics simulation for the case dropping
+    function updatePhysics(deltaTime) {
+      if (!isDropping) return;
+      
+      // Apply gravity to velocity
+      velocity += config.gravity * deltaTime;
+      
+      // Save previous position for collision correction
+      const previousY = caseGroup.position.y;
+      
+      // Move the case based on velocity
+      caseGroup.position.y += velocity * deltaTime;
+      
+      // Apply rotation based on angular velocity
+      caseGroup.rotation.x += angularVelocity.x * deltaTime;
+      caseGroup.rotation.y += angularVelocity.y * deltaTime;
+      caseGroup.rotation.z += angularVelocity.z * deltaTime;
+      
+      // Define floor level including the case height offset
+      const floorLevel = -2 + config.caseHeight/2;
+      
+      // Check for collision with floor
+      if (caseGroup.position.y <= floorLevel) {
+        bounceCount++;
+        
+        // Ensure the case doesn't go below the floor
+        caseGroup.position.y = floorLevel;
+        
+        // If in no-bounce mode, just stop the case immediately
+        if (config.noBounceMode) {
+          isDropping = false;
+          hasLanded = true;
+          
+          // Stop all movement and rotation
+          velocity = 0;
+          angularVelocity = { x: 0, y: 0, z: 0 };
+          
+          // Stabilize the case
+          gsap.to(caseGroup.rotation, {
+            x: 0,
+            y: 0,
+            z: 0,
+            duration: 0.5,
+            ease: "power1.out"
+          });
+          
+          // Show the open button after 1 second
+          setTimeout(() => {
+            document.getElementById("openButton").style.display = "block";
+          }, 1000);
+          
+          return;
+        }
+        
+        // Only trigger bounce if we were above the floor in the previous frame
+        if (previousY > floorLevel) {
+          const randomBounceFactor = 1 + (Math.random() * config.bounceVariation * 2 - config.bounceVariation);
+          velocity = -velocity * config.bounciness * randomBounceFactor;
+          
+          // Play bounce sound with varying pitch
+          if (bounceSound.buffer && Math.abs(velocity) > 0.3) {
+            const bounceClone = bounceSound.clone();
+            bounceClone.setPlaybackRate(0.8 + Math.random() * 0.4);
+            bounceClone.play();
+          }
+          
+          // Add stronger and more random rotation on impact
+          if (Math.abs(velocity) > 0.3) {
+            const impactForce = config.impactRotationForce * (Math.random() * 0.5 + 0.5);
+            angularVelocity.x = (Math.random() - 0.5) * impactForce;
+            angularVelocity.y = (Math.random() - 0.5) * impactForce;
+            angularVelocity.z = (Math.random() - 0.5) * impactForce;
+            
+            // Random horizontal movement on impact
+            if (bounceCount < 5) {
+              caseGroup.position.x += (Math.random() - 0.5) * 0.5;
+              caseGroup.position.z += (Math.random() - 0.5) * 0.5;
+            }
+          }
+        } else {
+          // If we were already below the floor, just correct position without bouncing
+          velocity = 0;
+        }
+        
+        // Apply friction to angular velocity (slightly different per axis for more chaos)
+        angularVelocity.x *= config.friction * (0.9 + Math.random() * 0.2);
+        angularVelocity.y *= config.friction * (0.9 + Math.random() * 0.2);
+        angularVelocity.z *= config.friction * (0.9 + Math.random() * 0.2);
+        
+        // Stop the simulation if the velocity is very low and it has bounced enough times
+        if ((Math.abs(velocity) < config.minBounceVelocity && 
+            Math.abs(angularVelocity.x) < 0.05 && 
+            Math.abs(angularVelocity.z) < 0.05) || bounceCount > 12) {
+          isDropping = false;
+          hasLanded = true;
+          
+          // Stabilize the case
+          gsap.to(caseGroup.rotation, {
+            x: 0,
+            y: 0,
+            z: 0,
+            duration: 0.5,
+            ease: "power1.out"
+          });
+          
+          document.getElementById("openButton").style.display = "block";
+        }
+      }
+      
+      // Add slight angular momentum changes during flight for more chaotic motion
+      if (caseGroup.position.y > -1) {
+        angularVelocity.x += (Math.random() - 0.5) * 0.1 * deltaTime;
+        angularVelocity.y += (Math.random() - 0.5) * 0.1 * deltaTime;
+        angularVelocity.z += (Math.random() - 0.5) * 0.1 * deltaTime;
+      }
+    }
+
+    // Initialize random rotation for the falling case with stronger initial force
+    angularVelocity = { 
+      x: (Math.random() - 0.5) * config.initialRotationForce,
+      y: (Math.random() - 0.5) * config.initialRotationForce,
+      z: (Math.random() - 0.5) * config.initialRotationForce
+    };
+
+    // Start drop sound when the simulation begins
+    if (dropSound.buffer) {
+      dropSound.play();
+    }
+
+    // Time tracking for consistent physics
+    let lastTime = 0;
+
+    // Render loop
+    function animate(currentTime) {
+      // Convert to seconds with safety cap to prevent large time jumps
+      const deltaTime = Math.min((currentTime - lastTime) / 1000, 0.05);
+      lastTime = currentTime;
+      
+      // Only update physics if we have a valid time delta
+      if (deltaTime > 0) {
+        updatePhysics(deltaTime);
+      }
+      
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    }
+    animate(0);
+
+    // Case cooldown intercept
+    const openButton = document.getElementById("openButton");
+    if (openButton) {
+      // Add a capturing phase event listener that runs before other listeners (such as the one in main.js).
+      openButton.addEventListener("click", function (e) {
+        if (!canOpenCase()) {
+          // Prevent other listeners from firing and show a message with the remaining cooldown time.
+          e.stopImmediatePropagation();
+          e.preventDefault();
+          const remaining = getTimeRemaining();
+          alert(`Bạn cần đợi thêm ${remaining.hours} giờ, ${remaining.minutes} phút, ${remaining.seconds} giây trước khi mở hòm tiếp theo.`);
+        } else {
+          // Record the current open time to start the cooldown.
+          recordCaseOpen();
+        }
+      }, true);
+    }
+    
+    // Case counter initialization
+    document.addEventListener("DOMContentLoaded", () => {
+      if (!openButton) return;
+      
+      // Ensure the player's case count is stored in localStorage (default to 3 if not set)
+      if (localStorage.getItem("playerCaseCount") === null) {
+        localStorage.setItem("playerCaseCount", "3");
+      }
+      
+      // Create a badge element within the open button if it doesn't already exist.
+      let badge = openButton.querySelector(".case-counter-badge");
+      if (!badge) {
+        badge = document.createElement("span");
+        badge.className = "case-counter-badge";
+        // Ensure the button is positioned relatively for badge positioning.
+        openButton.style.position = "relative";
+        // Set styling to tilt the badge.
+        badge.style.transform = "rotate(45deg)";
+        badge.style.display = "inline-block";
+        badge.style.position = "absolute";
+        badge.style.top = "-10";
+        badge.style.right = "-10";
+        badge.style.color = "#fff";
+        badge.style.padding = "-15px -15px";
+        badge.style.borderRadius = "50%";
+        openButton.appendChild(badge);
+      }
+      
+      // Function to update the badge text from localStorage, ensuring the displayed number is always current.
+      function updateBadge() {
+        const currentCount = parseInt(localStorage.getItem("playerCaseCount"), 10) || 0;
+        badge.textContent = "x" + currentCount;
+      }
+      updateBadge();
+      
+      // When the "Open Case" button is clicked, decrement the case count from localStorage and update the badge.
+      openButton.addEventListener("click", () => {
+        if (!openButton.disabled) {
+          let currentCount = parseInt(localStorage.getItem("playerCaseCount"), 10) || 0;
+          if (currentCount > 0) {
+            currentCount -= 1;
+            localStorage.setItem("playerCaseCount", currentCount.toString());
+            updateBadge();
+          }
+        }
+      });
+    });
+
+    // Inventory UI setup
+    document.addEventListener("DOMContentLoaded", () => {
+      // Create backpack div if it doesn't exist
+      let backpackDiv = document.getElementById("backpack");
+      if (!backpackDiv) {
+        backpackDiv = document.createElement("div");
+        backpackDiv.id = "backpack";
+        document.body.appendChild(backpackDiv);
+      }
+      
+      // Create toggle button with backpack icon
+      let toggleBtn = document.getElementById("toggleBackpack");
+      if (!toggleBtn) {
+        toggleBtn = document.createElement("button");
+        toggleBtn.id = "toggleBackpack";
+        toggleBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/>
+          <path d="M14 4v4H10V4h4z"/>
+        </svg>`;
+        toggleBtn.style.position = "absolute";
+        toggleBtn.style.top = "20px";
+        toggleBtn.style.right = "20px";
+        toggleBtn.style.zIndex = "15";
+        document.body.appendChild(toggleBtn);
+      }
+      
+      toggleBtn.addEventListener("click", toggleBackpack);
+      
+      // Set default state to closed (regardless of saved state)
+      backpackDiv.style.display = "none";
+      localStorage.setItem("backpackVisible", "false");
+      
+      // Update display with saved inventory
+      updateInventoryDisplay();
+    });
+
+    // Event listeners for UI interactions
+    document.getElementById("openButton").addEventListener("click", openCase);
+    document.getElementById("okButton").addEventListener("click", resetCase);
+
+    // Hide the open button until the case has landed
+    document.getElementById("openButton").style.display = "none";
+  </script>
+</body>
+</html>
