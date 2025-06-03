@@ -304,62 +304,6 @@ input[type="range"]::-webkit-slider-thumb {
     visibility: hidden;
   }
 }
-
-.notification {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(255, 0, 0, 0.9);
-  color: white;
-  padding: 20px;
-  border-radius: 10px;
-  z-index: 1000;
-  box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
-  max-width: 80%;
-  width: 400px;
-}
-
-.notification-content {
-  position: relative;
-  text-align: center;
-}
-
-.notification-close {
-  position: absolute;
-  top: -15px;
-  right: -15px;
-  font-size: 24px;
-  cursor: pointer;
-  background: white;
-  color: red;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 5px rgba(0,0,0,0.5);
-}
-
-.notification h3 {
-  margin-top: 0;
-  font-size: 1.5rem;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-}
-
-.notification p {
-  margin-bottom: 15px;
-}
-
-@media (max-width: 500px) {
-  .notification {
-    width: 90%;
-  }
-}
 </style>
 </head>
 <body>
@@ -400,30 +344,7 @@ input[type="range"]::-webkit-slider-thumb {
   </main>
   <footer>
   </footer>
-  <div class="notification">
-    <div class="notification-content">
-      <span class="notification-close">&times;</span>
-      <h3>Thử game mới của tôi!</h3>
-      <p>Khám phá trải nghiệm 3D thú vị tại:</p>
-      <a href="https://3d-game--hhuy.on.websim.ai/" target="_blank" class="nav-button">Chơi ngay</a>
-    </div>
-  </div>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const notification = document.querySelector('.notification');
-      const closeBtn = document.querySelector('.notification-close');
-      
-      closeBtn.addEventListener('click', function() {
-        notification.style.display = 'none';
-      });
-      
-      // Show notification after 2 seconds
-      setTimeout(() => {
-        notification.style.opacity = '1';
-        notification.style.visibility = 'visible';
-      }, 2000);
-    });
-
     let timeout;
     const uiElements = document.querySelectorAll('.nav-buttons, .logo, .audio-controls');
 
