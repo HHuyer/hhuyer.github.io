@@ -4,307 +4,374 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chill Home Page</title>
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-<style>
-  body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #000; /* fallback background */
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-}
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #000;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+    }
 
-header h1 {
-  font-size: 3rem;
-  margin-bottom: 0.5rem;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
-}
+    header h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+    }
 
-.content {
-  text-align: center;
-  max-width: 600px;
-  margin: auto;
-}
+    .content {
+      text-align: center;
+      max-width: 600px;
+      margin: auto;
+    }
 
-.content p {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-}
+    .content p {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
 
-.chill-svg {
-  margin: 20px auto;
-  display: block;
-  animation: pulse 2s infinite;
-}
+    .chill-svg {
+      margin: 20px auto;
+      display: block;
+      animation: pulse 2s infinite;
+    }
 
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 0.7;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.7; }
+      100% { transform: scale(1); opacity: 1; }
+    }
 
-button#moodButton {
-  padding: 10px 20px;
-  font-size: 1rem;
-  border: none;
-  background-color: #ffffff;
-  color: #2575fc;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
+    button#moodButton {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      background-color: #ffffff;
+      color: #2575fc;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
 
-button#moodButton:hover {
-  background-color: #e0e0e0;
-}
+    button#moodButton:hover {
+      background-color: #e0e0e0;
+    }
 
-#quote {
-  margin-top: 20px;
-  font-size: 1.2rem;
-  font-style: italic;
-}
+    #quote {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      font-style: italic;
+    }
 
-.big-time {
-  font-size: 4rem;
-  text-align: center;
-  margin: 0;
-}
+    .big-time {
+      font-size: 4rem;
+      text-align: center;
+      margin: 0;
+    }
 
-.time-spent {
-  font-size: 1rem;
-  text-align: center;
-  margin-top: 0.5rem;
-  opacity: 0.8;
-}
+    .time-spent {
+      font-size: 1rem;
+      text-align: center;
+      margin-top: 0.5rem;
+      opacity: 0.8;
+    }
 
-footer {
-  position: absolute;
-  bottom: 10px;
-  width: 100%;
-  text-align: center;
-  font-size: 0.9rem;
-  opacity: 0.7;
-}
+    footer {
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
 
-#bgVideo {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: -1;
-}
+    #bgVideo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
 
-.nav-buttons {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  gap: 15px;
-  z-index: 100;
-}
+    .nav-buttons {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 15px;
+      z-index: 100;
+    }
 
-.nav-button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background-color: transparent;
-  color: white;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  text-decoration: none;
-  backdrop-filter: blur(0);
-  box-shadow: none;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  position: relative;
-  overflow: hidden;
-}
+    .nav-button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background-color: transparent;
+      color: white;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      text-decoration: none;
+      backdrop-filter: blur(0);
+      box-shadow: none;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+    }
 
-.nav-button:hover {
-  background-color: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 7px 14px rgba(0, 0, 0, 0.2),
-              0 3px 6px rgba(0, 0, 0, 0.1);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(8px);
-}
+    .nav-button:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 7px 14px rgba(0, 0, 0, 0.2),
+                  0 3px 6px rgba(0, 0, 0, 0.1);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+    }
 
-.nav-button:active {
-  transform: translateY(1px) scale(0.98);
-  background-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),
-              0 1px 2px rgba(0, 0, 0, 0.08);
-}
+    .nav-button:active {
+      transform: translateY(1px) scale(0.98);
+      background-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),
+                  0 1px 2px rgba(0, 0, 0, 0.08);
+    }
 
-.nav-button::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    120deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
-  transition: 0.5s;
-}
+    .nav-button::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+      );
+      transition: 0.5s;
+    }
 
-.nav-button:hover::after {
-  left: 100%;
-}
+    .nav-button:hover::after {
+      left: 100%;
+    }
 
-.logo {
-  position: fixed;
-  top: 20px;
-  left: 30px;
-  font-family: 'Dancing Script', cursive;
-  font-size: 2rem;
-  color: white;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  z-index: 100;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
+    .logo {
+      position: fixed;
+      top: 20px;
+      left: 30px;
+      font-family: 'Dancing Script', cursive;
+      font-size: 2rem;
+      color: white;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      z-index: 100;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
 
-.logo:hover {
-  transform: scale(1.05);
-  text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
-}
+    .logo:hover {
+      transform: scale(1.05);
+      text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+    }
 
-.audio-controls {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  z-index: 100;
-  transition: opacity 0.5s ease, visibility 0.5s ease;
-}
+    .audio-controls {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 100;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
 
-.audio-icon {
-  width: 24px;
-  height: 24px;
-}
+    .audio-icon {
+      width: 24px;
+      height: 24px;
+    }
 
-.audio-icon.pause {
-  display: none;
-}
+    .audio-icon.pause {
+      display: none;
+    }
 
-.playing .audio-icon.play {
-  display: none;
-}
+    .playing .audio-icon.play {
+      display: none;
+    }
 
-.playing .audio-icon.pause {
-  display: block;
-}
+    .playing .audio-icon.pause {
+      display: block;
+    }
 
-.volume-control {
-  width: 100px;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 5px;
-  border-radius: 20px;
-  display: none;
-}
+    .volume-control {
+      width: 100px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 5px;
+      border-radius: 20px;
+      display: none;
+    }
 
-.audio-controls:hover .volume-control {
-  display: block;
-}
+    .audio-controls:hover .volume-control {
+      display: block;
+    }
 
-input[type="range"] {
-  width: 100%;
-  height: 3px;
-  -webkit-appearance: none;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 5px;
-  outline: none;
-}
+    input[type="range"] {
+      width: 100%;
+      height: 3px;
+      -webkit-appearance: none;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 5px;
+      outline: none;
+    }
 
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 12px;
-  height: 12px;
-  background: white;
-  border-radius: 50%;
-  cursor: pointer;
-}
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      background: white;
+      border-radius: 50%;
+      cursor: pointer;
+    }
 
-.nav-buttons, .logo, .audio-controls {
-  transition: opacity 0.5s ease, visibility 0.5s ease;
-}
+    .nav-buttons, .logo, .audio-controls {
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
 
-.inactive {
-  opacity: 0;
-  visibility: hidden;
-}
+    .inactive {
+      opacity: 0;
+      visibility: hidden;
+    }
 
-.menu-toggle {
-  display: none;
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 101;
-  color: white;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 101;
+      color: white;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
 
-.menu-toggle svg {
-  width: 24px;
-  height: 24px;
-}
+    .menu-toggle svg {
+      width: 24px;
+      height: 24px;
+    }
 
-@media (max-width: 768px) {
-  .menu-toggle {
-    display: block;
-  }
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
 
-  .nav-buttons {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    height: 100vh;
-    width: 70%;
-    max-width: 300px;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
-    flex-direction: column;
-    padding: 80px 20px;
-    transition: right 0.3s ease;
-  }
+      .nav-buttons {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        height: 100vh;
+        width: 70%;
+        max-width: 300px;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        flex-direction: column;
+        padding: 80px 20px;
+        transition: right 0.3s ease;
+      }
 
-  .nav-buttons.active {
-    right: 0;
-  }
+      .nav-buttons.active {
+        right: 0;
+      }
 
-  .logo.menu-active {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
-</style>
+      .logo.menu-active {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
+    .chat-container {
+      background: rgba(255,255,255,0.05);
+      padding: 20px;
+      border-radius: 15px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      width: 90%;
+      max-width: 600px;
+      margin: 40px auto;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .messages-box {
+      max-height: 250px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      padding-right: 10px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    #userInput {
+      flex: 1;
+      padding: 10px 15px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+
+    #userInput::placeholder {
+      color: rgba(255,255,255,0.4);
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #2575fc;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #1a5edb;
+    }
+
+    /* Chat header for model selection */
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .chat-header label {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    .chat-header select {
+      padding: 6px 12px;
+      border-radius: 5px;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      font-size: 1rem;
+      outline: none;
+    }
+  </style>
 </head>
 <body>
   <a href="https://hhuyer.github.io/" class="logo">hhuyer.github.io</a>
@@ -332,19 +399,26 @@ input[type="range"]::-webkit-slider-thumb {
       <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.5">
     </div>
   </div>
+
   <header>
     <h1><div id="time-container">
         <p id="currentTime" class="big-time"></p>
         <p id="timeSpent" class="time-spent"></p>
       </div></h1>
   </header>
+
   <main>
     <section class="content">
+      <!-- Nội dung chính -->
     </section>
   </main>
+
   <footer>
+    <!-- Footer nếu cần -->
   </footer>
+
   <script>
+    // === Các phần xử lý UI (giữ nguyên từ code gốc của bạn) ===
     let timeout;
     const uiElements = document.querySelectorAll('.nav-buttons, .logo, .audio-controls');
 
@@ -369,13 +443,13 @@ input[type="range"]::-webkit-slider-thumb {
     timeout = setTimeout(hideUI, 2000);
 
     const audioTracks = [
-  '1.MP3', '2.MP3', '3.MP3', '4.MP3', '5.MP3', '6.MP3', '7.MP3', '8.MP3', '9.MP3', '10.MP3',
-  '11.MP3', '12.MP3', '13.MP3', '14.MP3', '15.MP3', '16.MP3', '17.MP3', '18.MP3', '19.MP3', '20.MP3',
-  '21.MP3', '22.MP3', '23.MP3', '24.MP3', '25.MP3', '26.MP3', '27.MP3', '28.MP3', '29.MP3', '30.MP3',
-  '31.MP3', '32.MP3', '33.MP3', '34.MP3', '35.MP3', '36.MP3', '37.MP3', '38.MP3', '39.MP3', '40.MP3',
-  '41.MP3', '42.MP3', '43.MP3', '44.MP3', '45.MP3', '46.MP3', '47.MP3', '48.MP3', '49.MP3', '50.MP3',
-  '51.MP3', '52.MP3', '53.MP3', '54.mp3', '55.mp3', '56.mp3', '57.mp3', '58.mp3', '59.mp3', '60.mp3',
-  '61.mp3', '62.mp3', '63.mp3', '64.mp3', '65.mp3'
+      '1.MP3', '2.MP3', '3.MP3', '4.MP3', '5.MP3', '6.MP3', '7.MP3', '8.MP3', '9.MP3', '10.MP3',
+      '11.MP3', '12.MP3', '13.MP3', '14.MP3', '15.MP3', '16.MP3', '17.MP3', '18.MP3', '19.MP3', '20.MP3',
+      '21.MP3', '22.MP3', '23.MP3', '24.MP3', '25.MP3', '26.MP3', '27.MP3', '28.MP3', '29.MP3', '30.MP3',
+      '31.MP3', '32.MP3', '33.MP3', '34.MP3', '35.MP3', '36.MP3', '37.MP3', '38.MP3', '39.MP3', '40.MP3',
+      '41.MP3', '42.MP3', '43.MP3', '44.MP3', '45.MP3', '46.MP3', '47.MP3', '48.MP3', '49.MP3', '50.MP3',
+      '51.MP3', '52.MP3', '53.MP3', '54.mp3', '55.mp3', '56.mp3', '57.mp3', '58.mp3', '59.mp3', '60.mp3',
+      '61.mp3', '62.mp3', '63.mp3', '64.mp3', '65.mp3'
     ];
 
     let currentAudio = new Audio();
@@ -462,7 +536,7 @@ input[type="range"]::-webkit-slider-thumb {
     menuToggle.addEventListener('click', () => {
       navButtons.classList.toggle('active');
       logo.classList.toggle('menu-active');
-      showUI(); 
+      showUI();
     });
 
     window.addEventListener('resize', () => {
@@ -473,14 +547,128 @@ input[type="range"]::-webkit-slider-thumb {
     });
 
     document.addEventListener('click', (e) => {
-      if (window.innerWidth <= 768 && 
-          !navButtons.contains(e.target) && 
+      if (window.innerWidth <= 768 &&
+          !navButtons.contains(e.target) &&
           !menuToggle.contains(e.target) &&
           navButtons.classList.contains('active')) {
         navButtons.classList.remove('active');
         logo.classList.remove('menu-active');
       }
     });
+
+    // ==== Phần quan trọng: Gọi API OpenRouter với streaming ====
+
+    const API_KEY = "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";
+    const API_URL = "https://openrouter.ai/api/v1/chat/completions";
+
+    let messages = [
+      { role: "system", content: "Bạn là một trợ lý thú vị." }
+    ];
+
+    async function sendMessage() {
+      const modelSelect = document.getElementById("modelSelect");
+      const input = document.getElementById("userInput");
+      const text = input.value.trim();
+      if (!text) return;
+
+      // Thêm tin nhắn user vào mảng messages và hiển thị
+      messages.push({ role: "user", content: text });
+      displayMessage("user", text);
+      input.value = "";
+
+      // Tạo phần tử message của bot (mỗi ký tự mới sẽ nối vào phần tử này)
+      const msgBox = document.getElementById("messages");
+      const botMsg = document.createElement("div");
+      botMsg.className = "msg bot";
+      botMsg.textContent = "Bot: ";
+      msgBox.appendChild(botMsg);
+      msgBox.scrollTop = msgBox.scrollHeight;
+
+      // Gọi API với stream: true
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: modelSelect.value,
+          messages: messages,
+          stream: true        // Kích hoạt streaming
+        })
+      });
+
+      if (!response.ok) {
+        // Nếu lỗi (quota, API key, v.v.), đọc hết phần JSON lỗi rồi hiển thị
+        const err = await response.json();
+        botMsg.textContent = "Bot: [Lỗi] " + (err.error || JSON.stringify(err));
+        return;
+      }
+
+      // Xử lý streaming
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+
+        // Mỗi lần đọc xong một chunk, sẽ có format kiểu:
+        // data: { ...JSON... }\n\ndata: { ...JSON... }\n\n...
+        // Chúng ta split theo "data: "
+        const parts = buffer.split("data: ");
+        for (let i = 0; i < parts.length - 1; i++) {
+          const part = parts[i + 1].trim();
+          if (part === "[DONE]" || part === "") continue;
+          try {
+            const json = JSON.parse(part);
+            const delta = json.choices?.[0]?.delta?.content;
+            if (delta) {
+              // Nối thêm từng ký tự/thông tin nhận được
+              botMsg.textContent += delta;
+              msgBox.scrollTop = msgBox.scrollHeight;
+            }
+          } catch (e) {
+            // Nếu JSON chưa hoàn chỉnh, bỏ qua
+          }
+        }
+        // Giữ lại phần cuối (có khả năng chứa JSON chưa full) để lần đọc sau ghép tiếp
+        buffer = parts[parts.length - 1];
+      }
+
+      // Khi streaming kết thúc, thêm tin nhắn trả lời vào mảng messages
+      const fullReply = botMsg.textContent.replace(/^Bot:\s*/, "");
+      messages.push({ role: "assistant", content: fullReply });
+    }
+
+    function displayMessage(role, text) {
+      const msgBox = document.getElementById("messages");
+      const msg = document.createElement("div");
+      msg.className = "msg " + (role === "user" ? "user" : "bot");
+      msg.textContent = `${role === "user" ? "Bạn" : "Bot"}: ${text}`;
+      msgBox.appendChild(msg);
+      msgBox.scrollTop = msgBox.scrollHeight;
+    }
   </script>
+
+  <!-- Chatbox UI -->
+  <div id="chatbox" class="chat-container">
+    <div class="chat-header">
+      <label for="modelSelect">Chế độ Chat:</label>
+      <select id="modelSelect">
+        <option value="qwen/qwen3-235b-a22b:free">Normal</option>
+        <option value="mistralai/mistral-small-3.1-24b-instruct:free">Fastest</option>
+        <option value="deepseek/deepseek-r1:free">Think</option>
+      </select>
+    </div>
+    <div id="messages" class="messages-box"></div>
+    <div class="input-row">
+      <input type="text" id="userInput" placeholder="Nhập tin nhắn..." />
+      <button onclick="sendMessage()">Gửi</button>
+    </div>
+  </div>
 </body>
-</html>
+  </html>
