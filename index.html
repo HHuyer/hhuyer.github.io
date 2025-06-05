@@ -416,244 +416,6 @@
   <footer>
     <!-- Footer nếu cần -->
   </footer>
-
-  <script>
-    // === Các phần xử lý UI (giữ nguyên từ code gốc của bạn) ===
-    let timeout;
-    const uiElements = document.querySelectorAll('.nav-buttons, .logo, .audio-controls');
-
-    function showUI() {
-      if (window.innerWidth <= 768 && document.querySelector('.nav-buttons').classList.contains('active')) {
-        clearTimeout(timeout);
-        return;
-      }
-      uiElements.forEach(el => el.classList.remove('inactive'));
-      clearTimeout(timeout);
-      timeout = setTimeout(hideUI, 2000);
-    }
-
-    function hideUI() {
-      uiElements.forEach(el => el.classList.add('inactive'));
-    }
-
-    document.addEventListener('mousemove', showUI);
-    document.addEventListener('click', showUI);
-    document.addEventListener('keydown', showUI);
-
-    timeout = setTimeout(hideUI, 2000);
-
-    const audioTracks = [
-      '1.MP3', '2.MP3', '3.MP3', '4.MP3', '5.MP3', '6.MP3', '7.MP3', '8.MP3', '9.MP3', '10.MP3',
-      '11.MP3', '12.MP3', '13.MP3', '14.MP3', '15.MP3', '16.MP3', '17.MP3', '18.MP3', '19.MP3', '20.MP3',
-      '21.MP3', '22.MP3', '23.MP3', '24.MP3', '25.MP3', '26.MP3', '27.MP3', '28.MP3', '29.MP3', '30.MP3',
-      '31.MP3', '32.MP3', '33.MP3', '34.MP3', '35.MP3', '36.MP3', '37.MP3', '38.MP3', '39.MP3', '40.MP3',
-      '41.MP3', '42.MP3', '43.MP3', '44.MP3', '45.MP3', '46.MP3', '47.MP3', '48.MP3', '49.MP3', '50.MP3',
-      '51.MP3', '52.MP3', '53.MP3', '54.mp3', '55.mp3', '56.mp3', '57.mp3', '58.mp3', '59.mp3', '60.mp3',
-      '61.mp3', '62.mp3', '63.mp3', '64.mp3', '65.mp3'
-    ];
-
-    let currentAudio = new Audio();
-    currentAudio.volume = 0.5;
-
-    function playRandomTrack() {
-      const randomTrack = audioTracks[Math.floor(Math.random() * audioTracks.length)];
-      currentAudio.src = randomTrack;
-      currentAudio.play();
-    }
-
-    currentAudio.addEventListener('ended', () => {
-      setTimeout(playRandomTrack, 2000);
-    });
-
-    const toggleAudio = document.getElementById('toggleAudio');
-    const volumeSlider = document.getElementById('volumeSlider');
-
-    toggleAudio.addEventListener('click', () => {
-      if (currentAudio.paused) {
-        if (!currentAudio.src) {
-          playRandomTrack();
-        } else {
-          currentAudio.play();
-        }
-        toggleAudio.classList.add('playing');
-      } else {
-        currentAudio.pause();
-        toggleAudio.classList.remove('playing');
-      }
-    });
-
-    volumeSlider.addEventListener('input', (e) => {
-      currentAudio.volume = e.target.value;
-    });
-
-    currentAudio.volume = volumeSlider.value;
-
-    window.addEventListener("load", function() {
-      const videoSources = [
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
-        "3.mov",
-      ];
-      const bgVideo = document.getElementById("bgVideo");
-      if (bgVideo) {
-        const randomSource = videoSources[Math.floor(Math.random() * videoSources.length)];
-        bgVideo.src = randomSource;
-        bgVideo.load();
-      }
-
-      const startTime = new Date();
-
-      function updateTime() {
-        const now = new Date();
-        const currentTimeElem = document.getElementById("currentTime");
-        if (currentTimeElem) {
-          currentTimeElem.textContent = now.toLocaleTimeString();
-        }
-        const elapsedMs = now - startTime;
-        const elapsedSec = Math.floor(elapsedMs / 1000);
-        const minutes = Math.floor(elapsedSec / 60);
-        const seconds = elapsedSec % 60;
-        const timeSpentElem = document.getElementById("timeSpent");
-        if (timeSpentElem) {
-          let elapsedText = "";
-          if (minutes > 0) {
-            elapsedText += minutes + " phút ";
-          }
-          elapsedText += seconds + " giây";
-          timeSpentElem.textContent = "Bạn đã ở đây: " + elapsedText;
-        }
-      }
-
-      updateTime();
-      setInterval(updateTime, 1000);
-    });
-
-    const menuToggle = document.querySelector('.menu-toggle');
-    const navButtons = document.querySelector('.nav-buttons');
-    const logo = document.querySelector('.logo');
-
-    menuToggle.addEventListener('click', () => {
-      navButtons.classList.toggle('active');
-      logo.classList.toggle('menu-active');
-      showUI();
-    });
-
-    window.addEventListener('resize', () => {
-      if (window.innerWidth > 768) {
-        navButtons.classList.remove('active');
-        logo.classList.remove('menu-active');
-      }
-    });
-
-    document.addEventListener('click', (e) => {
-      if (window.innerWidth <= 768 &&
-          !navButtons.contains(e.target) &&
-          !menuToggle.contains(e.target) &&
-          navButtons.classList.contains('active')) {
-        navButtons.classList.remove('active');
-        logo.classList.remove('menu-active');
-      }
-    });
-
-    // ==== Phần quan trọng: Gọi API OpenRouter với streaming ====
-
-    const API_KEY = "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";
-    const API_URL = "https://openrouter.ai/api/v1/chat/completions";
-
-    let messages = [
-      { role: "system", content: "Bạn là một trợ lý thú vị." }
-    ];
-
-    async function sendMessage() {
-      const modelSelect = document.getElementById("modelSelect");
-      const input = document.getElementById("userInput");
-      const text = input.value.trim();
-      if (!text) return;
-
-      // Thêm tin nhắn user vào mảng messages và hiển thị
-      messages.push({ role: "user", content: text });
-      displayMessage("user", text);
-      input.value = "";
-
-      // Tạo phần tử message của bot (mỗi ký tự mới sẽ nối vào phần tử này)
-      const msgBox = document.getElementById("messages");
-      const botMsg = document.createElement("div");
-      botMsg.className = "msg bot";
-      botMsg.textContent = "Bot: ";
-      msgBox.appendChild(botMsg);
-      msgBox.scrollTop = msgBox.scrollHeight;
-
-      // Gọi API với stream: true
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${API_KEY}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: modelSelect.value,
-          messages: messages,
-          stream: true        // Kích hoạt streaming
-        })
-      });
-
-      if (!response.ok) {
-        // Nếu lỗi (quota, API key, v.v.), đọc hết phần JSON lỗi rồi hiển thị
-        const err = await response.json();
-        botMsg.textContent = "Bot: [Lỗi] " + (err.error || JSON.stringify(err));
-        return;
-      }
-
-      // Xử lý streaming
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder("utf-8");
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-
-        // Mỗi lần đọc xong một chunk, sẽ có format kiểu:
-        // data: { ...JSON... }\n\ndata: { ...JSON... }\n\n...
-        // Chúng ta split theo "data: "
-        const parts = buffer.split("data: ");
-        for (let i = 0; i < parts.length - 1; i++) {
-          const part = parts[i + 1].trim();
-          if (part === "[DONE]" || part === "") continue;
-          try {
-            const json = JSON.parse(part);
-            const delta = json.choices?.[0]?.delta?.content;
-            if (delta) {
-              // Nối thêm từng ký tự/thông tin nhận được
-              botMsg.textContent += delta;
-              msgBox.scrollTop = msgBox.scrollHeight;
-            }
-          } catch (e) {
-            // Nếu JSON chưa hoàn chỉnh, bỏ qua
-          }
-        }
-        // Giữ lại phần cuối (có khả năng chứa JSON chưa full) để lần đọc sau ghép tiếp
-        buffer = parts[parts.length - 1];
-      }
-
-      // Khi streaming kết thúc, thêm tin nhắn trả lời vào mảng messages
-      const fullReply = botMsg.textContent.replace(/^Bot:\s*/, "");
-      messages.push({ role: "assistant", content: fullReply });
-    }
-
-    function displayMessage(role, text) {
-      const msgBox = document.getElementById("messages");
-      const msg = document.createElement("div");
-      msg.className = "msg " + (role === "user" ? "user" : "bot");
-      msg.textContent = `${role === "user" ? "Bạn" : "Bot"}: ${text}`;
-      msgBox.appendChild(msg);
-      msgBox.scrollTop = msgBox.scrollHeight;
-    }
-  </script>
-
   <!-- Chatbox UI -->
   <div id="chatbox" class="chat-container">
     <div class="chat-header">
@@ -670,5 +432,266 @@
       <button onclick="sendMessage()">Gửi</button>
     </div>
   </div>
+  <script>
+  // =========================
+  // Phần xử lý UI (giữ nguyên logic gốc)
+  // =========================
+  let timeout;
+  const uiElements = document.querySelectorAll('.nav-buttons, .logo, .audio-controls');
+
+  function showUI() {
+    if (
+      window.innerWidth <= 768 &&
+      document.querySelector('.nav-buttons').classList.contains('active')
+    ) {
+      clearTimeout(timeout);
+      return;
+    }
+    uiElements.forEach(el => el.classList.remove('inactive'));
+    clearTimeout(timeout);
+    timeout = setTimeout(hideUI, 2000);
+  }
+
+  function hideUI() {
+    uiElements.forEach(el => el.classList.add('inactive'));
+  }
+
+  document.addEventListener('mousemove', showUI);
+  document.addEventListener('click', showUI);
+  document.addEventListener('keydown', showUI);
+
+  timeout = setTimeout(hideUI, 2000);
+
+  const audioTracks = [
+    '1.MP3', '2.MP3', '3.MP3', '4.MP3', '5.MP3',
+    '6.MP3', '7.MP3', '8.MP3', '9.MP3', '10.MP3',
+    '11.MP3', '12.MP3', '13.MP3', '14.MP3', '15.MP3',
+    '16.MP3', '17.MP3', '18.MP3', '19.MP3', '20.MP3',
+    '21.MP3', '22.MP3', '23.MP3', '24.MP3', '25.MP3',
+    '26.MP3', '27.MP3', '28.MP3', '29.MP3', '30.MP3',
+    '31.MP3', '32.MP3', '33.MP3', '34.MP3', '35.MP3',
+    '36.MP3', '37.MP3', '38.MP3', '39.MP3', '40.MP3',
+    '41.MP3', '42.MP3', '43.MP3', '44.MP3', '45.MP3',
+    '46.MP3', '47.MP3', '48.MP3', '49.MP3', '50.MP3',
+    '51.MP3', '52.MP3', '53.MP3', '54.mp3', '55.mp3',
+    '56.mp3', '57.mp3', '58.mp3', '59.mp3', '60.mp3',
+    '61.mp3', '62.mp3', '63.mp3', '64.mp3', '65.mp3'
+  ];
+
+  let currentAudio = new Audio();
+  currentAudio.volume = 0.5;
+
+  function playRandomTrack() {
+    const randomTrack = audioTracks[Math.floor(Math.random() * audioTracks.length)];
+    currentAudio.src = randomTrack;
+    currentAudio.play();
+  }
+
+  currentAudio.addEventListener('ended', () => {
+    setTimeout(playRandomTrack, 2000);
+  });
+
+  const toggleAudio = document.getElementById('toggleAudio');
+  const volumeSlider = document.getElementById('volumeSlider');
+
+  toggleAudio.addEventListener('click', () => {
+    if (currentAudio.paused) {
+      if (!currentAudio.src) {
+        playRandomTrack();
+      } else {
+        currentAudio.play();
+      }
+      toggleAudio.classList.add('playing');
+    } else {
+      currentAudio.pause();
+      toggleAudio.classList.remove('playing');
+    }
+  });
+
+  volumeSlider.addEventListener('input', (e) => {
+    currentAudio.volume = e.target.value;
+  });
+
+  currentAudio.volume = volumeSlider.value;
+
+  window.addEventListener("load", function() {
+    const videoSources = [
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+      "3.mov"
+    ];
+    const bgVideo = document.getElementById("bgVideo");
+    if (bgVideo) {
+      const randomSource = videoSources[Math.floor(Math.random() * videoSources.length)];
+      bgVideo.src = randomSource;
+      bgVideo.load();
+    }
+
+    const startTime = new Date();
+
+    function updateTime() {
+      const now = new Date();
+      const currentTimeElem = document.getElementById("currentTime");
+      if (currentTimeElem) {
+        currentTimeElem.textContent = now.toLocaleTimeString();
+      }
+      const elapsedMs = now - startTime;
+      const elapsedSec = Math.floor(elapsedMs / 1000);
+      const minutes = Math.floor(elapsedSec / 60);
+      const seconds = elapsedSec % 60;
+      const timeSpentElem = document.getElementById("timeSpent");
+      if (timeSpentElem) {
+        let elapsedText = "";
+        if (minutes > 0) {
+          elapsedText += minutes + " phút ";
+        }
+        elapsedText += seconds + " giây";
+        timeSpentElem.textContent = "Bạn đã ở đây: " + elapsedText;
+      }
+    }
+
+    updateTime();
+    setInterval(updateTime, 1000);
+  });
+
+  const menuToggle = document.querySelector('.menu-toggle');
+  const navButtons = document.querySelector('.nav-buttons');
+  const logo = document.querySelector('.logo');
+
+  menuToggle.addEventListener('click', () => {
+    navButtons.classList.toggle('active');
+    logo.classList.toggle('menu-active');
+    showUI();
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+      navButtons.classList.remove('active');
+      logo.classList.remove('menu-active');
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (
+      window.innerWidth <= 768 &&
+      !navButtons.contains(e.target) &&
+      !menuToggle.contains(e.target) &&
+      navButtons.classList.contains('active')
+    ) {
+      navButtons.classList.remove('active');
+      logo.classList.remove('menu-active');
+    }
+  });
+
+  // =========================
+  // Phần Chatbot: gọi OpenRouter với streaming
+  // =========================
+  const API_KEY = "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";
+  const API_URL = "https://openrouter.ai/api/v1/chat/completions";
+
+  let messages = [
+    { role: "system", content: "Bạn là một trợ lý thú vị." }
+  ];
+
+  async function sendMessage() {
+    const modelSelect = document.getElementById("modelSelect");
+    const input = document.getElementById("userInput");
+    const text = input.value.trim();
+    if (!text) return;
+
+    // Thêm tin nhắn của user và hiển thị
+    messages.push({ role: "user", content: text });
+    displayMessage("user", text);
+    input.value = "";
+
+    // Tạo phần tử bot message để "đánh chữ" sau này
+    const msgBox = document.getElementById("messages");
+    const botMsg = document.createElement("div");
+    botMsg.className = "msg bot";
+    botMsg.textContent = "Bot: ";
+    msgBox.appendChild(botMsg);
+    msgBox.scrollTop = msgBox.scrollHeight;
+
+    let response;
+    try {
+      response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: modelSelect.value,
+          messages: messages,
+          stream: true
+        })
+      });
+    } catch (networkErr) {
+      botMsg.textContent = `Bot: [Lỗi Mạng] ${networkErr.message || networkErr}`;
+      return;
+    }
+
+    if (!response.ok) {
+      // Xử lý lỗi trả về từ server
+      let raw;
+      try {
+        raw = await response.text();
+      } catch {
+        raw = "";
+      }
+      let errMsg;
+      try {
+        const obj = JSON.parse(raw);
+        errMsg = obj.error?.message || JSON.stringify(obj);
+      } catch {
+        errMsg = raw || `HTTP ${response.status}`;
+      }
+      botMsg.textContent = `Bot: [Lỗi] ${errMsg}`;
+      return;
+    }
+
+    // Xử lý streaming từng chunk
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    let buffer = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const parts = buffer.split("data: ");
+      for (let i = 0; i < parts.length - 1; i++) {
+        const part = parts[i + 1].trim();
+        if (part === "[DONE]" || part === "") continue;
+        try {
+          const json = JSON.parse(part);
+          const delta = json.choices?.[0]?.delta?.content;
+          if (delta) {
+            botMsg.textContent += delta;
+            msgBox.scrollTop = msgBox.scrollHeight;
+          }
+        } catch {
+          // JSON chưa hoàn chỉnh, chờ chunk tiếp theo
+        }
+      }
+      buffer = parts[parts.length - 1];
+    }
+
+    // Lưu câu trả lời đầy đủ vào messages
+    const fullReply = botMsg.textContent.replace(/^Bot:\s*/, "");
+    messages.push({ role: "assistant", content: fullReply });
+  }
+
+  function displayMessage(role, text) {
+    const msgBox = document.getElementById("messages");
+    const msg = document.createElement("div");
+    msg.className = "msg " + (role === "user" ? "user" : "bot");
+    msg.textContent = `${role === "user" ? "Bạn" : "Bot"}: ${text}`;
+    msgBox.appendChild(msg);
+    msgBox.scrollTop = msgBox.scrollHeight;
+  }
+  </script>
 </body>
-  </html>
+</html>
