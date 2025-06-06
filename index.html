@@ -603,7 +603,7 @@
   const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
   let messages = [
-    { role: "system", content: "Bạn là một trợ lý thú vị." }
+    { role: "system", content: "Bạn là Kina, một trợ lý thú vị. Bạn ưu tiên sử dụng tiếng Việt Nam với các câu trả lời của mình" }
   ];
 
   async function sendMessage() {
@@ -621,7 +621,7 @@
     const msgBox = document.getElementById("messages");
     const botMsg = document.createElement("div");
     botMsg.className = "msg bot";
-    botMsg.textContent = "Bot: ";
+    botMsg.textContent = "Kina: ";
     msgBox.appendChild(botMsg);
     msgBox.scrollTop = msgBox.scrollHeight;
 
@@ -640,7 +640,7 @@
         })
       });
     } catch (networkErr) {
-      botMsg.textContent = `Bot: [Lỗi Mạng] ${networkErr.message || networkErr}`;
+      botMsg.textContent = `Kina: [Ủa, mất mạng rồi] ${networkErr.message || networkErr}`;
       return;
     }
 
@@ -659,7 +659,7 @@
       } catch {
         errMsg = raw || `HTTP ${response.status}`;
       }
-      botMsg.textContent = `Bot: [Lỗi] ${errMsg}`;
+      botMsg.textContent = `Kina: [Lỗi:/] ${errMsg}`;
       return;
     }
 
@@ -692,15 +692,15 @@
     }
 
     // Lưu câu trả lời đầy đủ vào messages
-    const fullReply = botMsg.textContent.replace(/^Bot:\s*/, "");
+    const fullReply = botMsg.textContent.replace(/^Kina:\s*/, "");
     messages.push({ role: "assistant", content: fullReply });
   }
 
   function displayMessage(role, text) {
     const msgBox = document.getElementById("messages");
     const msg = document.createElement("div");
-    msg.className = "msg " + (role === "user" ? "user" : "bot");
-    msg.textContent = `${role === "user" ? "Bạn" : "Bot"}: ${text}`;
+    msg.className = "msg " + (role === "user" ? "user" : "Kina");
+    msg.textContent = `${role === "user" ? "Bạn" : "Kina"}: ${text}`;
     msgBox.appendChild(msg);
     msgBox.scrollTop = msgBox.scrollHeight;
   }
