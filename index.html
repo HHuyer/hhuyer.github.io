@@ -574,8 +574,8 @@
         <label for="serverSelect">Server:</label>
         <select id="serverSelect" class="chat-select">
           <option value="free">Free</option>
-          <option value="plus" disabled>Plus (Coming soon)</option>
-          <option value="pro" disabled>Pro (Coming soon)</option>
+          <option value="plus">Plus</option>
+          <option value="pro">Pro</option>
         </select>
       </div>
       <div class="select-group">
@@ -746,12 +746,19 @@
   });
 
   // =========================
-  // Phần Chatbot: gọi OpenRouter với streaming (đã obfuscate API_KEY mới)
+  // Phần Chatbot: gọi OpenRouter với streaming (đã obfuscate API_KEY theo server)
   // =========================
 
-  // Hàm decode Base64 để lấy API_KEY ở runtime
-  function getApiKey() {
-    const encoded = "c2stb3ItdjEtZmE0NTI2MjhiYjEyOWU1MGNiZDRjMzhmZTA1NzkxYjdmZTYyZDAyODI5NGQ3NjYxODVmODIwZGQzZDQyNGIyMg==";
+  // Base64 encoded API keys cho từng server (free, plus, pro)
+  const ENCODED_KEYS = {
+    free: "c2stb3ItdjEtZmE0NTI2MjhiYjEyOWU1MGNiZDRjMzhmZTA1NzkxYjdmZTYyZDAyODI5NGQ3NjYxODVmODIwZGQzZDQyNGIyMg==",
+    plus: "c2stb3ItdjEtMmRiYzk0Y2UxYWQ4NjhkOGMwMDdiYTcyZDM5OWYxNzM1Mjk2NTYxMWU3ZGI0NTYwZjk5ZGNjMjY3Y2JiOTRiMzJiMzI==",
+    pro:  "c2stb3ItdjEtNDFjYzg2ODQzZjYzOGM0MzMxMzBhODUwNDk0MzM3NjMxNWUyNjFiMTU3OGE1MmEzNjY2MDU1NDI0M2FiNDJhZQ=="
+  };
+
+  // Hàm decode Base64 để lấy API_KEY theo server
+  function getApiKey(serverType) {
+    const encoded = ENCODED_KEYS[serverType] || "";
     try {
       return atob(encoded);
     } catch (e) {
@@ -760,9 +767,29 @@
     }
   }
 
-  const API_KEY = getApiKey();
   const API_URL = "https://openrouter.ai/api/v1/chat/completions";
   let abortController = new AbortController();
+
+  // Quản lý giới hạn sử dụng hàng ngày cho server plus và pro
+  const USAGE_STORAGE_KEY = 'chatUsageData';
+  function resetUsageIfNeeded() {
+    const today = new Date().toISOString().split('T')[0];
+    let data = JSON.parse(localStorage.getItem(USAGE_STORAGE_KEY) || '{}');
+    if (data.date !== today) {
+      data = { date: today, plus: 0, pro: 0 };
+      localStorage.setItem(USAGE_STORAGE_KEY, JSON.stringify(data));
+    }
+    return data;
+  }
+  function getUsage(serverType) {
+    const data = resetUsageIfNeeded();
+    return data[serverType] || 0;
+  }
+  function incrementUsage(serverType) {
+    const data = resetUsageIfNeeded();
+    data[serverType] = (data[serverType] || 0) + 1;
+    localStorage.setItem(USAGE_STORAGE_KEY, JSON.stringify(data));
+  }
 
   // Cancel fetch request if the user navigates away
   window.addEventListener('beforeunload', () => {
@@ -877,6 +904,21 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
     const text = input.value.trim();
     if (!text) return;
 
+    // Lấy loại server và kiểm tra giới hạn
+    const serverSelect = document.getElementById("serverSelect");
+    const serverType = serverSelect.value;
+    if (serverType === 'plus' && getUsage('plus') >= 5) {
+      displayBotMessage("Giới hạn 5 lần server Plus mỗi ngày đã hết.");
+      return;
+    }
+    if (serverType === 'pro' && getUsage('pro') >= 1) {
+      displayBotMessage("Giới hạn 1 lần server Pro mỗi ngày đã hết.");
+      return;
+    }
+    if (serverType !== 'free') {
+      incrementUsage(serverType);
+    }
+
     // Abort any ongoing request and create a new controller for this one
     abortController.abort();
     abortController = new AbortController();
@@ -911,7 +953,7 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
       response = await fetch(API_URL, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${API_KEY}`,
+          "Authorization": `Bearer ${getApiKey(serverType)}`,
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
@@ -927,7 +969,7 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
         botMsg.textContent = `Kina: [Yêu cầu đã được hủy]`;
         console.log("Fetch aborted:", err.message);
       } else {
-        botMsg.textContent = `Kina: [Ủa, mất mạng rồi] ${err.message || err}`;
+        botMsg.textContent = `Kina: [Lỗi mạng] ${err.message || err}`;
       }
       return;
     }
@@ -1011,7 +1053,7 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
     }
   }
 
-  // Simplified function to display only user messages
+  // Hiển thị tin nhắn người dùng
   function displayMessage(role, text) {
     if (role !== 'user') return;
     const msgBox = document.getElementById("messages");
@@ -1019,6 +1061,16 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
     msg.className = "msg user";
     msg.textContent = `Bạn: ${text}`;
     msgBox.appendChild(msg);
+    msgBox.scrollTop = msgBox.scrollHeight;
+  }
+
+  // Hiển thị tin nhắn từ bot/hệ thống (lỗi giới hạn)
+  function displayBotMessage(text) {
+    const msgBox = document.getElementById("messages");
+    const botMsg = document.createElement("div");
+    botMsg.className = "msg bot";
+    botMsg.textContent = `Kina: ${text}`;
+    msgBox.appendChild(botMsg);
     msgBox.scrollTop = msgBox.scrollHeight;
   }
 </script>
