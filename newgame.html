@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nothing at All</title>
+<style>* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Georgia', serif;
+    background-color: #0a0a0a;
+    color: #f0f0f0;
+    overflow: hidden;
+    cursor: none;
+}
+
+.container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.void {
+    text-align: center;
+    transition: all 2s ease;
+}
+
+.text {
+    font-size: 2rem;
+    opacity: 0.5;
+    letter-spacing: 0.2em;
+    transition: all 1.5s ease;
+    user-select: none;
+}
+
+.cursor-glow {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: all 0.1s ease;
+    z-index: 1000;
+}
+
+.void:hover .text {
+    opacity: 0.8;
+    letter-spacing: 0.3em;
+}
+
+.void.active .text {
+    opacity: 1;
+    font-size: 3rem;
+    color: #ffffff;
+}
+
+.hidden-message {
+    position: absolute;
+    font-size: 1rem;
+    opacity: 0;
+    transition: opacity 2s ease;
+    pointer-events: none;
+}
+
+.hidden-message.visible {
+    opacity: 0.7;
+}
+
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="void" id="void">
+            <p class="text">không có gì cả</p>
+        </div>
+        <div class="cursor-glow" id="cursorGlow"></div>
+    </div>
+    <script>
+      const voidElement = document.getElementById('void');
+const cursorGlow = document.getElementById('cursorGlow');
+let interactionCount = 0;
+let messages = [
+    "Everything is nothing",
+    "Nothing contains everything",
+    "The void is full",
+    "Still nothing... or everything?",
+    "You are here, in nothing"
+];
+
+document.addEventListener('mousemove', (e) => {
+    cursorGlow.style.left = e.clientX + 'px';
+    cursorGlow.style.top = e.clientY + 'px';
+});
+
+voidElement.addEventListener('click', (e) => {
+    interactionCount++;
+    
+    if (interactionCount === 1) {
+        voidElement.classList.add('active');
+        createHiddenMessage(e.clientX, e.clientY);
+    } else if (interactionCount < 6) {
+        createHiddenMessage(e.clientX, e.clientY);
+    } else {
+        revealAll();
+    }
+});
+
+function createHiddenMessage(x, y) {
+    const message = document.createElement('div');
+    message.className = 'hidden-message';
+    message.textContent = messages[interactionCount - 1] || "You found something in nothing";
+    message.style.left = x + 'px';
+    message.style.top = y + 'px';
+    
+    document.body.appendChild(message);
+    
+    setTimeout(() => {
+        message.classList.add('visible');
+    }, 100);
+    
+    setTimeout(() => {
+        message.style.opacity = '0';
+        setTimeout(() => message.remove(), 2000);
+    }, 3000);
+}
+
+function revealAll() {
+    const allMessages = messages.concat(["Nothing was never nothing at all"]);
+    
+    allMessages.forEach((msg, index) => {
+        setTimeout(() => {
+            const msgEl = document.createElement('div');
+            msgEl.className = 'hidden-message visible';
+            msgEl.textContent = msg;
+            msgEl.style.left = Math.random() * window.innerWidth + 'px';
+            msgEl.style.top = Math.random() * window.innerHeight + 'px';
+            document.body.appendChild(msgEl);
+            
+            setTimeout(() => {
+                msgEl.style.opacity = '0';
+                setTimeout(() => msgEl.remove(), 2000);
+            }, 5000);
+        }, index * 500);
+    });
+    
+    voidElement.innerHTML = '<p class="text">Everything was here all along</p>';
+    voidElement.style.transform = 'scale(1.5)';
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'r' || e.key === 'R') {
+        location.reload();
+    }
+});
+</script>
+</body>
+</html>
+
