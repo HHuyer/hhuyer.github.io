@@ -1,0 +1,300 @@
+// pickaxe.js
+const PICKAXE_VARIANTS = [
+    {
+        name: 'stone',
+        power: 1,
+        gravity: 0.6,
+        maxDurability: 70, // Reduced from 100
+        durability: 70,
+        stability: 1.5,
+        ability: 'stone_shockwave',
+        abilityCooldown: 5, // seconds
+    },
+    {
+        name: 'iron',
+        power: 1.5,
+        gravity: 0.5,
+        maxDurability: 100, // Reduced from 150
+        durability: 100,
+        stability: 2,
+        ability: 'iron_will',
+        abilityCooldown: 10, // seconds
+    },
+    {
+        name: 'golden',
+        power: 2,
+        gravity: 0.3,
+        maxDurability: 50, // Reduced from 75
+        durability: 50,
+        stability: 1.2,
+        ability: 'coin_shower',
+        abilityCooldown: 4, // seconds
+    },
+    {
+        name: 'diamond',
+        power: 3,
+        gravity: 0.55,
+        maxDurability: 200, // Reduced from 300
+        durability: 200,
+        stability: 2.5,
+        ability: 'shatter',
+        abilityCooldown: 6, // seconds
+    },
+    {
+        name: 'obsidian',
+        power: 2.5,
+        gravity: 0.58,
+        maxDurability: 250,
+        durability: 250,
+        stability: 2.2,
+        ability: 'piercing_strike',
+        abilityCooldown: 8, // seconds
+    },
+    {
+        name: 'netherite',
+        power: 4,
+        gravity: 0.45,
+        maxDurability: 350,
+        durability: 350,
+        stability: 3,
+    },
+];
+
+// game.js
+class Game {
+    constructor() {
+        // ...
+        this.collectibleEffects = [];
+        this.impactSparkles = [];
+
+        // Pickaxe buffs
+        this.pickaxeSizeBuff = {
+            active: false,
+            timer: 0,
+            duration: 5, // 5 seconds
+            originalSize: { width: this.pickaxe.width, height: this.pickaxe.height }
+        };
+        this.pickaxePowerBuff = {
+            active: false,
+            timer: 0,
+            duration: 3, // 3 seconds
+            powerBoost: 1,
+            sparkleTimer: 0
+        };
+    }
+
+    // ...
+
+    triggerAbility(abilityType, position) {
+        if (abilityType === 'stone_shockwave') {
+            const adjacentPositions = [
+                { dx: 0, dy: -this.world.blockSize }, // Up
+                { dx: 0, dy: this.world.blockSize },  // Down
+                { dx: -this.world.blockSize, dy: 0 }, // Left
+                { dx: this.world.blockSize, dy: 0 }  // Right
+            ];
+            adjacentPositions.forEach(pos => {
+                const adjBlock = this.world.getBlockAt(position.x + pos.dx, position.y + pos.dy);
+                if (adjBlock && !adjBlock.destroyed) {
+                    adjBlock.takeDamage(0.5); // Minor damage
+                    this.handleBlockDestruction(adjBlock, true);
+                }
+            });
+            this.createImpactSparkles(position.x, position.y);
+        } else if (abilityType === 'iron_will') {
+            this.pickaxePowerBuff.active = true;
+            this.pickaxePowerBuff.timer = this.pickaxePowerBuff.duration;
+            this.pickaxePowerBuff.sparkleTimer = 0;
+        } else if (abilityType === 'coin_shower') {
+            const bonusMoney = 1 + Math.floor(Math.random() * 5);
+            this.state.money += bonusMoney;
+            this.state.stats.moneyEarned += bonusMoney;
+
+            for (let i = 0; i < 15; i++) {
+                this.collectibleEffects.push({
+                    type: 'money',
+                    x: position.x,
+                    y: position.y,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: -2 - Math.random() * 6,
+                    life: 1.2,
+                    duration: 1.2
+                });
+            }
+        } else if (abilityType === 'shatter') {
+            const block = this.world.getBlockAt(position.x, position.y);
+            if (block && !block.destroyed && (block.health / block.maxHealth) < 0.25) {
+                block.health = 0;
+                block.destroyed = true;
+                this.handleBlockDestruction(block, true);
+            }
+        } else if (abilityType === 'piercing_strike') {
+            const block = this.world.getBlockAt(position.x, position.y);
+            if (block) {
+                const directionY = Math.sign(this.pickaxe.velocity.y);
+                if (directionY !== 0) {
+                    const blockBehind = this.world.getBlockAt(block.x, block.y + directionY * this.world.blockSize);
+                    if (blockBehind && !blockBehind.destroyed) {
+                        const efficiencyBonus = this.state.enchantmentLevels.efficiency * 0.5;
+                        const totalPower = this.pickaxe.getCurrentVariant().power + efficiencyBonus;
+                        blockBehind.takeDamage(totalPower * 0.5); // Deal 50% damage
+                        this.handleBlockDestruction(blockBehind, true);
+                    }
+                }
+            }
+        }
+    }
+
+    // ...
+
+    update(dt) {
+        // ...
+
+        if (this.pickaxePowerBuff.active) {
+            this.pickaxePowerBuff.timer -= dt;
+            this.pickaxePowerBuff.sparkleTimer -= dt;
+
+            if (this.pickaxePowerBuff.sparkleTimer <= 0) {
+                this.createImpactSparkles(this.pickaxe.x + this.pickaxe.width / 2, this.pickaxe.y + this.pickaxe.height / 2);
+                this.pickaxePowerBuff.sparkleTimer = 0.2; // Sparkle every 0.2s
+            }
+
+            if (this.pickaxePowerBuff.timer <= 0) {
+                this.pickaxePowerBuff.active = false;
+            }
+        } else {
+            // ensure timer doesn't go into negative values when not active
+            this.pickaxePowerBuff.timer = 0;
+        }
+    }
+
+    // ...
+
+    handleCollision(block) {
+        const wasAlive = !block.destroyed;
+        const efficiencyBonus = this.state.enchantmentLevels.efficiency * 0.5;
+        let powerBuff = 0;
+        if (this.pickaxePowerBuff.active) {
+            powerBuff = this.pickaxePowerBuff.powerBoost;
+        }
+        const totalPower = this.pickaxe.getCurrentVariant().power + efficiencyBonus + powerBuff;
+        block.takeDamage(totalPower);
+
+        this.handleBlockDestruction(block);
+
+        this.createImpactSparkles(this.pickaxe.x + this.pickaxe.width / 2, this.pickaxe.y + this.pickaxe.height / 2);
+
+        if (wasAlive && !block.destroyed) {
+            // Block was hit but not destroyed, play a 'hit' sound with a higher pitch
+            const hitPitch = 1.5 + (Math.random() - 0.5) * 0.4;
+            this.playSound(this.assetLoader.getAudioAsset('blockBreak'), hitPitch);
+        }
+
+        const pickaxeVariant = this.pickaxe.getCurrentVariant();
+        if (pickaxeVariant.ability && this.pickaxe.abilityTimer >= pickaxeVariant.abilityCooldown) {
+            this.pickaxe.abilityTimer = 0;
+            this.triggerAbility(pickaxeVariant.ability, { x: block.x + block.width / 2, y: block.y + block.height / 2 });
+        }
+    }
+
+    // ...
+
+    draw() {
+        // ...
+
+        // Draw collectible effects
+        const expBottleImage = this.assetLoader.getAsset('experience_bottle');
+        const moneyIcon = this.assetLoader.getAsset('moneyIcon');
+
+        if (expBottleImage && expBottleImage.complete) {
+            this.collectibleEffects.forEach(e => {
+                let imageToDraw = null;
+                if (e.type === 'experience_bottle') imageToDraw = expBottleImage;
+                if (e.type === 'money') imageToDraw = moneyIcon;
+
+                if (!imageToDraw) return;
+
+                if (e.type === 'experience_bottle') {
+                    const progress = 1 - (e.life / e.duration);
+                    const scale = 1.0 - (progress * 0.8); // shrinks to 20%
+                    const alpha = 1.0 - progress;
+                    const width = 32 * scale;
+                    const height = 32 * scale;
+
+                    this.ctx.globalAlpha = alpha;
+                    this.ctx.drawImage(imageToDraw, e.x - width / 2, e.y - height / 2, width, height);
+                    this.ctx.globalAlpha = 1.0;
+                } else if (e.type === 'money') {
+                    const progress = 1 - (e.life / e.duration);
+                    const scale = 1.0 - (progress * 0.5); // shrinks a bit
+                    const alpha = 1.0 - progress;
+                    const width = 16 * scale;
+                    const height = 16 * scale;
+
+                    this.ctx.globalAlpha = alpha;
+                    this.ctx.drawImage(imageToDraw, e.x - width / 2, e.y - height / 2, width, height);
+                    this.ctx.globalAlpha = 1.0;
+                }
+            });
+        }
+    }
+
+    // ...
+
+    handleBlockDestruction(block, fromAbility = false) {
+        // ...
+    }
+}
+
+// block.js
+class Block {
+    constructor(x, y, blockType) {
+        this.x = x;
+        this.y = y;
+        this.blockType = blockType;
+        this.destroyed = false;
+        this.hasExperienceBottle = false;
+        this.spawnMoneyParticles = false;
+
+        const definition = BLOCK_DEFINITIONS[blockType] || BLOCK_DEFINITIONS['stone'];
+        this.health = definition.health;
+        // ...
+    }
+}
+
+// ui.js
+class UI {
+    // ...
+
+    drawSummerEventButton(ctx, currentUIY, uiMargin, isNarrow) {
+        // ...
+    }
+
+    // Draw active buffs
+    if (this.game.pickaxePowerBuff.active) {
+        currentUIY += (isNarrow ? 24 : 30) + 5;
+        this.drawBuffIndicator(ctx, currentUIY, uiMargin, boxWidth, isNarrow, 'Power Boost!', this.game.pickaxePowerBuff.timer / this.game.pickaxePowerBuff.duration, '#FF5722');
+    }
+
+    drawBuffIndicator(ctx, y, x, width, isNarrow, text, progress, color) {
+        const height = isNarrow ? 20 : 25;
+        const fontSize = isNarrow ? '10px' : '12px';
+
+        // Background
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+        ctx.fillRect(x, y, width, height);
+
+        // Progress Fill
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, width * progress, height);
+
+        // Text
+        ctx.fillStyle = 'white';
+        ctx.font = `bold ${fontSize} "Minecraft Seven", monospace`;
+        ctx.textAlign = 'center';
+        this.drawTextWithShadow(ctx, text, x + width / 2, y + height / 2 + 4, 'rgba(0,0,0,0.8)', 'white');
+        ctx.textAlign = 'left';
+    }
+
+    // ...
+}
