@@ -81,6 +81,16 @@ export class UI {
         this.drawTextWithShadow(ctx, 'THỐNG KÊ', statsButtonX + (buttonWidth/2), 10 + (buttonHeight/2) + 4, 'rgba(0,0,0,0.7)', 'white', 1, 1);
         ctx.textAlign = 'left';
 
+        // Draw collect button
+        const collectButtonX = this.game.canvas.width - (buttonWidth * 4 + 55);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+        ctx.fillRect(collectButtonX, 10, buttonWidth, buttonHeight);
+        ctx.fillStyle = 'white';
+        ctx.font = `bold ${fontSize} system-ui, -apple-system, sans-serif`;
+        ctx.textAlign = 'center';
+        this.drawTextWithShadow(ctx, 'SƯU TẬP', collectButtonX + (buttonWidth/2), 10 + (buttonHeight/2) + 4, 'rgba(0,0,0,0.7)', 'white', 1, 1);
+        ctx.textAlign = 'left';
+
         // Calculate UI layout
         let currentUIY = 10;
         const uiMargin = isNarrow ? 5 : 10;

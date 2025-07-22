@@ -33,4 +33,5 @@ export const BLOCK_DEFINITIONS = {
     // Special blocks
     chest: { health: 8, textureKey: 'chestImage', fallbackColor: '#8B4513' },
     tnt: { health: 3, textureKey: 'tntImage', fallbackColor: '#FF4444' },
+    water: { health: Infinity, textureKey: null, fallbackColor: '#4F90FF' }
 };

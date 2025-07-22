@@ -16,6 +16,10 @@ export class Block {
         this.isDeepslate = definition.isDeepslate || false;
         
         this.damageState = 0;
+        // Initialize horizontal spread count for water blocks
+        if (blockType === 'water') {
+            this.horizontalSpreadCount = 0;
+        }
     }
 
     takeDamage(damage) {

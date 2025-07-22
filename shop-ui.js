@@ -22,26 +22,32 @@ export class ShopUI {
         // Check if summer event is active - show different interface
         if (this.shop.state.summerEventActive) {
             this.drawSummerEventShop(ctx, canvas);
+            // Draw scroll buttons only for the regular shop for now.
+            // If summer event shop also becomes scrollable, this needs to be adjusted.
+            this.drawScrollButtons(ctx, canvas);
             return;
         }
 
         // --- DYNAMICALLY CALCULATE CONTENT HEIGHT ---
         let totalContentHeight = 120; // starting Y
+        // Add exchange section height first
+        totalContentHeight += 200; // Exchange section height
+        totalContentHeight += 100; // Spacing after exchange
+
         const resources = ['coal', 'copper', 'iron', 'gold', 'redstone', 'diamond', 'lapis', 'emerald', 'stone', 'sand', 'sandstone'];
         totalContentHeight += 70 + (resources.length * 105);
         totalContentHeight += 100; // Spacing
 
         totalContentHeight += 120 + (['copper', 'iron', 'gold'].length * 105); // Smelting section
-        totalContentHeight += 100;
+        totalContentHeight += 100; // Increased spacing between sections
 
         totalContentHeight += 70 + (['copper', 'iron', 'gold'].length * 105); // Ingot section
-        totalContentHeight += 100;
+        totalContentHeight += 100; // Increased spacing between sections
 
         totalContentHeight += 70 + (['efficiency', 'unbreaking', 'fortune'].length * 120); // Enchantment section
-        totalContentHeight += 100;
+        totalContentHeight += 100; // Increased spacing between sections
 
-        const pickaxeTypes = ['wooden', 'stone', 'iron', 'golden', 'diamond', 'obsidian', 'netherite'];
-        totalContentHeight += 70 + (pickaxeTypes.length * 120); // Pickaxe section
+        totalContentHeight += 70 + (['wooden', 'stone', 'iron', 'golden', 'diamond', 'obsidian', 'netherite'].length * 120); // Pickaxe section
         
         const eventPickaxes = ['lava', 'blaze', 'fish'];
         const unlockedEventPickaxes = eventPickaxes.filter(key => this.shop.state.pickaxePrices[key].unlocked);
@@ -52,6 +58,7 @@ export class ShopUI {
         }
 
         totalContentHeight += 50; // Padding at the bottom
+        totalContentHeight += 80; // Add space for scroll buttons at the bottom
 
         // Calculate max scroll based on dynamic content height and viewable area
         const scrollableAreaHeight = canvas.height - 100; // Account for fixed header
@@ -59,22 +66,13 @@ export class ShopUI {
 
         // Draw fixed header
         this.drawHeader(ctx, canvas);
-        // Draw currency exchange section (ensure y-coordinate is passed)
-        // This is fixed on the right, not part of the scroll
-        const exchangeSectionWidth = 300; // Updated width
-        const rightMargin = 20;
-        const exchangeSectionX = canvas.width - exchangeSectionWidth - rightMargin;
-        const exchangeSectionY = 100; // Fixed Y position
-        this.drawExchangeSection(ctx, canvas, exchangeSectionX, exchangeSectionY);
-
+        
         // Save context for scrolling content
         ctx.save();
         
         // Create clipping region for scrollable content
         ctx.beginPath();
-        // Adjust clipping region to exclude the new exchange section area
-        const scrollableAreaRightBoundary = exchangeSectionX - 10; // 10px gap
-        ctx.rect(0, 100, scrollableAreaRightBoundary, canvas.height - 100);
+        ctx.rect(0, 100, canvas.width, canvas.height - 100);
         ctx.clip();
 
         // Apply scroll offset
@@ -82,15 +80,17 @@ export class ShopUI {
 
         // Calculate card layout - move to left side
         const margin = 20;
-        // Ensure cardWidth doesn't overlap with the new exchange section
-        const maxCardWidth = scrollableAreaRightBoundary - (2 * margin);
-        const cardWidth = Math.min(550, canvas.width * 0.9, maxCardWidth); 
+        const cardWidth = Math.min(550, canvas.width * 0.9); 
         const leftX = margin; 
         
         let currentY = 120;
 
         // Check for narrow screen (mobile portrait)
         const isNarrow = canvas.width < 450;
+
+        // Draw exchange section first
+        this.drawExchangeSection(ctx, canvas, leftX + cardWidth/2 - 150, currentY);
+        currentY += 200; // Exchange section height + spacing
 
         // Draw sections
         currentY = this.drawResourceSection(ctx, canvas, leftX, cardWidth, currentY, isNarrow);
@@ -116,6 +116,8 @@ export class ShopUI {
 
         // Draw scroll indicator
         this.drawScrollIndicator(ctx, canvas);
+        // Draw scroll buttons
+        this.drawScrollButtons(ctx, canvas);
     }
 
     drawSummerEventShop(ctx, canvas) {
@@ -1274,6 +1276,23 @@ export class ShopUI {
             ctx.strokeStyle = '#FFFFFF';
             ctx.lineWidth = 1;
             ctx.strokeRect(scrollBarX, thumbY, scrollBarWidth, thumbHeight);
+        }
+    }
+
+    drawScrollButtons(ctx, canvas) {
+        if (this.shop.maxShopScrollY > 0) {
+            const buttonWidth = 60;
+            const buttonHeight = 30;
+            const centerX = canvas.width / 2;
+            const bottomY = canvas.height - 40; // Position at the bottom
+
+            // Scroll Up button
+            const scrollUpX = centerX - buttonWidth - 10;
+            this.drawEnhancedMinecraftButton(ctx, scrollUpX, bottomY, buttonWidth, buttonHeight, 'LÊN', '#4CAF50', this.shop.shopScrollY > 0);
+            
+            // Scroll Down button
+            const scrollDownX = centerX + 10;
+            this.drawEnhancedMinecraftButton(ctx, scrollDownX, bottomY, buttonWidth, buttonHeight, 'XUỐNG', '#F44336', this.shop.shopScrollY < this.shop.maxShopScrollY);
         }
     }
 }

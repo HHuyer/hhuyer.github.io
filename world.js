@@ -22,6 +22,9 @@ export class World {
         // Spatial Grid for collision optimization
         this.spatialGrid = new Map();
         this.gridCellSize = this.blockSize * 2; // Check a smaller, more focused area
+        
+        this.caveExpansion = new Set();
+        this.caveExpansionQueue = [];
     }
 
     _getGridKey(x, y) {
@@ -114,6 +117,17 @@ export class World {
         for (let col = 0; col < this.gridWidth; col++) {
             const x = this.fixedStartX + col * this.blockSize;
             
+            // Check if this position should be a cave (air pocket)
+            if (this.isCavePosition(row, col)) {
+                // 10% chance to fill cave cell with water block
+                if (Math.random() < 0.1) {
+                    const waterBlock = new Block(x, y, this.blockSize, this.blockSize, 'water');
+                    this.game.blocks.push(waterBlock);
+                    this._addBlockToGrid(waterBlock);
+                }
+                continue;
+            }
+            
             if (this.game.state.summerEventActive) {
                 // Summer event mode: 1% chance for chest, 3% for TNT
                 const chestChance = Math.random();
@@ -150,20 +164,121 @@ export class World {
             }
             
             const blockType = this.determineBlockType(row, col);
-            const block = new Block(x, y, this.blockSize, this.blockSize, blockType);
             
             // Add chance for experience bottle
             const bottleChance = 0.01; // 1% chance for any block to have a bottle
-            if (Math.random() < bottleChance && block.blockType !== 'bedrock' && block.blockType !== 'obsidian') {
+            if (Math.random() < bottleChance && blockType !== 'bedrock' && blockType !== 'obsidian') {
+                const block = new Block(x, y, this.blockSize, this.blockSize, blockType);
                 block.hasExperienceBottle = true;
+                this.game.blocks.push(block);
+                this._addBlockToGrid(block);
+                continue;
             }
-
+            
+            const block = new Block(x, y, this.blockSize, this.blockSize, blockType);
             this.game.blocks.push(block);
             this._addBlockToGrid(block);
         }
     }
 
+    isCavePosition(row, col) {
+        // Only generate caves below certain depth
+        if (row < 8) return false;
+        
+        // Cave expansion tracking
+        if (!this.caveExpansion) {
+            this.caveExpansion = new Set();
+            this.caveExpansionQueue = [];
+        }
+        
+        // Check if this position is already part of a cave
+        const key = `${row},${col}`;
+        if (this.caveExpansion.has(key)) {
+            return true;
+        }
+        
+        // Check if this position is already processed
+        if (this.caveExpansion.has(key + '_processed')) {
+            return false;
+        }
+        
+        // Start new caves with 0.5% chance
+        const startChance = 0.005;
+        if (Math.random() < startChance && !this.caveExpansion.has(key)) {
+            this.caveExpansion.add(key);
+            this.caveExpansionQueue.push({row, col, depth: 0});
+
+            // 2% chance for water in caves (reduced from 10%)
+            if (Math.random() < 0.01) { // <-- changed from 0.02 to 0.01 (50 % less)
+                const x = this.fixedStartX + col * this.blockSize;
+                const y = 300 + row * this.blockSize;
+                const waterBlock = new Block(x, y, this.blockSize, this.blockSize, 'water');
+                this.game.blocks.push(waterBlock);
+                this._addBlockToGrid(waterBlock);
+            }
+            
+            // Process cave expansion
+            this.processCaveExpansion();
+            return true;
+        }
+        
+        return false;
+    }
+
+    processCaveExpansion() {
+        while (this.caveExpansionQueue.length > 0) {
+            const {row, col, depth} = this.caveExpansionQueue.shift();
+            
+            // Mark as processed
+            const processedKey = `${row},${col}_processed`;
+            this.caveExpansion.add(processedKey);
+            
+            // Check adjacent blocks for expansion
+            const adjacentBlocks = [
+                {row: row - 1, col: col}, // Up
+                {row: row + 1, col: col}, // Down
+                {row: row, col: col - 1}, // Left
+                {row: row, col: col + 1}  // Right
+            ];
+            
+            for (const adj of adjacentBlocks) {
+                const adjKey = `${adj.row},${adj.col}`;
+                
+                // Skip if already part of cave or processed
+                if (this.caveExpansion.has(adjKey) || this.caveExpansion.has(adjKey + '_processed')) {
+                    continue;
+                }
+                
+                // 75% chance to expand cave
+                if (Math.random() < 0.75) {
+                    this.caveExpansion.add(adjKey);
+                    
+                    // Continue expansion if depth allows
+                    if (depth < 3) { // Maximum expansion depth
+                        this.caveExpansionQueue.push({
+                            row: adj.row, 
+                            col: adj.col, 
+                            depth: depth + 1
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    // Simple 2D noise function (pseudo-Perlin noise) - made more random
+    noise2D(x, y) {
+        const seed = 12345 + Math.random() * 0.1; // Add randomness to seed
+        const n = Math.sin(x * 12.9898 + y * 78.233 + seed) * 43758.5453123;
+        return (n - Math.floor(n)) * 2 - 1; // Return value between -1 and 1
+    }
+
     determineBlockType(row, col) {
+        // First, check if this position is part of a cave
+        if (this.isCavePosition(row, col)) {
+            return null; // Return null to indicate air/empty cave
+        }
+
         const depth = row;
         const isDeepslate = this.isDeepslateLayer(depth);
         const adjacentInfo = {
@@ -269,7 +384,7 @@ export class World {
         }
         return false;
     }
-    
+
     generateMoreBlocks() {
         const cameraBottom = this.game.camera.y + this.game.canvas.height;
         const lastBlockY = 300 + this.generatedRows * this.blockSize;
@@ -281,6 +396,49 @@ export class World {
                 this.generationQueue.push(this.generatedRows + i);
             }
             this.generatedRows += rowsToGenerate;
+        }
+    }
+
+    updateWater() {
+        const waterBlocks = this.game.blocks.filter(b => !b.destroyed && b.blockType === 'water');
+        for (const block of waterBlocks) {
+            // Remove this water block from grid to reposition it
+            this.removeBlockFromGrid(block);
+
+            // Check if there's a solid block below
+            const belowBlock = this.getBlockAt(block.x, block.y + this.blockSize);
+            const hasSupportBelow = belowBlock && !belowBlock.destroyed && belowBlock.blockType !== 'water';
+
+            if (!hasSupportBelow) {
+                // Water flows down if no solid support below
+                block.y += this.blockSize;
+                this._addBlockToGrid(block);
+            } else {
+                // Re-add to grid at current position
+                this._addBlockToGrid(block);
+                
+                // Only spread horizontally when there's solid support below (max 1 spread per block)
+                const maxSpreads = 1; // Limit horizontal spread to only once per water block
+                // Ensure we track spreads
+                if (typeof block.horizontalSpreadCount !== 'number') {
+                    block.horizontalSpreadCount = 0;
+                }
+                if (block.horizontalSpreadCount < maxSpreads) {
+                    for (const dx of [-this.blockSize, this.blockSize]) {
+                        if (block.horizontalSpreadCount >= maxSpreads) break;
+                        const nx = block.x + dx;
+                        const ny = block.y;
+                        if (nx < this.fixedStartX || nx >= this.fixedStartX + this.gridWidth * this.blockSize) continue;
+                        // Only spawn if spot is empty
+                        if (!this.getBlockAt(nx, ny)) {
+                            const newWater = new Block(nx, ny, this.blockSize, this.blockSize, 'water');
+                            this.game.blocks.push(newWater);
+                            this._addBlockToGrid(newWater);
+                            block.horizontalSpreadCount++;
+                        }
+                    }
+                }
+            }
         }
     }
 

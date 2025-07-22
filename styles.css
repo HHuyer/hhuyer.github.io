@@ -224,6 +224,66 @@ canvas {
     box-shadow: inset 2px 2px 0px 0px #8f1f1f;
 }
 
+#collect-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1500;
+    backdrop-filter: blur(5px);
+}
+
+#collect-content {
+    background-color: #C6C6C6;
+    border: 3px solid #555555;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    font-family: 'Minecraft Seven', monospace, system-ui, -apple-system, sans-serif;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+#collect-content h2 {
+    font-size: 24px;
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px #FFF;
+}
+
+#collect-grid {
+    display: grid;
+    gap: 10px;
+}
+
+#collect-close-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-family: 'Minecraft Seven', monospace, system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    color: white;
+    background-color: #1976D2;
+    border: 2px solid #555;
+    cursor: pointer;
+    box-shadow: inset -2px -2px 0px 0px #0f4a83;
+}
+
+#collect-close-button:hover {
+    background-color: #2196F3;
+}
+
+#collect-close-button:active {
+    box-shadow: inset 2px 2px 0px 0px #0f4a83;
+}
+
 #settings-popup {
     position: fixed;
     top: 0;
@@ -331,4 +391,28 @@ canvas {
 
 #background-music {
     display: none;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 600px) {
+    #stats-content, #settings-content {
+        width: 95%;
+        max-width: 400px;
+        padding: 15px;
+    }
+
+    #stats-content h2, #settings-content h2 {
+        font-size: 20px;
+    }
+
+    .stat-item, .setting-item {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 450px) {
+    #stats-content, #settings-content {
+        width: 98%;
+        padding: 10px;
+    }
 }

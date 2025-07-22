@@ -54,6 +54,10 @@ export class Game {
         this.statsPopup = document.getElementById('stats-popup');
         this.statsCloseButton = document.getElementById('stats-close-button');
         
+        // Collect popup elements
+        this.collectPopup = document.getElementById('collect-popup');
+        this.collectCloseButton = document.getElementById('collect-close-button');
+        
         // Settings popup elements
         this.settingsPopup = document.getElementById('settings-popup');
         this.settingsCloseButton = document.getElementById('settings-close-button');
@@ -179,7 +183,6 @@ export class Game {
                     damage: 2,
                     aoeDamage: 1, // new property for area damage
                 });
-                this.playSound(this.assetLoader.getAudioAsset('bouncyBallSpawn'), 1.0 + (Math.random() - 0.5) * 0.2);
             }
         }
     }
@@ -400,6 +403,14 @@ export class Game {
                 this.showStats();
                 return;
             }
+
+            // Check if clicking collect button - adjust for mobile
+            const collectButtonX = this.canvas.width - (buttonWidth * 4 + 55);
+            if (clickX >= collectButtonX && clickX <= collectButtonX + buttonWidth &&
+                clickY >= 10 && clickY <= 10 + buttonHeight) {
+                this.showCollect();
+                return;
+            }
             
             // Check if clicking summer event button - adjust for mobile
             const summerButtonY = this.ui.getSummerEventButtonY();
@@ -413,7 +424,7 @@ export class Game {
                 return;
             }
             
-            if (!this.pickaxe.isDropped) {
+            if (!this.pickaxe.isDropped && !this.pickaxe.isBroken) {
                 const pickaxeScreenX = this.pickaxe.x - this.camera.x;
                 const pickaxeScreenY = this.pickaxe.y - this.camera.y;
                 
@@ -465,10 +476,17 @@ export class Game {
         // Stats popup listener
         this.statsCloseButton.addEventListener('click', () => this.hideStats());
 
+        // Collect popup listener
+        this.collectCloseButton.addEventListener('click', () => this.hideCollect());
+        
         // Settings popup listeners
         this.settingsCloseButton.addEventListener('click', () => this.hideSettings());
         this.musicVolumeSlider.addEventListener('input', (e) => this.updateMusicVolume(e.target.value));
         this.sfxVolumeSlider.addEventListener('input', (e) => this.updateSfxVolume(e.target.value));
+        this.languageSelect.addEventListener('change', (e) => {
+            this.state.settings.language = e.target.value;
+            this.state.saveSettings();
+        });
         this.resetProgressButton.addEventListener('click', () => {
              if (window.confirm("Bạn có chắc muốn đặt lại toàn bộ tiến trình không?")) {
                 this.resetProgress();
@@ -531,6 +549,16 @@ export class Game {
         
         this.pickaxe.update(dt);
 
+        // Slow pickaxe falling when in water
+        if (this.pickaxe.isDropped) {
+            const px = this.pickaxe.x + this.pickaxe.width / 2;
+            const py = this.pickaxe.y + this.pickaxe.height / 2;
+            const water = this.world.getBlockAt(px, py);
+            if (water && water.blockType === 'water') {
+                this.pickaxe.velocity.y *= 0.6;
+            }
+        }
+
         if (this.pickaxe.isDropped) {
             // Update deepest depth stat
             const currentDepth = Math.max(0, Math.floor((this.pickaxe.y - 300) / this.world.blockSize));
@@ -542,6 +570,8 @@ export class Game {
         this.updateCamera();
         this.world.generateMoreBlocks();
         this.world.processGenerationQueue();
+        // simulate water flow in cave cells
+        this.world.updateWater();
         this.checkCollisions();
         this.updateAbilityEffects(dt);
         this.updateProjectiles(dt);
@@ -555,22 +585,33 @@ export class Game {
         for (let i = this.activeTNT.length - 1; i >= 0; i--) {
             const tnt = this.activeTNT[i];
             tnt.timer -= dt;
-            
-            // Flash effect - make it flash faster as time runs out
-            const flashRate = Math.max(0.1, tnt.timer / 2); // Flash faster as timer decreases
+
+            // Flash effect
+            const flashRate = Math.max(0.1, tnt.timer / 2);
             tnt.flashTimer -= dt;
             if (tnt.flashTimer <= 0) {
                 tnt.isFlashing = !tnt.isFlashing;
                 tnt.flashTimer = flashRate;
 
-                // Play TNT sound when flashing
                 if (tnt.isFlashing && tnt.timer > 0.1) {
                     this.playSound(this.assetLoader.getAudioAsset('tntExplode'), 0.5);
                 }
             }
-            
+
+            // Gravity for TNT (only after first hit)
+            if (!tnt.isFixed) {
+                tnt.velocityY = (tnt.velocityY || 0) + 0.5; // gravity
+                tnt.block.y += tnt.velocityY;
+
+                // Check collision with blocks below
+                const blockBelow = this.world.getBlockAt(tnt.block.x, tnt.block.y + tnt.block.height);
+                if (blockBelow && !blockBelow.destroyed) {
+                    tnt.velocityY = 0;
+                    tnt.block.y = blockBelow.y - tnt.block.height; // snap to top
+                }
+            }
+
             if (tnt.timer <= 0) {
-                // Explode!
                 this.explodeTNT(tnt);
                 this.activeTNT.splice(i, 1);
             }
@@ -578,7 +619,7 @@ export class Game {
     }
 
     explodeTNT(tnt) {
-        const explosionRadius = 120; // Increased explosion radius
+        const explosionRadius = 160; // Increased explosion radius
         
         // Destroy nearby blocks
         const nearbyBlocks = this.world.getNearbyBlocks(
@@ -1064,7 +1105,8 @@ export class Game {
         
         // Check for collisions with each block
         for (const block of nearbyBlocks) {
-            if (block.destroyed) continue;
+            // Skip destroyed and water blocks (pickaxe passes through water)
+            if (block.destroyed || block.blockType === 'water') continue;
             
             const collision = this.checkPickaxeBlockCollision(block);
             if (collision.hit) {
@@ -1165,6 +1207,22 @@ export class Game {
         
         // If the block was just destroyed
         this.handleBlockDestruction(block);
+        
+        // Special handling for TNT
+        if (block.blockType === 'tnt' && !block.destroyed) {
+            block.health = 0;
+            block.destroyed = true;
+            this.activeTNT.push({
+                block: block,
+                timer: 2.0,
+                flashTimer: 0.2,
+                isFlashing: false,
+                velocityY: 0,
+                isFixed: false
+            });
+            this.playSound(this.assetLoader.getAudioAsset('tntExplode'), 0.5);
+            return; // Skip normal destruction for TNT
+        }
 
         // Create impact sparkles on hit
         this.createImpactSparkles(this.pickaxe.x + this.pickaxe.width / 2, this.pickaxe.y + this.pickaxe.height / 2);
@@ -1712,6 +1770,15 @@ export class Game {
         this.statsPopup.style.display = 'none';
     }
 
+    showCollect() {
+        this.updateCollectDisplay();
+        this.collectPopup.style.display = 'flex';
+    }
+
+    hideCollect() {
+        this.collectPopup.style.display = 'none';
+    }
+
     updateStatsDisplay() {
         const stats = this.state.stats;
         const grid = document.getElementById('stats-grid');
@@ -1742,6 +1809,128 @@ export class Game {
             statItem.innerHTML = `<span class="stat-label">${stat.label}</span><span class="stat-value">${stat.value}</span>`;
             grid.appendChild(statItem);
         });
+    }
+
+    updateCollectDisplay() {
+        const grid = document.getElementById('collect-grid');
+        grid.innerHTML = '';
+
+        // Show all collected resources and pickaxes
+        const collectibles = [];
+
+        // Add resources
+        Object.entries(this.state.resources).forEach(([key, value]) => {
+            if (value > 0) {
+                const nameMap = {
+                    coal: "Than", copper: "Đồng", iron: "Sắt", gold: "Vàng", redstone: "Đá Đỏ",
+                    diamond: "Kim Cương", lapis: "Lưu Ly", emerald: "Ngọc Lục Bảo", 
+                    stone: "Đá", obsidian: "Hắc曜石", sand: "Cát", sandstone: "Đá Cát"
+                };
+                collectibles.push({
+                    type: 'resource',
+                    name: nameMap[key] || key,
+                    count: value,
+                    icon: key
+                });
+            }
+        });
+
+        // Add smelted resources
+        Object.entries(this.state.smeltedResources).forEach(([key, value]) => {
+            if (value > 0) {
+                const nameMap = {
+                    copper: "Đồng Thỏi", iron: "Sắt Thỏi", gold: "Vàng Thỏi"
+                };
+                collectibles.push({
+                    type: 'smelted',
+                    name: nameMap[key] || key,
+                    count: value,
+                    icon: key
+                });
+            }
+        });
+
+        // Add unlocked pickaxes
+        const pickaxeNames = {
+            wooden: "Cúp Gỗ", stone: "Cúp Đá", iron: "Cúp Sắt", golden: "Cúp Vàng", 
+            diamond: "Cúp Kim Cương", obsidian: "Cúp Hắc曜石", netherite: "Cúp Netherite",
+            lava: "Cúp Dung Nham", blaze: "Cúp Quỷ Lửa", fish: "Cúp Cá"
+        };
+
+        Object.entries(this.state.pickaxePrices).forEach(([key, value]) => {
+            if (value.unlocked) {
+                collectibles.push({
+                    type: 'pickaxe',
+                    name: pickaxeNames[key] || key,
+                    count: 1,
+                    icon: key
+                });
+            }
+        });
+
+        // Display collectibles
+        if (collectibles.length === 0) {
+            const emptyMessage = document.createElement('div');
+            emptyMessage.textContent = 'Bạn chưa có vật phẩm nào';
+            emptyMessage.style.textAlign = 'center';
+            emptyMessage.style.color = '#666';
+            grid.appendChild(emptyMessage);
+        } else {
+            collectibles.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'stat-item';
+                
+                const iconSpan = document.createElement('span');
+                iconSpan.className = 'stat-label';
+                
+                // Create icon based on type
+                let iconElement = '';
+                if (item.type === 'resource') {
+                    const icon = this.assetLoader.getAsset(item.icon === 'stone' ? 'stone' : `${item.icon}Icon`);
+                    if (icon && icon.complete) {
+                        const img = document.createElement('img');
+                        img.src = icon.src;
+                        img.style.width = '16px';
+                        img.style.height = '16px';
+                        img.style.verticalAlign = 'middle';
+                        img.style.marginRight = '5px';
+                        iconSpan.appendChild(img);
+                    }
+                } else if (item.type === 'smelted') {
+                    const icon = this.assetLoader.getAsset(item.icon === 'copper' ? 'copperIngotIcon' : `${item.icon}IngotIcon`);
+                    if (icon && icon.complete) {
+                        const img = document.createElement('img');
+                        img.src = icon.src;
+                        img.style.width = '16px';
+                        img.style.height = '16px';
+                        img.style.verticalAlign = 'middle';
+                        img.style.marginRight = '5px';
+                        iconSpan.appendChild(img);
+                    }
+                } else if (item.type === 'pickaxe') {
+                    const icon = this.assetLoader.getAsset(`${item.icon}Pickaxe`);
+                    if (icon && icon.complete) {
+                        const img = document.createElement('img');
+                        img.src = icon.src;
+                        img.style.width = '20px';
+                        img.style.height = '20px';
+                        img.style.verticalAlign = 'middle';
+                        img.style.marginRight = '5px';
+                        iconSpan.appendChild(img);
+                    }
+                }
+                
+                iconSpan.appendChild(document.createTextNode(`${item.name}:`));
+                itemDiv.appendChild(iconSpan);
+                
+                const countSpan = document.createElement('span');
+                countSpan.className = 'stat-value';
+                countSpan.textContent = item.count;
+                itemDiv.appendChild(countSpan);
+                
+                grid.appendChild(itemDiv);
+            });
+        }
     }
 
     showSettings() {

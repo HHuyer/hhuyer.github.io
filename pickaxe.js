@@ -133,7 +133,7 @@ export class Pickaxe {
                 maxDurability: 150,
                 durability: 150,
                 ability: 'bouncy_ball',
-                abilityCooldown: 2, 
+                abilityCooldown: 1, 
                 stability: 2.0
             }
         ];

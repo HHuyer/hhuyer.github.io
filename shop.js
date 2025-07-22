@@ -9,6 +9,13 @@ export class Shop {
         this.shopScrollY = 0;
         this.maxShopScrollY = 0;
         this.isScrolling = false;
+
+        // Define resource and pickaxe lists for consistent iteration
+        this.resourceKeys = ['coal', 'copper', 'iron', 'gold', 'redstone', 'diamond', 'lapis', 'emerald', 'stone', 'sand', 'sandstone'];
+        this.smeltableResourceKeys = ['copper', 'iron', 'gold'];
+        this.enchantmentTypes = ['efficiency', 'unbreaking', 'fortune'];
+        this.pickaxeTypes = ['wooden', 'stone', 'iron', 'golden', 'diamond', 'obsidian', 'netherite'];
+        this.eventPickaxeKeys = ['lava', 'blaze', 'fish'];
     }
 
     show() {
@@ -25,18 +32,15 @@ export class Shop {
 
     handleClick(clickX, clickY) {
         const isNarrow = this.game.canvas.width < 450;
-
-        // Check if summer event is active - handle different clicks
-        if (this.state.summerEventActive) {
-            this.handleSummerEventClick(clickX, clickY);
-            return;
-        }
-
         const margin = 20;
         const cardWidth = Math.min(550, this.game.canvas.width * 0.9); 
         const leftX = margin; 
-        
-        // Exit shop button (fixed position, not affected by scroll)
+        const buttonWidth = 70; // Consistent button sizes for most actions
+        const buttonHeight = 30;
+        const cardPadding = 15; // Define cardPadding here
+
+        // --- Fixed Header Elements (NOT affected by scroll context) ---
+        // Exit shop button
         const exitButtonX = this.game.canvas.width - 120;
         const exitButtonY = 20;
         if (clickX >= exitButtonX && clickX <= exitButtonX + 100 &&
@@ -45,185 +49,181 @@ export class Shop {
             return;
         }
 
-        // Reset progress button (fixed position, not affected by scroll)
-        const resetButtonX = 20;
-        const resetButtonY = 20;
-        if (clickX >= resetButtonX && clickX <= resetButtonX + 100 &&
-            clickY >= resetButtonY && clickY <= resetButtonY + 40) {
-            if (window.confirm("Are you sure you want to reset all your progress? This cannot be undone.")) {
-                this.game.resetProgress();
-            }
+        // Scroll buttons (fixed position at bottom of canvas)
+        const scrollBtnWidth = 60;
+        const scrollBtnHeight = 30;
+        const scrollBtnY = this.game.canvas.height - 40;
+        const scrollUpX = this.game.canvas.width / 2 - scrollBtnWidth - 10;
+        const scrollDownX = this.game.canvas.width / 2 + 10;
+
+        if (clickX >= scrollUpX && clickX <= scrollUpX + scrollBtnWidth &&
+            clickY >= scrollBtnY && clickY <= scrollBtnY + scrollBtnHeight) {
+            this.handleScroll(-200); // Scroll up by 200 pixels
             return;
         }
 
-        // Exchange Xu to New Money buttons (fixed UI above scroll area)
-        // These clicks are now handled by the shop-ui's drawExchangeSection logic for accurate button positions
-        // This old logic can be removed as they are now part of the scrollable content or specifically handled in UI
-        /*
-        const exchangeX = 20;
-        const exchangeY = 70;
-        const btnWidth = 70;
-        const btnHeight = 30;
-        if (clickX >= exchangeX && clickX <= exchangeX + btnWidth &&
-            clickY >= exchangeY && clickY <= exchangeY + btnHeight) {
-            this.game.exchangeMoney(1);
+        if (clickX >= scrollDownX && clickX <= scrollDownX + scrollBtnWidth &&
+            clickY >= scrollBtnY && clickY <= scrollBtnY + scrollBtnHeight) {
+            this.handleScroll(200); // Scroll down by 200 pixels
             return;
         }
-        if (clickX >= exchangeX + btnWidth + 10 && clickX <= exchangeX + 2 * btnWidth + 10 &&
-            clickY >= exchangeY && clickY <= exchangeY + btnHeight) {
-            this.game.exchangeMoney(Infinity);
-            return;
-        }
-        */
 
-        let scrolledClickY = clickY;
-        // Only adjust clickY for scrollable content (below header)
-        // The fixed-position exchange section is now drawn on the right, still needs to be checked.
-        const exchangeSectionX = this.game.canvas.width - 320; // Matches UI for shop-ui.js
-        const exchangeSectionY = 100;
-        const exchangeSectionWidth = 300;
-        const exchangeSectionHeight = 180;
-        const buttonWidth = 70;
-        const buttonHeight = 30;
-        const buttonYOffset = 110; // Corresponds to y + 110 in drawExchangeSection
+        // Handle summer event clicks (which has its own logic and fixed positions)
+        if (this.state.summerEventActive) {
+            this.handleSummerEventClick(clickX, clickY);
+            return;
+        }
+
+        // --- All content below the fixed header is scrollable ---
+        // Adjust clickY to be relative to the translated canvas context
+        let clickedYInScrollableContext = clickY;
+        if (clickY > 100) { // Check if click is below the fixed header (height 100px)
+            clickedYInScrollableContext += this.shopScrollY;
+        }
         
-        // Check "Đổi 1" button in exchange section
-        const exchange1BtnX = exchangeSectionX + exchangeSectionWidth / 2 - buttonWidth - 10;
-        const exchange1BtnY = exchangeSectionY + buttonYOffset;
+        // Replicate the 'currentY' progression from ShopUI.draw to match positions
+        let currentShopContentY = 120; // This is the starting Y in the translated context
+
+
+        // --- Exchange Section Buttons ---
+        const exchangeSectionWidth = 300; // From ShopUI.drawExchangeSection
+        const exchangeSectionXOffsetForDrawing = leftX + cardWidth / 2 - 150; // The 'x' param passed to drawExchangeSection
+        const exchangeButtonYOffsetInCard = 110; // buttonY in drawExchangeSection is y + 110
+        
+        // Exchange 1 button
+        const exchange1BtnX = exchangeSectionXOffsetForDrawing + (exchangeSectionWidth / 2) - buttonWidth - 10;
+        const exchange1BtnY = currentShopContentY + exchangeButtonYOffsetInCard;
         if (clickX >= exchange1BtnX && clickX <= exchange1BtnX + buttonWidth &&
-            clickY >= exchange1BtnY && clickY <= exchange1BtnY + buttonHeight) {
+            clickedYInScrollableContext >= exchange1BtnY && clickedYInScrollableContext <= exchange1BtnY + buttonHeight) {
             this.game.exchangeMoney(1);
             return;
         }
 
-        // Check "Đổi Tất" button in exchange section
-        const exchangeAllBtnX = exchangeSectionX + exchangeSectionWidth / 2 + 10;
-        const exchangeAllBtnY = exchangeSectionY + buttonYOffset;
+        // Exchange All button
+        const exchangeAllBtnX = exchangeSectionXOffsetForDrawing + (exchangeSectionWidth / 2) + 10;
+        const exchangeAllBtnY = currentShopContentY + exchangeButtonYOffsetInCard;
         if (clickX >= exchangeAllBtnX && clickX <= exchangeAllBtnX + buttonWidth &&
-            clickY >= exchangeAllBtnY && clickY <= exchangeAllBtnY + buttonHeight) {
+            clickedYInScrollableContext >= exchangeAllBtnY && clickedYInScrollableContext <= exchangeAllBtnY + buttonHeight) {
             this.game.exchangeMoney(Infinity);
             return;
         }
 
-        // Now handle scrolling for the *main* shop content, which starts lower
-        if (clickY > 100) { // Main content starts below header (100px fixed header height)
-            scrolledClickY += this.shopScrollY;
-        }
+        currentShopContentY += 200; // Move past exchange section height
 
-        // --- SECTION VARIABLES ---
-        const cardPadding = 15;
-        // const buttonWidth = 70; // Already defined above for consistency
-        // const buttonHeight = 30; // Already defined above for consistency
-        let currentY = 120; // This is the Y for the first *scrollable* section
 
         // --- Resource selling buttons ---
-        let resourceSectionY = currentY + 70;
-        const resources = ['coal', 'copper', 'iron', 'gold', 'redstone', 'diamond', 'lapis', 'emerald', 'stone', 'sand', 'sandstone'];
-        resources.forEach((resource, index) => {
-            const cardY = resourceSectionY + index * 105;
+        let resourceCardStartY = currentShopContentY + 70; // Offset for section title
+        this.resourceKeys.forEach((resource, index) => {
+            const cardY = resourceCardStartY + index * 105; // Each card is 105px tall
             
             // Sell 1 button
             const sell1X = leftX + cardWidth - cardPadding - (isNarrow ? buttonWidth : 150);
-            const sell1Y = isNarrow ? cardY + 15 : cardY + 25;
+            const sell1Y = isNarrow ? cardY + 15 : cardY + 25; // Button Y relative to card top
             if (clickX >= sell1X && clickX <= sell1X + buttonWidth &&
-                scrolledClickY >= sell1Y && scrolledClickY <= sell1Y + buttonHeight) {
+                clickedYInScrollableContext >= sell1Y && clickedYInScrollableContext <= sell1Y + buttonHeight) {
                 this.sellResource(resource, 1);
+                return; 
             }
             
             // Sell All button
             const sellAllX = leftX + cardWidth - cardPadding - buttonWidth;
-            const sellAllY = isNarrow ? cardY + 55 : cardY + 25;
+            const sellAllY = isNarrow ? cardY + 55 : cardY + 25; // Button Y relative to card top
             if (clickX >= sellAllX && clickX <= sellAllX + buttonWidth &&
-                scrolledClickY >= sellAllY && scrolledClickY <= sellAllY + buttonHeight) {
+                clickedYInScrollableContext >= sellAllY && clickedYInScrollableContext <= sellAllY + buttonHeight) {
                 this.sellResource(resource, this.state.resources[resource]);
+                return;
             }
         });
-        currentY = resourceSectionY + resources.length * 105;
-        currentY += 100;
+        currentShopContentY = resourceCardStartY + this.resourceKeys.length * 105;
+        currentShopContentY += 100; // Spacing after section
+
 
         // --- Smelting buttons ---
-        const smeltingSectionStart = currentY;
-        const smeltableResources = ['copper', 'iron', 'gold'];
-        let smeltingSectionContentY = smeltingSectionStart + 120;
-        smeltableResources.forEach((resource, index) => {
-            const cardY = smeltingSectionContentY + index * 105;
+        let smeltingCardStartY = currentShopContentY + 120; // Offset for section title and info box
+        this.smeltableResourceKeys.forEach((resource, index) => {
+            const cardY = smeltingCardStartY + index * 105;
             
             // Smelt 1 button
             const smelt1X = leftX + cardWidth - cardPadding - (isNarrow ? buttonWidth : 150);
             const smelt1Y = isNarrow ? cardY + 15 : cardY + 25;
             if (clickX >= smelt1X && clickX <= smelt1X + buttonWidth &&
-                scrolledClickY >= smelt1Y && scrolledClickY <= smelt1Y + buttonHeight) {
+                clickedYInScrollableContext >= smelt1Y && clickedYInScrollableContext <= smelt1Y + buttonHeight) {
                 this.smeltResource(resource, 1);
+                return;
             }
             
             // Smelt All button
             const smeltAllX = leftX + cardWidth - cardPadding - buttonWidth;
             const smeltAllY = isNarrow ? cardY + 55 : cardY + 25;
             if (clickX >= smeltAllX && clickX <= smeltAllX + buttonWidth &&
-                scrolledClickY >= smeltAllY && scrolledClickY <= smeltAllY + buttonHeight) {
+                clickedYInScrollableContext >= smeltAllY && clickedYInScrollableContext <= smeltAllY + buttonHeight) {
                 const coalPerItem = this.state.smeltingCost.coal || 1;
                 const maxSmeltFromCoal = this.state.resources.coal > 0 ? Math.floor(this.state.resources.coal / coalPerItem) : 0;
                 const maxSmelt = Math.min(this.state.resources[resource], maxSmeltFromCoal);
                 this.smeltResource(resource, maxSmelt);
+                return;
             }
         });
-        currentY = smeltingSectionContentY + smeltableResources.length * 105;
-        currentY += 100;
+        currentShopContentY = smeltingCardStartY + this.smeltableResourceKeys.length * 105;
+        currentShopContentY += 100; // Spacing after section
+        
 
         // --- Smelted resource selling buttons ---
-        const ingotSectionStart = currentY;
-        let ingotSectionContentY = ingotSectionStart + 70;
-        smeltableResources.forEach((resource, index) => {
-            const cardY = ingotSectionContentY + index * 105;
+        let ingotCardStartY = currentShopContentY + 70; // Offset for section title
+        this.smeltableResourceKeys.forEach((resource, index) => {
+            const cardY = ingotCardStartY + index * 105;
             
             // Sell 1 smelted button
             const sell1X = leftX + cardWidth - cardPadding - (isNarrow ? buttonWidth : 150);
             const sell1Y = isNarrow ? cardY + 15 : cardY + 25;
             if (clickX >= sell1X && clickX <= sell1X + buttonWidth &&
-                scrolledClickY >= sell1Y && scrolledClickY <= sell1Y + buttonHeight) {
+                clickedYInScrollableContext >= sell1Y && clickedYInScrollableContext <= sell1Y + buttonHeight) {
                 this.sellSmeltedResource(resource, 1);
+                return;
             }
             
             // Sell All smelted button
             const sellAllX = leftX + cardWidth - cardPadding - buttonWidth;
             const sellAllY = isNarrow ? cardY + 55 : cardY + 25;
             if (clickX >= sellAllX && clickX <= sellAllX + buttonWidth &&
-                scrolledClickY >= sellAllY && scrolledClickY <= sellAllY + buttonHeight) {
+                clickedYInScrollableContext >= sellAllY && clickedYInScrollableContext <= sellAllY + buttonHeight) {
                 this.sellSmeltedResource(resource, this.state.smeltedResources[resource]);
+                return;
             }
         });
-        currentY = ingotSectionContentY + smeltableResources.length * 105;
-        currentY += 100;
+        currentShopContentY = ingotCardStartY + this.smeltableResourceKeys.length * 105;
+        currentShopContentY += 100; // Spacing after section
+
 
         // --- Enchantment upgrade buttons ---
-        const enchantmentSectionStart = currentY;
-        const enchantmentTypes = ['efficiency', 'unbreaking', 'fortune'];
-        let enchantmentSectionContentY = enchantmentSectionStart + 70;
-        enchantmentTypes.forEach((type, index) => {
-            const cardY = enchantmentSectionContentY + index * 120;
-            const buttonY = cardY + 30;
+        let enchantmentCardStartY = currentShopContentY + 70; // Offset for section title
+        this.enchantmentTypes.forEach((type, index) => {
+            const cardY = enchantmentCardStartY + index * 120; // Each card is 120px tall
+            const buttonY = cardY + 30; // Button is at y + 30 relative to card
 
             const currentLevel = this.state.enchantmentLevels[type];
             const maxLevel = this.state.maxEnchantmentLevels[type];
             
             if (currentLevel < maxLevel) {
-                const buttonX = leftX + cardWidth - cardPadding - 80;
-                if (clickX >= buttonX && clickX <= buttonX + 75 &&
-                    scrolledClickY >= buttonY && scrolledClickY <= buttonY + 30) {
+                const upgradeButtonWidth = 75; // specific for enchantment button
+                const upgradeButtonHeight = 30;
+                const buttonX = leftX + cardWidth - cardPadding - upgradeButtonWidth - 5; 
+                if (clickX >= buttonX && clickX <= buttonX + upgradeButtonWidth &&
+                    clickedYInScrollableContext >= buttonY && clickedYInScrollableContext <= buttonY + upgradeButtonHeight) {
                     this.buyEnchantment(type);
+                    return;
                 }
             }
         });
-        currentY = enchantmentSectionContentY + enchantmentTypes.length * 120;
-        currentY += 100;
+        currentShopContentY = enchantmentCardStartY + this.enchantmentTypes.length * 120;
+        currentShopContentY += 100; // Spacing after section
+
 
         // --- Pickaxe purchase/equip buttons ---
-        const pickaxeSectionStart = currentY;
-        const pickaxeTypes = ['wooden', 'stone', 'iron', 'golden', 'diamond', 'obsidian', 'netherite'];
-        let pickaxeSectionContentY = pickaxeSectionStart + 70;
-        pickaxeTypes.forEach((type, index) => {
-            const cardY = pickaxeSectionContentY + index * 120;
-            const buttonY = cardY + 30;
+        let pickaxeCardStartY = currentShopContentY + 70; // Offset for section title
+        this.pickaxeTypes.forEach((type, index) => {
+            const cardY = pickaxeCardStartY + index * 120;
+            const buttonY = cardY + 30; 
             
             const pickaxeData = this.state.pickaxePrices[type];
             const buttonX = leftX + cardWidth - cardPadding - buttonWidth - 5;
@@ -231,40 +231,43 @@ export class Shop {
             if (!pickaxeData.unlocked) {
                 // Buy button
                 if (clickX >= buttonX && clickX <= buttonX + buttonWidth &&
-                    scrolledClickY >= buttonY && scrolledClickY <= buttonY + buttonHeight) {
+                    clickedYInScrollableContext >= buttonY && clickedYInScrollableContext <= buttonY + buttonHeight) {
                     this.buyPickaxe(type);
+                    return;
                 }
             } else {
                 // Equip button
                 if (clickX >= buttonX && clickX <= buttonX + buttonWidth &&
-                    scrolledClickY >= buttonY && scrolledClickY <= buttonY + buttonHeight) {
+                    clickedYInScrollableContext >= buttonY && clickedYInScrollableContext <= buttonY + buttonHeight) {
                     this.equipPickaxe(type, index);
+                    return;
                 }
             }
         });
-        currentY = pickaxeSectionContentY + pickaxeTypes.length * 120;
+        currentShopContentY = pickaxeCardStartY + this.pickaxeTypes.length * 120;
 
-        // Check for unlocked event pickaxes to handle their clicks
-        const eventPickaxes = ['lava', 'blaze', 'fish'];
-        const unlockedEventPickaxes = eventPickaxes.filter(key => this.state.pickaxePrices[key].unlocked);
+
+        // --- Event Pickaxe Section ---
+        const unlockedEventPickaxes = this.eventPickaxeKeys.filter(key => this.state.pickaxePrices[key].unlocked);
 
         if (unlockedEventPickaxes.length > 0) {
-            currentY += 100; // Spacing for event pickaxe section
-            let eventPickaxeSectionContentY = currentY + 70;
+            currentShopContentY += 100; // Spacing for event pickaxe section
+            let eventPickaxeCardStartY = currentShopContentY + 70; // Offset for section title
             const eventPickaxeMap = { lava: 7, blaze: 8, fish: 9 };
 
             unlockedEventPickaxes.forEach((type) => {
                 const index = eventPickaxeMap[type];
-                const cardY = eventPickaxeSectionContentY;
+                const cardY = eventPickaxeCardStartY; // Each event pickaxe is drawn below the previous one
                 const buttonY = cardY + 30;
                 const buttonX = leftX + cardWidth - cardPadding - buttonWidth - 5;
 
                 // Equip button for event pickaxe
                 if (clickX >= buttonX && clickX <= buttonX + buttonWidth &&
-                    scrolledClickY >= buttonY && scrolledClickY <= buttonY + buttonHeight) {
+                    clickedYInScrollableContext >= buttonY && clickedYInScrollableContext <= buttonY + buttonHeight) {
                     this.equipPickaxe(type, index);
+                    return;
                 }
-                eventPickaxeSectionContentY += 120;
+                eventPickaxeCardStartY += 120; // Move down for next card
             });
         }
     }
@@ -282,16 +285,14 @@ export class Shop {
         const margin = 20;
         const cardWidth = Math.min(550, this.game.canvas.width * 0.9);
         const leftX = margin;
-
-        // --- Summer Event Layout Variables ---
-        const cardPadding = 15;
+        const cardPadding = 15; // Also define it here for summer event click handling
         const buttonWidth = 75;
         const buttonHeight = 30;
-        let currentY = 120;
+        let currentY = 120; // This is the starting Y for summer content in screen coordinates
 
         // Lava Pickaxe button
         const lavaCardY = currentY;
-        const lavaButtonY = lavaCardY + 40;
+        const lavaButtonY = lavaCardY + 40; // Button drawn at y + 40
         const lavaButtonX = leftX + cardWidth - cardPadding - buttonWidth - 5;
         const lavaData = this.state.pickaxePrices.lava;
         
@@ -306,6 +307,7 @@ export class Shop {
                 this.state.savePickaxeUnlocks();
                 this.state.saveAllState();
             }
+            return;
         }
         currentY += 130;
 
@@ -326,6 +328,7 @@ export class Shop {
                 this.state.savePickaxeUnlocks();
                 this.state.saveAllState();
             }
+            return;
         }
         currentY += 130;
 
@@ -346,18 +349,20 @@ export class Shop {
                 this.state.savePickaxeUnlocks();
                 this.state.saveAllState();
             }
+            return;
         }
         currentY += 130;
 
         // Sand selling buttons
         const sandCardY = currentY;
-        const sandButtonY = sandCardY + 30; // Centered Y for button in the card
+        const sandButtonY = sandCardY + 30; // Button drawn at y + 30
         
         // Sand sell 1 button
         const sandSell1X = leftX + cardWidth - cardPadding - 150;
         if (clickX >= sandSell1X && clickX <= sandSell1X + buttonWidth &&
             clickY >= sandButtonY && clickY <= sandButtonY + buttonHeight) {
             this.sellResource('sand', 1);
+            return;
         }
         
         // Sand sell all button
@@ -365,6 +370,7 @@ export class Shop {
         if (clickX >= sandSellAllX && clickX <= sandSellAllX + buttonWidth &&
             clickY >= sandButtonY && clickY <= sandButtonY + buttonHeight) {
             this.sellResource('sand', this.state.resources.sand);
+            return;
         }
         currentY += 105;
 
@@ -377,6 +383,7 @@ export class Shop {
         if (clickX >= sandstoneSell1X && clickX <= sandstoneSell1X + buttonWidth &&
             clickY >= sandstoneButtonY && clickY <= sandstoneButtonY + buttonHeight) {
             this.sellResource('sandstone', 1);
+            return;
         }
         
         // Sandstone sell all button
@@ -384,6 +391,7 @@ export class Shop {
         if (clickX >= sandstoneSellAllX && clickX <= sandstoneSellAllX + buttonWidth &&
             clickY >= sandstoneButtonY && clickY <= sandstoneButtonY + buttonHeight) {
             this.sellResource('sandstone', this.state.resources.sandstone);
+            return;
         }
     }
 
@@ -481,8 +489,9 @@ export class Shop {
 
     handleScroll(deltaY) {
         if (!this.showShop) return;
-        const scrollSpeed = 1;
-        this.shopScrollY += deltaY * scrollSpeed;
+        const scrollSpeed = 1; // Default sensitivity
+        const scrollAmount = deltaY * scrollSpeed;
+        this.shopScrollY += scrollAmount;
         this.shopScrollY = Math.max(0, Math.min(this.maxShopScrollY, this.shopScrollY));
     }
 
