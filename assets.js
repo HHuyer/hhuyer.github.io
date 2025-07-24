@@ -12,7 +12,7 @@ export class AssetLoader {
 
     async loadAssets() {
         // Count total assets to load
-        this.totalAssets = 56; // Increased from 55 for chest asset
+        this.totalAssets = 57; // Increased from 56 for fire effect asset
         this.loadedCount = 0;
 
         const assetPromises = [];
@@ -98,6 +98,9 @@ export class AssetLoader {
         // Load enchantment book
         assetPromises.push(this.loadImageWithProgress('enchanted_book.png', 'enchantedBook'));
 
+        // Load fire effect for burning pickaxe
+        assetPromises.push(this.loadImageWithProgress('fire.webp', 'fireEffect'));
+
         // Load damage state sprites
         const damageSpritePaths = [
             'sprite - 2025-06-20T113201.201.png', // damage 1
@@ -145,6 +148,8 @@ export class AssetLoader {
         window.sandstoneImage = this.assets.sandstone;
         window.chestImage = this.assets.chest;
         window.tntImage = this.assets.tnt;
+        // Lava texture for lava blocks
+        window.lavaTexture = this.assets.lava_texture;
         window.damageSprites = this.damageSprites;
     }
 

@@ -17,6 +17,9 @@ export class World {
         this.coalClusterChance = 0.4;
         this.andesiteClusterChance = 0.6;
 
+        // Lava spawn chance (smaller than water by 10×)
+        this.lavaChance = 0.01;
+
         this.generationQueue = [];
 
         // Spatial Grid for collision optimization
@@ -175,9 +178,23 @@ export class World {
                 continue;
             }
             
+            // Normal block
             const block = new Block(x, y, this.blockSize, this.blockSize, blockType);
             this.game.blocks.push(block);
             this._addBlockToGrid(block);
+
+            // Lava spawns on top of blocks at a low rate
+            if (row > 0 && Math.random() < this.lavaChance) {
+                const lavaBlock = new Block(
+                    x,
+                    y - this.blockSize,
+                    this.blockSize,
+                    this.blockSize,
+                    'lava'
+                );
+                this.game.blocks.push(lavaBlock);
+                this._addBlockToGrid(lavaBlock);
+            }
         }
     }
 
@@ -400,44 +417,96 @@ export class World {
     }
 
     updateWater() {
+        // Modified to handle lava removal and water-lava interaction
         const waterBlocks = this.game.blocks.filter(b => !b.destroyed && b.blockType === 'water');
-        for (const block of waterBlocks) {
-            // Remove this water block from grid to reposition it
-            this.removeBlockFromGrid(block);
+        const lavaBlocks = this.game.blocks.filter(b => !b.destroyed && b.blockType === 'lava');
 
-            // Check if there's a solid block below
-            const belowBlock = this.getBlockAt(block.x, block.y + this.blockSize);
-            const hasSupportBelow = belowBlock && !belowBlock.destroyed && belowBlock.blockType !== 'water';
+        // Process water blocks
+        for (let i = waterBlocks.length - 1; i >= 0; i--) {
+            const water = waterBlocks[i];
+            this.removeBlockFromGrid(water);
+            const belowBlock = this.getBlockAt(water.x, water.y + this.blockSize);
+            const hasSupportBelow = belowBlock && !belowBlock.destroyed && belowBlock.blockType !== 'water' && belowBlock.blockType !== 'lava';
 
             if (!hasSupportBelow) {
-                // Water flows down if no solid support below
-                block.y += this.blockSize;
-                this._addBlockToGrid(block);
+                water.y += this.blockSize;
+                this._addBlockToGrid(water);
             } else {
-                // Re-add to grid at current position
-                this._addBlockToGrid(block);
-                
-                // Only spread horizontally when there's solid support below (max 1 spread per block)
-                const maxSpreads = 1; // Limit horizontal spread to only once per water block
-                // Ensure we track spreads
-                if (typeof block.horizontalSpreadCount !== 'number') {
-                    block.horizontalSpreadCount = 0;
+                this._addBlockToGrid(water);
+                if (typeof water.horizontalSpreadCount !== 'number') {
+                    water.horizontalSpreadCount = 0;
                 }
-                if (block.horizontalSpreadCount < maxSpreads) {
+                if (water.horizontalSpreadCount < 1) {
                     for (const dx of [-this.blockSize, this.blockSize]) {
-                        if (block.horizontalSpreadCount >= maxSpreads) break;
-                        const nx = block.x + dx;
-                        const ny = block.y;
+                        if (water.horizontalSpreadCount >= 1) break;
+                        const nx = water.x + dx;
+                        const ny = water.y;
                         if (nx < this.fixedStartX || nx >= this.fixedStartX + this.gridWidth * this.blockSize) continue;
-                        // Only spawn if spot is empty
                         if (!this.getBlockAt(nx, ny)) {
                             const newWater = new Block(nx, ny, this.blockSize, this.blockSize, 'water');
                             this.game.blocks.push(newWater);
                             this._addBlockToGrid(newWater);
-                            block.horizontalSpreadCount++;
+                            water.horizontalSpreadCount++;
                         }
                     }
                 }
+            }
+
+            // Check for adjacent lava blocks and convert them
+            const adjacentPositions = [
+                { dx: 0, dy: -this.blockSize }, // Up
+                { dx: 0, dy: this.blockSize },  // Down
+                { dx: -this.blockSize, dy: 0 }, // Left
+                { dx: this.blockSize, dy: 0 },  // Right
+                { dx: -this.blockSize, dy: -this.blockSize }, // Top-left
+                { dx: this.blockSize, dy: -this.blockSize },  // Top-right
+                { dx: -this.blockSize, dy: this.blockSize }, // Bottom-left
+                { dx: this.blockSize, dy: this.blockSize }   // Bottom-right
+            ];
+
+            for (const pos of adjacentPositions) {
+                const adjacentLava = this.getBlockAt(water.x + pos.dx, water.y + pos.dy);
+                if (adjacentLava && adjacentLava.blockType === 'lava' && !adjacentLava.destroyed) {
+                    // Convert lava to obsidian (10%) or stone (90%)
+                    const random = Math.random();
+                    const newBlockType = random < 0.1 ? 'obsidian' : 'stone';
+                    
+                    // Create new block at lava position
+                    const newBlock = new Block(adjacentLava.x, adjacentLava.y, this.blockSize, this.blockSize, newBlockType);
+                    this.game.blocks.push(newBlock);
+                    this._addBlockToGrid(newBlock);
+                    
+                    // Mark lava as destroyed
+                    adjacentLava.destroyed = true;
+                    this.removeBlockFromGrid(adjacentLava);
+                }
+            }
+        }
+
+        // New: Process lava blocks - remove if no solid neighbor
+        for (let i = lavaBlocks.length - 1; i >= 0; i--) {
+            const lava = lavaBlocks[i];
+            const x = lava.x;
+            const y = lava.y;
+
+            // Check all 8 neighbors
+            let hasSolidNeighbor = false;
+            for (let dy = -this.blockSize; dy <= this.blockSize; dy += this.blockSize) {
+                for (let dx = -this.blockSize; dx <= this.blockSize; dx += this.blockSize) {
+                    if (dx === 0 && dy === 0) continue; // Skip self
+                    const neighbor = this.getBlockAt(x + dx, y + dy);
+                    if (neighbor && !neighbor.destroyed && neighbor.blockType !== 'lava' && neighbor.blockType !== 'water') {
+                        hasSolidNeighbor = true;
+                        break;
+                    }
+                }
+                if (hasSolidNeighbor) break;
+            }
+
+            if (!hasSolidNeighbor) {
+                // Remove lava block
+                lava.destroyed = true;
+                this.removeBlockFromGrid(lava);
             }
         }
     }

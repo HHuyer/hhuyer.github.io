@@ -36,7 +36,7 @@ export class ShopUI {
 
         const resources = ['coal', 'copper', 'iron', 'gold', 'redstone', 'diamond', 'lapis', 'emerald', 'stone', 'sand', 'sandstone'];
         totalContentHeight += 70 + (resources.length * 105);
-        totalContentHeight += 100; // Spacing
+        totalContentHeight += 100; // Increased spacing between sections
 
         totalContentHeight += 120 + (['copper', 'iron', 'gold'].length * 105); // Smelting section
         totalContentHeight += 100; // Increased spacing between sections
@@ -467,11 +467,11 @@ export class ShopUI {
     }
 
     drawExchangeSection(ctx, canvas, x, y) {
-        const sectionWidth = 300; // Increased width for better spacing
-        const sectionHeight = 180; // Increased height
-        const cardPadding = 15; // Consistent with other cards
+        const sectionWidth = 300;
+        const sectionHeight = 180;
+        const cardPadding = 15;
 
-        // Card background (consistent with other cards)
+        // Card background
         ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
         ctx.filter = 'blur(5px)';
         ctx.fillRect(x + cardPadding, y, sectionWidth - (cardPadding * 2), sectionHeight);
@@ -492,14 +492,13 @@ export class ShopUI {
         this.drawTextWithShadow(ctx, 'ĐỔI XU', x + sectionWidth / 2, y + 35, 'rgba(0,0,0,0.5)', '#000000', 1, 1);
         
         // Current Big Money (Xu) display
-        const bigMoneyIcon = this.assetLoader.getAsset('moneyIcon'); // Assuming 'moneyIcon' is the pixel art stack of money
+        const bigMoneyIcon = this.assetLoader.getAsset('moneyIcon');
         const bigMoneyText = `${this.shop.state.bigMoney}`;
         const bigMoneyFontSize = '16px';
         ctx.font = `bold ${bigMoneyFontSize} "Minecraft Seven", monospace`;
-
         ctx.textAlign = 'center';
         const textWidth = ctx.measureText(bigMoneyText).width;
-        const iconSize = 24; // Consistent size for money icon
+        const iconSize = 24;
         const padding = 5;
         const totalContentWidth = (bigMoneyIcon && bigMoneyIcon.complete ? iconSize + padding : 0) + textWidth;
         const startX = x + sectionWidth / 2 - totalContentWidth / 2;
@@ -509,9 +508,8 @@ export class ShopUI {
             ctx.drawImage(bigMoneyIcon, startX, y + 50, iconSize, iconSize);
             textDrawX = startX + iconSize + padding;
         } else {
-             // Fallback if icon not loaded
-             this.drawTextWithShadow(ctx, '💰', startX, y + 68, 'rgba(0,0,0,0.7)', '#FFD700', 1, 1);
-             textDrawX = startX + 24 + padding; // Approx icon size
+            this.drawTextWithShadow(ctx, '💰', startX, y + 68, 'rgba(0,0,0,0.7)', '#FFD700', 1, 1);
+            textDrawX = startX + 24 + padding;
         }
         this.drawTextWithShadow(ctx, bigMoneyText, textDrawX, y + 68, 'rgba(0,0,0,0.7)', '#FFD700', 1, 1);
         ctx.textAlign = 'left';
@@ -519,7 +517,7 @@ export class ShopUI {
         // Exchange buttons
         const buttonWidth = 70;
         const buttonHeight = 30;
-        const buttonY = y + 110; // Adjusted Y position for more space
+        const buttonY = y + 110;
 
         const canExchange1 = this.shop.state.money >= 1;
         const canExchangeAll = this.shop.state.money >= 1;
@@ -527,7 +525,7 @@ export class ShopUI {
         // Exchange 1 button
         this.drawEnhancedMinecraftButton(
             ctx, 
-            x + sectionWidth / 2 - buttonWidth - 10, // Centered left
+            x + sectionWidth / 2 - buttonWidth - 10,
             buttonY, 
             buttonWidth, 
             buttonHeight, 
@@ -539,7 +537,7 @@ export class ShopUI {
         // Exchange all button
         this.drawEnhancedMinecraftButton(
             ctx, 
-            x + sectionWidth / 2 + 10, // Centered right
+            x + sectionWidth / 2 + 10,
             buttonY, 
             buttonWidth, 
             buttonHeight, 
@@ -548,12 +546,12 @@ export class ShopUI {
             canExchangeAll
         );
 
-        // Exchange rate info at the bottom
+        // Exchange rate info
         ctx.fillStyle = '#3a3a3a';
         ctx.font = '14px "Minecraft Seven", monospace';
         ctx.textAlign = 'center';
         this.drawTextWithShadow(ctx, '1 tiền = 10 xu', x + sectionWidth / 2, y + sectionHeight - 15, 'rgba(0,0,0,0.7)', '#3a3a3a', 1, 1);
-        ctx.textAlign = 'left'; // Reset alignment
+        ctx.textAlign = 'left';
     }
 
     drawResourceSection(ctx, canvas, leftX, cardWidth, startY, isNarrow) {

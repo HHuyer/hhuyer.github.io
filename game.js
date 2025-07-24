@@ -1105,8 +1105,8 @@ export class Game {
         
         // Check for collisions with each block
         for (const block of nearbyBlocks) {
-            // Skip destroyed and water blocks (pickaxe passes through water)
-            if (block.destroyed || block.blockType === 'water') continue;
+            // Skip destroyed, water blocks, and lava blocks (pickaxe passes through water and lava)
+            if (block.destroyed || block.blockType === 'water' || block.blockType === 'lava') continue;
             
             const collision = this.checkPickaxeBlockCollision(block);
             if (collision.hit) {

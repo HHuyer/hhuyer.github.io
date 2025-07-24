@@ -205,7 +205,10 @@ export class UI {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
         ctx.font = `bold ${smallFontSize} system-ui, -apple-system, sans-serif`;
         ctx.textAlign = 'center';
-        this.drawTextWithShadow(ctx, `${variant.durability}/${variant.maxDurability}`, uiMargin + boxWidth / 2, barY + (barHeight/2) + 3, 'rgba(0,0,0,0.9)', 'rgba(255, 255, 255, 0.9)', 1, 1);
+        // Display durability as {current}/{max}
+        const displayDurability = Math.max(0, Math.floor(variant.durability));
+        const displayMaxDurability = Math.floor(variant.maxDurability);
+        this.drawTextWithShadow(ctx, `${displayDurability}/${displayMaxDurability}`, uiMargin + boxWidth / 2, barY + (barHeight/2) + 3, 'rgba(0,0,0,0.9)', 'rgba(255, 255, 255, 0.9)', 1, 1);
         ctx.textAlign = 'left';
     }
 

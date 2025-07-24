@@ -21,8 +21,6 @@ export class Shop {
     show() {
         this.showShop = true;
         this.shopScrollY = 0;
-        this.ui.backgroundCache = null; // Invalidate cache to redraw
-        this.ui.summerBackgroundCache = null;
     }
 
     hide() {

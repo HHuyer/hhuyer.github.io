@@ -29,6 +29,15 @@ export class Pickaxe {
         
         this.abilityTimer = 0;
         
+        // Burning effect system
+        this.burning = {
+            active: false,
+            timer: 0,
+            maxTimer: 5.0, // 5 seconds
+            inLava: false,
+            fireEffectTimer: 0
+        };
+        
         this.variants = [
             {
                 name: 'wooden',
@@ -187,7 +196,12 @@ export class Pickaxe {
     }
 
     getCurrentVariant() {
-        return this.variants[this.currentVariant];
+        const variant = this.variants[this.currentVariant];
+        // --- NEW: Boost power for lava pickaxe when burning ---
+        if (this.currentVariant === 7 && this.burning.active) {
+            return { ...variant, power: variant.power + 2 };
+        }
+        return variant;
     }
 
     update(dt) {
@@ -203,6 +217,9 @@ export class Pickaxe {
         }
 
         if (this.isBroken) return;
+
+        // Handle burning effect
+        this.updateBurningEffect(dt);
 
         // Handle abilities
         const variant = this.getCurrentVariant();
@@ -229,12 +246,69 @@ export class Pickaxe {
         this.angularVelocity *= 0.99;
     }
 
+    updateBurningEffect(dt) {
+        if (!this.isDropped) return;
+
+        // Determine if any part of the pickaxe overlaps fluid blocks
+        const overlapping = this.game.world.getNearbyBlocks(this.x, this.y, this.width, this.height);
+        const isInLava = overlapping.some(b => !b.destroyed && b.blockType === 'lava');
+        const isInWater = overlapping.some(b => !b.destroyed && b.blockType === 'water');
+
+        // Stop burning immediately if in water
+        if (isInWater && this.burning.active) {
+            this.burning.active = false;
+            this.burning.timer = 0;
+            this.burning.inLava = false;
+        }
+
+        // --- NEW: Lava Pickaxe (index 7) special behavior ---
+        const isLavaPickaxe = this.currentVariant === 7;
+        if (isLavaPickaxe && isInLava) {
+            // Regenerate 1% durability per second
+            const variant = this.variants[this.currentVariant];
+            const healAmount = variant.maxDurability * 0.01 * dt;
+            variant.durability = Math.min(variant.maxDurability, variant.durability + healAmount);
+            this.burning.active = true; // Still show the visual effect
+        } else {
+            // Original burning logic for non-lava pickaxes
+            if (isInLava && !isLavaPickaxe) {
+                this.burning.active = true;
+                this.burning.inLava = true;
+                this.burning.timer = this.burning.maxTimer; // Reset timer while in lava
+                
+                // Deal 15% durability damage per second while in lava
+                const variant = this.variants[this.currentVariant];
+                const damage = variant.maxDurability * 0.15 * dt;
+                this.takeDamage(damage);
+            } else if (this.burning.active && !isLavaPickaxe) {
+                this.burning.inLava = false;
+                this.burning.timer -= dt;
+                
+                // Deal 2% durability damage per second after leaving lava
+                const variant = this.variants[this.currentVariant];
+                const damage = variant.maxDurability * 0.02 * dt;
+                this.takeDamage(damage);
+                
+                // Stop burning when timer expires
+                if (this.burning.timer <= 0) {
+                    this.burning.active = false;
+                }
+            }
+        }
+
+        // Update fire effect timer for animation
+        if (this.burning.active) {
+            this.burning.fireEffectTimer += dt;
+        }
+    }
+
     draw(ctx) {
         ctx.save();
         ctx.translate(this.x + this.width/2, this.y + this.height/2);
         ctx.rotate(this.rotation);
         
         const variant = this.getCurrentVariant();
+        // Draw pickaxe image
         if (variant.image && variant.image.complete) {
             // Apply red tint if broken
             if (this.isBroken) {
@@ -246,9 +320,32 @@ export class Pickaxe {
             // Fallback drawing
             ctx.fillStyle = this.isBroken ? '#4A2C2A' : '#8B4513';
             ctx.fillRect(-5, -25, 10, 50);
-            
             ctx.fillStyle = this.isBroken ? '#666666' : '#C0C0C0';
             ctx.fillRect(-20, -30, 40, 15);
+        }
+        
+        // Draw fire effect if burning
+        if (this.burning.active) {
+            const fireImage = this.game.assetLoader.getAsset('fireEffect');
+            if (fireImage && fireImage.complete) {
+                // Create flickering effect
+                const flicker = 0.8 + 0.2 * Math.sin(this.burning.fireEffectTimer * 10);
+                ctx.globalAlpha = flicker;
+                
+                // Smaller fire effect
+                const fireSize = this.width * 0.35; // reduced from 0.7
+                ctx.drawImage(fireImage, -fireSize/2, -fireSize/2 - 8, fireSize, fireSize);
+                
+                ctx.globalAlpha = 1.0;
+            } else {
+                // Fallback fire effect
+                ctx.globalAlpha = 0.7 + 0.3 * Math.sin(this.burning.fireEffectTimer * 8);
+                ctx.fillStyle = '#FF4500';
+                ctx.beginPath();
+                ctx.arc(0, -6, this.width * 0.25, 0, Math.PI * 2); // reduced from 0.4
+                ctx.fill();
+                ctx.globalAlpha = 1.0;
+            }
         }
         
         ctx.restore();
@@ -277,6 +374,15 @@ export class Pickaxe {
         this.swayAngle = 0; // Reset sway angle
         this.abilityTimer = 0;
         
+        // Reset burning effect
+        this.burning = {
+            active: false,
+            timer: 0,
+            maxTimer: 5.0,
+            inLava: false,
+            fireEffectTimer: 0
+        };
+        
         // Reset size to default
         this.width = 50;
         this.height = 50;
@@ -295,7 +401,7 @@ export class Pickaxe {
         const variant = this.variants[this.currentVariant];
         variant.durability -= amount; // Damage is now passed from Game logic
         
-        if (variant.durability <= 0) {
+        if (variant.durability < 1) { // Changed from <= 0 to < 1
             this.isBroken = true;
             variant.durability = 0;
         }
