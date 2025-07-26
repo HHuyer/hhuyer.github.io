@@ -116,7 +116,18 @@ export class World {
 
     generateRow(row) {
         const y = 300 + row * this.blockSize;
-        
+        // Topmost row: chance to spawn a full row of dirt blocks
+        if (row === 0) {
+            if (Math.random() < 0.04) {
+                for (let col = 0; col < this.gridWidth; col++) {
+                    const x = this.fixedStartX + col * this.blockSize;
+                    const dirtBlock = new Block(x, y, this.blockSize, this.blockSize, 'dirt');
+                    this.game.blocks.push(dirtBlock);
+                    this._addBlockToGrid(dirtBlock);
+                }
+            }
+            return; // skip normal generation for top row
+        }
         for (let col = 0; col < this.gridWidth; col++) {
             const x = this.fixedStartX + col * this.blockSize;
             

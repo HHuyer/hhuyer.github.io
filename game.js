@@ -7,6 +7,7 @@ import { World } from './world.js';
 import { UI } from './ui.js';
 import { GameState } from './game-state.js';
 import { MusicPlayer } from './music-player.js';
+import { BLOCK_DEFINITIONS } from './block-definitions.js';
 
 export class Game {
     constructor() {
@@ -40,6 +41,7 @@ export class Game {
         this.blocks = [];
         this.camera = { x: 0, y: 0 };
         this.isLoading = true;
+        this.lastTNTFlash = 0; // Add this line
         
         // Core Modules - Initialized in dependency order
         this.state = new GameState();
@@ -412,14 +414,37 @@ export class Game {
                 return;
             }
             
-            // Check if clicking summer event button - adjust for mobile
+            // Check if clicking summer event button
             const summerButtonY = this.ui.getSummerEventButtonY();
             const summerButtonWidth = isNarrow ? 55 : 70;
             const summerButtonHeight = isNarrow ? 24 : 30;
             const uiMargin = isNarrow ? 5 : 10;
-            
             if (clickX >= uiMargin && clickX <= uiMargin + summerButtonWidth &&
                 clickY >= summerButtonY && clickY <= summerButtonY + summerButtonHeight) {
+                this.toggleSummerEvent();
+                return;
+            }
+
+            // Check if clicking TNT purchase button
+            const tntCost = 100;
+            const tntBtnY = summerButtonY + summerButtonHeight + 5;
+            const tntBtnWidth = isNarrow ? 55 : 70;
+            const tntBtnHeight = isNarrow ? 24 : 30;
+            if (this.state.money >= tntCost &&
+                clickX >= uiMargin && clickX <= uiMargin + tntBtnWidth &&
+                clickY >= tntBtnY && clickY <= tntBtnY + tntBtnHeight) {
+                this.purchaseTNT();
+                return;
+            }
+
+            // Check if clicking summer event button - adjust for mobile
+            const summerButtonY2 = this.ui.getSummerEventButtonY();
+            const summerButtonWidth2 = isNarrow ? 55 : 70;
+            const summerButtonHeight2 = isNarrow ? 24 : 30;
+            const uiMargin2 = isNarrow ? 5 : 10;
+            
+            if (clickX >= uiMargin2 && clickX <= uiMargin2 + summerButtonWidth2 &&
+                clickY >= summerButtonY2 && clickY <= summerButtonY2 + summerButtonHeight2) {
                 this.toggleSummerEvent();
                 return;
             }
@@ -1214,11 +1239,9 @@ export class Game {
             block.destroyed = true;
             this.activeTNT.push({
                 block: block,
-                timer: 2.0,
+                timer: 2.0, // 2 second fuse
                 flashTimer: 0.2,
-                isFlashing: false,
-                velocityY: 0,
-                isFixed: false
+                isFlashing: false
             });
             this.playSound(this.assetLoader.getAudioAsset('tntExplode'), 0.5);
             return; // Skip normal destruction for TNT
@@ -1409,6 +1432,12 @@ export class Game {
                     this.gameOver = true;
                 }
             }
+        }
+
+        // 1% chance to get TNT
+        if (Math.random() < 0.01) {
+            this.state.tntCollected = (this.state.tntCollected || 0) + 1;
+            this.state.saveTntCollected();
         }
 
         // Save stats periodically
@@ -1815,122 +1844,67 @@ export class Game {
         const grid = document.getElementById('collect-grid');
         grid.innerHTML = '';
 
-        // Show all collected resources and pickaxes
-        const collectibles = [];
+        const brokenStats = this.state.stats.blocksBrokenByType || {};
+        const blockTypes = Object.keys(BLOCK_DEFINITIONS);
 
-        // Add resources
-        Object.entries(this.state.resources).forEach(([key, value]) => {
-            if (value > 0) {
-                const nameMap = {
-                    coal: "Than", copper: "Đồng", iron: "Sắt", gold: "Vàng", redstone: "Đá Đỏ",
-                    diamond: "Kim Cương", lapis: "Lưu Ly", emerald: "Ngọc Lục Bảo", 
-                    stone: "Đá", obsidian: "Hắc曜石", sand: "Cát", sandstone: "Đá Cát"
-                };
-                collectibles.push({
-                    type: 'resource',
-                    name: nameMap[key] || key,
-                    count: value,
-                    icon: key
-                });
-            }
-        });
+        blockTypes.forEach(blockType => {
+            const count = brokenStats[blockType] || 0;
+            const isDiscovered = count > 0;
+            const definition = BLOCK_DEFINITIONS[blockType];
 
-        // Add smelted resources
-        Object.entries(this.state.smeltedResources).forEach(([key, value]) => {
-            if (value > 0) {
-                const nameMap = {
-                    copper: "Đồng Thỏi", iron: "Sắt Thỏi", gold: "Vàng Thỏi"
-                };
-                collectibles.push({
-                    type: 'smelted',
-                    name: nameMap[key] || key,
-                    count: value,
-                    icon: key
-                });
-            }
-        });
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'collect-item';
 
-        // Add unlocked pickaxes
-        const pickaxeNames = {
-            wooden: "Cúp Gỗ", stone: "Cúp Đá", iron: "Cúp Sắt", golden: "Cúp Vàng", 
-            diamond: "Cúp Kim Cương", obsidian: "Cúp Hắc曜石", netherite: "Cúp Netherite",
-            lava: "Cúp Dung Nham", blaze: "Cúp Quỷ Lửa", fish: "Cúp Cá"
-        };
+            // Create icon
+            const iconImg = document.createElement('img');
+            iconImg.className = 'collect-item-icon';
+            let asset = null;
 
-        Object.entries(this.state.pickaxePrices).forEach(([key, value]) => {
-            if (value.unlocked) {
-                collectibles.push({
-                    type: 'pickaxe',
-                    name: pickaxeNames[key] || key,
-                    count: 1,
-                    icon: key
-                });
-            }
-        });
-
-        // Display collectibles
-        if (collectibles.length === 0) {
-            const emptyMessage = document.createElement('div');
-            emptyMessage.textContent = 'Bạn chưa có vật phẩm nào';
-            emptyMessage.style.textAlign = 'center';
-            emptyMessage.style.color = '#666';
-            grid.appendChild(emptyMessage);
-        } else {
-            collectibles.forEach(item => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'stat-item';
-                
-                const iconSpan = document.createElement('span');
-                iconSpan.className = 'stat-label';
-                
-                // Create icon based on type
-                let iconElement = '';
-                if (item.type === 'resource') {
-                    const icon = this.assetLoader.getAsset(item.icon === 'stone' ? 'stone' : `${item.icon}Icon`);
-                    if (icon && icon.complete) {
-                        const img = document.createElement('img');
-                        img.src = icon.src;
-                        img.style.width = '16px';
-                        img.style.height = '16px';
-                        img.style.verticalAlign = 'middle';
-                        img.style.marginRight = '5px';
-                        iconSpan.appendChild(img);
-                    }
-                } else if (item.type === 'smelted') {
-                    const icon = this.assetLoader.getAsset(item.icon === 'copper' ? 'copperIngotIcon' : `${item.icon}IngotIcon`);
-                    if (icon && icon.complete) {
-                        const img = document.createElement('img');
-                        img.src = icon.src;
-                        img.style.width = '16px';
-                        img.style.height = '16px';
-                        img.style.verticalAlign = 'middle';
-                        img.style.marginRight = '5px';
-                        iconSpan.appendChild(img);
-                    }
-                } else if (item.type === 'pickaxe') {
-                    const icon = this.assetLoader.getAsset(`${item.icon}Pickaxe`);
-                    if (icon && icon.complete) {
-                        const img = document.createElement('img');
-                        img.src = icon.src;
-                        img.style.width = '20px';
-                        img.style.height = '20px';
-                        img.style.verticalAlign = 'middle';
-                        img.style.marginRight = '5px';
-                        iconSpan.appendChild(img);
-                    }
+            if (blockType === 'dirt') {
+                // Use IMG_0104.jpeg for dirt blocks in collection
+                asset = this.assetLoader.getAsset('dirtImage');
+            } else {
+                const textureKey = definition.textureKey;
+                if (textureKey) {
+                    asset = this.assetLoader.getAsset(textureKey.replace('Image', ''));
                 }
-                
-                iconSpan.appendChild(document.createTextNode(`${item.name}:`));
-                itemDiv.appendChild(iconSpan);
-                
+            }
+
+            if (asset && asset.complete) {
+                iconImg.src = asset.src;
+            } else {
+                // Fallback for missing images
+                const fallbackCanvas = document.createElement('canvas');
+                fallbackCanvas.width = 16;
+                fallbackCanvas.height = 16;
+                const fbCtx = fallbackCanvas.getContext('2d');
+                fbCtx.fillStyle = definition.fallbackColor || '#808080';
+                fbCtx.fillRect(0,0,16,16);
+                iconImg.src = fallbackCanvas.toDataURL();
+            }
+
+            if (!isDiscovered) {
+                iconImg.classList.add('locked');
+            }
+            itemDiv.appendChild(iconImg);
+
+            // Create name label
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'collect-item-name';
+            const displayName = blockType === 'dirt' ? 'Đất' : blockType.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            nameSpan.textContent = isDiscovered ? displayName : '???';
+            itemDiv.appendChild(nameSpan);
+
+            // Create count label (only if discovered)
+            if (isDiscovered) {
                 const countSpan = document.createElement('span');
-                countSpan.className = 'stat-value';
-                countSpan.textContent = item.count;
+                countSpan.className = 'collect-item-count';
+                countSpan.textContent = this.ui.formatNumber(count);
                 itemDiv.appendChild(countSpan);
-                
-                grid.appendChild(itemDiv);
-            });
-        }
+            }
+
+            grid.appendChild(itemDiv);
+        });
     }
 
     showSettings() {
@@ -1974,7 +1948,7 @@ export class Game {
         if (units <= 0) return;
         if (units > maxUnits) units = maxUnits;
 
-        this.state.money   -= units * costPerUnit;
+        this.state.money -= units * costPerUnit;
         this.state.bigMoney = (this.state.bigMoney || 0) + units * 10;
         this.state.saveAllState();
         this.updateBigMoneyDisplay();
@@ -1983,6 +1957,39 @@ export class Game {
     updateBigMoneyDisplay() {
         const el = document.getElementById('big-money-count');
         if (el) el.textContent = this.state.bigMoney.toString();
+    }
+
+    // New method: purchase and drop TNT
+    purchaseTNT() {
+        if (this.state.tntCollected <= 0 || this.state.money < 100) return; // Require 100 money + 1 TNT
+        this.state.tntCollected--;
+        this.state.money -= 100; // Deduct 100 money
+        this.state.saveAllState();
+        this.spawnTNT();
+        this.notifications.push({
+            text: `💣 TNT đã được thả! (${this.state.tntCollected} còn lại)`,
+            x: this.canvas.width / 2,
+            y: this.canvas.height / 2,
+            life: 2.0,
+            maxLife: 2.0
+        });
+    }
+
+    spawnTNT() {
+        // Create a TNT block at the pickaxe's current position
+        const x = this.pickaxe.x;
+        const y = this.pickaxe.y;
+        const size = this.world.blockSize;
+        const tntBlock = new Block(x, y, size, size, 'tnt');
+        this.blocks.push(tntBlock); // Add to the main game blocks array
+        this.world._addBlockToGrid(tntBlock);
+        // Start TNT fuse
+        this.activeTNT.push({
+            block: tntBlock,
+            timer: 2.0,
+            flashTimer: 0.2,
+            isFlashing: false
+        });
     }
 }
 

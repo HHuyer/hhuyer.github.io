@@ -8,6 +8,7 @@ export const BLOCK_DEFINITIONS = {
     obsidian: { health: 50, textureKey: 'obsidianImage', fallbackColor: '#1e1b29' },
     sand: { health: 1.5, textureKey: 'sandImage', fallbackColor: '#F4E4BC' },
     sandstone: { health: 2.5, textureKey: 'sandstoneImage', fallbackColor: '#F2D2A7' },
+    dirt: { health: 1, textureKey: 'dirtImage', fallbackColor: '#8B4513' },
     bedrock: { health: Infinity, textureKey: 'bedrockImage', fallbackColor: '#4A4A4A' },
 
     // Ores

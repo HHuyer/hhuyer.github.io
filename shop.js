@@ -54,16 +54,18 @@ export class Shop {
         const scrollUpX = this.game.canvas.width / 2 - scrollBtnWidth - 10;
         const scrollDownX = this.game.canvas.width / 2 + 10;
 
-        if (clickX >= scrollUpX && clickX <= scrollUpX + scrollBtnWidth &&
-            clickY >= scrollBtnY && clickY <= scrollBtnY + scrollBtnHeight) {
-            this.handleScroll(-200); // Scroll up by 200 pixels
-            return;
-        }
+        if (this.maxShopScrollY > 0) { // Only check scroll buttons if scrolling is possible
+            if (clickX >= scrollUpX && clickX <= scrollUpX + scrollBtnWidth &&
+                clickY >= scrollBtnY && clickY <= scrollBtnY + scrollBtnHeight) {
+                this.handleScroll(-200); // Scroll up by 200 pixels
+                return;
+            }
 
-        if (clickX >= scrollDownX && clickX <= scrollDownX + scrollBtnWidth &&
-            clickY >= scrollBtnY && clickY <= scrollBtnY + scrollBtnHeight) {
-            this.handleScroll(200); // Scroll down by 200 pixels
-            return;
+            if (clickX >= scrollDownX && clickX <= scrollDownX + scrollBtnWidth &&
+                clickY >= scrollBtnY && clickY <= scrollBtnY + scrollBtnHeight) {
+                this.handleScroll(200); // Scroll down by 200 pixels
+                return;
+            }
         }
 
         // Handle summer event clicks (which has its own logic and fixed positions)
@@ -74,13 +76,14 @@ export class Shop {
 
         // --- All content below the fixed header is scrollable ---
         // Adjust clickY to be relative to the translated canvas context
-        let clickedYInScrollableContext = clickY;
-        if (clickY > 100) { // Check if click is below the fixed header (height 100px)
-            clickedYInScrollableContext += this.shopScrollY;
-        }
+        // This is only for the actual content area where scrolling applies.
+        // Clicks on fixed header elements (exit, scroll buttons) are handled above.
+        let clickedYInScrollableContext = clickY + this.shopScrollY;
         
         // Replicate the 'currentY' progression from ShopUI.draw to match positions
-        let currentShopContentY = 120; // This is the starting Y in the translated context
+        // This 'currentY' in ShopUI is the y-coordinate *within the content cache*.
+        // The first section in the content cache starts at an offset equal to the header height.
+        let currentShopContentY = 120; // This is the starting Y in the shop's content-cache drawing context
 
 
         // --- Exchange Section Buttons ---
@@ -393,6 +396,33 @@ export class Shop {
         }
     }
 
+    updateResourceSection(resourceKey) {
+        // Only update the specific resource that changed
+        const resourceIndex = this.resourceKeys.indexOf(resourceKey);
+        if (resourceIndex === -1) return;
+        
+        // Mark this resource for update
+        this.ui.resourceNeedsUpdate = { [resourceKey]: true };
+    }
+
+    updateEnchantmentSection(enchantmentType) {
+        // Only update the specific enchantment that changed
+        const enchantmentIndex = this.enchantmentTypes.indexOf(enchantmentType);
+        if (enchantmentIndex === -1) return;
+        
+        // Mark this enchantment for update
+        this.ui.enchantmentNeedsUpdate = { [enchantmentType]: true };
+    }
+
+    updatePickaxeSection(pickaxeType) {
+        // Only update the specific pickaxe that changed
+        const pickaxeIndex = this.pickaxeTypes.indexOf(pickaxeType);
+        if (pickaxeIndex === -1) return;
+        
+        // Mark this pickaxe for update
+        this.ui.pickaxeNeedsUpdate = { [pickaxeType]: true };
+    }
+
     sellResource(resource, amount) {
         if (amount <= 0 || !this.state.resources[resource] || this.state.resources[resource] < amount) return;
         
@@ -401,6 +431,9 @@ export class Shop {
         this.state.money += earnings;
         this.state.stats.moneyEarned = (this.state.stats.moneyEarned || 0) + earnings;
         this.state.saveAllState(); // Save all state after selling
+        
+        // Only update this specific resource display
+        this.updateResourceSection(resource);
     }
 
     smeltResource(resource, amount) {
@@ -413,6 +446,8 @@ export class Shop {
         this.state.smeltedResources[resource] += amount;
         this.state.resources.coal -= totalCoalCost;
         this.state.saveAllState(); // Save all state after smelting
+        
+        // this.ui.contentCache = null; // Removed to prevent cache invalidation
     }
 
     sellSmeltedResource(resource, amount) {
@@ -423,6 +458,8 @@ export class Shop {
         this.state.money += earnings;
         this.state.stats.moneyEarned = (this.state.stats.moneyEarned || 0) + earnings;
         this.state.saveAllState(); // Save all state after selling smelted resources
+        
+        // this.ui.contentCache = null; // Removed to prevent cache invalidation
     }
 
     buyEnchantment(type) {
@@ -438,6 +475,9 @@ export class Shop {
             this.state.enchantmentLevels[type]++;
             this.state.saveAllState(); // Save all state after buying enchantment
             this.game.createEnchantmentSparkles(); // Visual feedback
+            
+            // Only update this specific enchantment display
+            this.updateEnchantmentSection(type);
         }
     }
 
@@ -473,6 +513,10 @@ export class Shop {
             
             pickaxeData.unlocked = true;
             this.state.saveAllState(); // Save all state after buying pickaxe
+            this.state.savePickaxeUnlocks();
+            
+            // Only update this specific pickaxe display
+            this.updatePickaxeSection(type);
         }
     }
 
@@ -482,6 +526,9 @@ export class Shop {
             this.game.pickaxe.updateProperties();
             this.state.currentPickaxeVariant = index;
             this.state.saveAllState(); // Save all state after equipping pickaxe
+            
+            // Only update this specific pickaxe display
+            this.updatePickaxeSection(type);
         }
     }
 

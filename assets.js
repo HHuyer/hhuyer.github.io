@@ -27,6 +27,8 @@ export class AssetLoader {
         assetPromises.push(this.loadImageWithProgress('andesite.png', 'andesite'));
         assetPromises.push(this.loadImageWithProgress('diorite.png', 'diorite'));
         assetPromises.push(this.loadImageWithProgress('granite.png', 'granite'));
+        // Load dirt texture (full-row dirt)
+        assetPromises.push(this.loadImageWithProgress('IMG_0104.jpeg', 'dirtImage'));
         assetPromises.push(this.loadImageWithProgress('coal_ore.png', 'coalOre'));
         assetPromises.push(this.loadImageWithProgress('copper_ore.png', 'copperOre'));
         assetPromises.push(this.loadImageWithProgress('iron_ore.png', 'ironOre'));
@@ -148,6 +150,7 @@ export class AssetLoader {
         window.sandstoneImage = this.assets.sandstone;
         window.chestImage = this.assets.chest;
         window.tntImage = this.assets.tnt;
+        window.dirtImage = this.assets.dirtImage;
         // Lava texture for lava blocks
         window.lavaTexture = this.assets.lava_texture;
         window.damageSprites = this.damageSprites;

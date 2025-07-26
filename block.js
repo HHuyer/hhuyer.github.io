@@ -16,6 +16,10 @@ export class Block {
         this.isDeepslate = definition.isDeepslate || false;
         
         this.damageState = 0;
+        // Dirt requires two hits to break
+        if (blockType === 'dirt') {
+            this.hitsCounter = 0;
+        }
         // Initialize horizontal spread count for water blocks
         if (blockType === 'water') {
             this.horizontalSpreadCount = 0;
@@ -23,6 +27,15 @@ export class Block {
     }
 
     takeDamage(damage) {
+        // Two‐hit override for dirt
+        if (this.blockType === 'dirt') {
+            this.hitsCounter = (this.hitsCounter || 0) + 1;
+            if (this.hitsCounter >= 2) {
+                this.destroyed = true;
+                this.health = 0;
+            }
+            return;
+        }
         if (this.destroyed) return;
         
         // Special handling for TNT - explode on first hit

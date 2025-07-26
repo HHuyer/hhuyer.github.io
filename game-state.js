@@ -68,6 +68,9 @@ export class GameState {
         };
         this.loadPickaxeUnlocks(); // This will modify this.pickaxePrices
         this.currentPickaxeVariant = this.loadCurrentPickaxeVariant();
+
+        // Add TNT tracking
+        this.tntCollected = this.loadTntCollected() || 0;
     }
 
     getEnchantmentCost(enchantment, level) {
@@ -175,6 +178,15 @@ export class GameState {
         localStorage.setItem('money', this.bigMoney.toString());
     }
 
+    loadTntCollected() {
+        const saved = localStorage.getItem('tnt_collected');
+        return saved ? parseInt(saved, 10) : 0;
+    }
+
+    saveTntCollected() {
+        localStorage.setItem('tnt_collected', this.tntCollected.toString());
+    }
+
     // Add comprehensive save method to save all state at once
     saveAllState() {
         this.saveResources();
@@ -187,6 +199,7 @@ export class GameState {
         this.saveSummerEvent();
         this.saveStats();
         this.saveSettings();
+        this.saveTntCollected();
     }
 
     resetProgress() {
@@ -199,6 +212,7 @@ export class GameState {
         this.money = 0;
         this.bigMoney = 0;
         this.smeltedResources = { copper: 0, iron: 0, gold: 0 };
+        this.tntCollected = 0;
         
         // Reset pickaxe unlocks (keep wooden unlocked)
         Object.keys(this.pickaxePrices).forEach(key => {

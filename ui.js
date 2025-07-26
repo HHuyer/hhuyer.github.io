@@ -114,6 +114,61 @@ export class UI {
 
         this.drawSummerEventButton(ctx, currentUIY, uiMargin, isNarrow);
 
+        // Draw TNT purchase button
+        const now = Date.now();
+        const canShowTNT = this.game.state.tntCollected > 0;
+        
+        if (canShowTNT) {
+            const summerY = this.getSummerEventButtonY();
+            const isNarrow = this.game.canvas.width < 450;
+            const buttonWidth = isNarrow ? 80 : 100;
+            const buttonHeight = isNarrow ? 36 : 48;
+            const tntBtnY = summerY + (isNarrow ? 30 : 38) + 8;
+            const uiMargin = isNarrow ? 5 : 10;
+
+            // Gradient background
+            const gradient = ctx.createLinearGradient(uiMargin, tntBtnY, uiMargin, tntBtnY + buttonHeight);
+            gradient.addColorStop(0, 'rgba(255, 68, 68, 0.9)');
+            gradient.addColorStop(1, 'rgba(204, 0, 0, 0.9)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(uiMargin, tntBtnY, buttonWidth, buttonHeight);
+
+            // Animated border
+            ctx.strokeStyle = 'rgba(255, 102, 102, 0.8)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(uiMargin, tntBtnY, buttonWidth, buttonHeight);
+
+            // Inner highlight
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.fillRect(uiMargin + 2, tntBtnY + 2, buttonWidth - 4, 4);
+
+            // Draw TNT icon
+            const tntIcon = this.game.assetLoader.getAsset('tnt');
+            const iconSize = isNarrow ? 24 : 32;
+            const iconX = uiMargin + (buttonWidth - iconSize) / 2;
+            const iconY = tntBtnY + (buttonHeight - iconSize) / 2 - 6;
+
+            if (tntIcon && tntIcon.complete) {
+                ctx.drawImage(tntIcon, iconX, iconY, iconSize, iconSize);
+            }
+
+            // Cost text
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${isNarrow ? '12px' : '16px'} system-ui, -apple-system, sans-serif`;
+            ctx.textAlign = 'center';
+            this.drawTextWithShadow(
+                ctx,
+                `💣 Thả (${this.game.state.tntCollected})`,
+                uiMargin + buttonWidth / 2,
+                tntBtnY + buttonHeight - (isNarrow ? 6 : 10),
+                'rgba(0,0,0,0.8)',
+                'white',
+                2,
+                2
+            );
+            ctx.textAlign = 'left';
+        }
+
         if (this.game.gameOver) {
             this.drawGameOverScreen(ctx, isNarrow);
         }
