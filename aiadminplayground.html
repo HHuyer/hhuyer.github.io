@@ -1,0 +1,137 @@
+<!DOCTYPE html><html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Prompt Tester</title>
+  <style>
+    body {
+      font-family: Inter, sans-serif;
+      background: #0d1117;
+      color: #f0f6fc;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #161b22;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    textarea, select, input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #30363d;
+      background: #0d1117;
+      color: #f0f6fc;
+      font-size: 1rem;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #238636;
+      color: white;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    button:hover { background: #2ea043; }
+    .output {
+      margin-top: 20px;
+      padding: 15px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 AI Prompt Tester</h1>
+  <div class="container">
+    <label for="serverSelect">Server:</label>
+    <select id="serverSelect">
+      <option value="free">Free</option>
+      <option value="plus">Plus</option>
+      <option value="pro">Pro</option>
+    </select><label for="modelInput">Model / Finetune ID:</label>
+<input id="modelInput" type="text" placeholder="vd: openai/gpt-4, qwen/qwen3-235b, model-finetune-id..." />
+
+<label for="systemInput">System Prompt:</label>
+<textarea id="systemInput" rows="4" placeholder="Nhập system prompt..."></textarea>
+
+<label for="promptInput">User Prompt:</label>
+<textarea id="promptInput" rows="4" placeholder="Nhập prompt để test..."></textarea>
+
+<button onclick="testPrompt()">🚀 Test Prompt</button>
+
+<div id="output" class="output">Kết quả sẽ hiển thị ở đây...</div>
+
+  </div>  <script>
+    const API_URL = "https://openrouter.ai/api/v1/chat/completions";
+
+    // Base64 encoded API keys (copy từ file gốc)
+    const ENCODED_KEYS = {
+      free: "c2stb3ItdjEtZmE0NTI2MjhiYjEyOWU1MGNiZDRjMzhmZTA1NzkxYjdmZTYyZDAyODI5NGQ3NjYxODVmODIwZGQzZDQyNGIyMg==",
+      plus: "c2stb3ItdjEtMmRiYzk0Y2UxYWQ4NjhkOGMw0DdiYTcyZDM5OWYxNzM1Mjk2NTYxMWU3ZGI0NTYwZjk5ZGNjMjY3Y2JiOTRiMzJiMzI==",
+      pro:  "c2stb3ItdjEtNDFjYzg2ODQzZjYzOGM0MzMxMzBhODUwNDk0MzM3NjMxNWUyNjFiMTU3OGE1MmEzNjY2MDU1NDI0M2FiNDJhZQ=="
+    };
+
+    function getApiKey(serverType) {
+      try { return atob(ENCODED_KEYS[serverType] || ""); }
+      catch (e) { return ""; }
+    }
+
+    async function testPrompt() {
+      const systemText = document.getElementById("systemInput").value.trim();
+      const userText = document.getElementById("promptInput").value.trim();
+      const model = document.getElementById("modelInput").value.trim();
+      const serverType = document.getElementById("serverSelect").value;
+      const apiKey = getApiKey(serverType);
+
+      if (!systemText || !userText || !model) {
+        document.getElementById("output").textContent = "⚠️ Hãy nhập đủ system prompt, user prompt và model.";
+        return;
+      }
+
+      document.getElementById("output").textContent = "⏳ Đang gửi request...";
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model,
+            messages: [
+              { role: "system", content: systemText },
+              { role: "user", content: userText }
+            ]
+          })
+        });
+        const data = await res.json();
+        const reply = data.choices?.[0]?.message?.content || "❌ Không có phản hồi.";
+        document.getElementById("output").textContent = reply;
+      } catch (err) {
+        document.getElementById("output").textContent = "❌ Lỗi khi test prompt: " + err.message;
+      }
+    }
+  </script></body>
+        </html>
