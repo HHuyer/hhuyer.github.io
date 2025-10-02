@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trung tâm trò chơi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans', Arial, sans-serif;
+            background-color: #0b1220;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .bg-svg {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: rgba(255, 255, 255, 0.95);
+            color: #f59e0b;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.2);
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.3);
+        }
+
+        .back-button i {
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 120px auto 20px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            font-size: 2.8em;
+            font-weight: 700;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.2);
+            letter-spacing: 1px;
+        }
+
+        .currency-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 25px 30px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+        }
+
+        .currency-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .currency-box span {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+            letter-spacing: 0.5px;
+        }
+
+        .currency-box button {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            /* removed uppercase to keep original casing */
+            letter-spacing: 0.5px;
+        }
+
+        .currency-box button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
+        }
+
+        .alert {
+            display: none;
+            background-color: rgba(248, 215, 218, 0.95);
+            color: #721c24;
+            padding: 18px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(245, 198, 203, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.2);
+            backdrop-filter: blur(15px);
+            font-weight: 600;
+            border-left: 4px solid #dc3545;
+        }
+
+        .multi-exchange {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .multi-exchange button {
+            margin: 5px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .multi-exchange button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.2);
+        }
+
+        .user-info {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px 18px;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.2);
+            font-size: 14px;
+            font-weight: 700;
+            backdrop-filter: blur(20px);
+            color: #f59e0b;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .user-info .top-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-info img {
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            border: 3px solid #f59e0b;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .user-info a {
+            color: #f59e0b;
+            text-decoration: none;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .user-info a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .section h2 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .section p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        small {
+            display: block;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 30px;
+            font-size: 0.8em;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .disclaimer {
+            margin-top: 18px;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.85);
+            border-radius: 12px;
+            font-size: 0.95em;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1); }
+            50% { box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25), 0 0 20px rgba(255, 255, 255, 0.2); }
+            100% { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1); }
+        }
+
+        /* Enhanced pickaxe and crack animations for BreakBlock */
+        #game-breakblock { position: relative; overflow: visible; }
+        #game-breakblock .pickaxe {
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            bottom: -10px;
+            left: -10px;
+            transform: rotate(-45deg) scale(0.5);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            z-index: 1;
+        }
+
+        #game-breakblock:hover .pickaxe {
+            animation: enhancedPickaxeSequence 3.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes enhancedPickaxeSequence {
+            /* Pickaxe grows and flies out */
+            0% { 
+                bottom: -10px; 
+                left: -10px; 
+                transform: rotate(-45deg) scale(0.5); 
+                opacity: 0; 
+            }
+            8% { 
+                opacity: 1; 
+                bottom: 45px; 
+                left: -45px; 
+                transform: rotate(-45deg) scale(1.1); 
+            }
+            
+            /* First strike - smoother motion */
+            18% { 
+                bottom: 28px; 
+                left: 18px; 
+                transform: rotate(-15deg) scale(1.15); 
+            }
+            22% { 
+                bottom: 22px; 
+                left: 38px; 
+                transform: rotate(8deg) scale(1.15); 
+            }
+            
+            /* Pull back for second strike - more fluid */
+            32% { 
+                bottom: 42px; 
+                left: 8px; 
+                transform: rotate(-28deg) scale(1.15); 
+            }
+            
+            /* Second strike */
+            42% { 
+                bottom: 18px; 
+                left: 48px; 
+                transform: rotate(12deg) scale(1.15); 
+            }
+            
+            /* Charge up - smoother shake */
+            52% { 
+                bottom: 58px; 
+                left: -18px; 
+                transform: rotate(-58deg) scale(1.4); 
+            }
+            56% { 
+                bottom: 62px; 
+                left: -12px; 
+                transform: rotate(-62deg) scale(1.5); 
+            }
+            60% { 
+                bottom: 58px; 
+                left: -18px; 
+                transform: rotate(-58deg) scale(1.4); 
+            }
+            64% { 
+                bottom: 62px; 
+                left: -12px; 
+                transform: rotate(-62deg) scale(1.5); 
+            }
+            
+            /* Final powerful strike - smoother arc */
+            78% { 
+                bottom: 12px; 
+                left: 58px; 
+                transform: rotate(18deg) scale(1.7); 
+            }
+            
+            /* Hold position briefly */
+            88% { 
+                bottom: 8px; 
+                left: 68px; 
+                transform: rotate(22deg) scale(1.7); 
+            }
+            
+            /* Fade out - more graceful exit */
+            100% { 
+                bottom: -25px; 
+                left: 105px; 
+                transform: rotate(40deg) scale(0.7); 
+                opacity: 0; 
+            }
+        }
+
+        #game-breakblock .crack {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 2;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+
+        #game-breakblock:hover .crack {
+            animation: crackProgression 3.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes crackProgression {
+            0% { opacity: 0; transform: scale(0.95); }
+            
+            /* First crack appears after first strike - smoother fade */
+            22% { 
+                background-image: url('sprite 1.png');
+                opacity: 0; 
+                transform: scale(0.95); 
+            }
+            26% { 
+                background-image: url('sprite 1.png');
+                opacity: 1; 
+                transform: scale(1); 
+            }
+            
+            /* Second crack appears after second strike */
+            42% { 
+                background-image: url('sprite 2.png');
+                opacity: 0; 
+                transform: scale(0.95); 
+            }
+            46% { 
+                background-image: url('sprite 2.png');
+                opacity: 1; 
+                transform: scale(1); 
+            }
+            
+            /* Final destruction after powerful strike - smoother transition */
+            78% { 
+                background-image: url('sprite 3.png');
+                opacity: 0; 
+                transform: scale(0.9); 
+            }
+            82% { 
+                background-image: url('sprite 3.png');
+                opacity: 1; 
+                transform: scale(1); 
+            }
+            
+            100% { 
+                background-image: url('sprite 3.png');
+                opacity: 1; 
+                transform: scale(1); 
+            }
+        }
+
+        /* Enhanced Li Xi animation for smoother motion */
+        #game-lixi .lixi-effect {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%) scale(0) rotate(0deg);
+            opacity: 0;
+            width: 60px;
+            height: 60px;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        #game-lixi:hover .lixi-effect {
+            animation: lixiFly 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes lixiFly {
+            0%   { 
+                opacity: 0;   
+                transform: translateX(-50%) translateY(0) rotate(0deg) scale(0.3); 
+            }
+            15%  { 
+                opacity: 1;   
+                transform: translateX(-50%) translateY(-80px) rotate(270deg) scale(1); 
+            }
+            35%  { 
+                transform: translateX(-50%) translateY(-120px) rotate(540deg) scale(1.1); 
+            }
+            55%  { 
+                transform: translateX(-50%) translateY(-100px) rotate(720deg) scale(1); 
+            }
+            75%  { 
+                transform: translateX(-50%) translateY(-60px) rotate(900deg) scale(0.9); 
+            }
+            90%  { 
+                transform: translateX(-50%) translateY(-30px) rotate(990deg) scale(0.85); 
+            }
+            100% { 
+                opacity: 1;   
+                transform: translateX(-50%) translateY(0) rotate(1080deg) scale(0.8); 
+            }
+        }
+
+        .game-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 25px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .game-item:hover::before {
+            left: 100%;
+        }
+
+        .game-item:hover {
+            transform: translateY(-3px) scale(1.02);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .game-item span {
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 600;
+            font-size: 1.1em;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+            z-index: 1;
+            position: relative;
+            letter-spacing: 0.3px;
+        }
+
+        .game-item button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #dc2626, #f59e0b);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            position: relative;
+            z-index: 1;
+            /* removed uppercase to keep original casing */
+            letter-spacing: 0.5px;
+        }
+
+        .game-item button:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        .game-item button:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        /* Performance hints for smoother animations */
+        #game-breakblock .pickaxe,
+        #game-lixi .lixi-effect {
+            will-change: transform, opacity;
+        }
+
+        /* Cat pop-up effect for Gacha game */
+        #game-gacha {
+            position: relative;
+            overflow: hidden;
+        }
+        #game-gacha .cat {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 80px;
+            height: 80px;
+            pointer-events: none;
+            z-index: 0;
+            /* start half hidden */
+            transform: translate(-50%, 85%);
+            transition: transform 0.5s ease-in-out;
+            opacity: 1;
+        }
+        #game-gacha:hover .cat {
+            /* rise up halfway */
+            transform: translate(-50%, 25%);
+        }
+    </style>
+    <script>
+        let coins = parseInt(localStorage.getItem('money')) || 0;
+        let candies = parseInt(localStorage.getItem('candies')) || 0;
+        let candyExchanges = parseInt(localStorage.getItem('candyExchanges')) || 0;
+        let username = localStorage.getItem('username') || 'Guest';
+        let equippedRank = localStorage.getItem('equippedRank') || 'No rank';
+        let level = parseInt(localStorage.getItem('level')) || 1;
+
+        function loadSavedData() {
+            updateUI();
+        }
+
+        function exchangeCandy(amount = 1) {
+            const alertBox = document.getElementById('alert-box');
+            alertBox.style.display = 'none';
+
+            const cost = amount * 100;
+            if (coins >= cost) {
+                coins -= cost;
+                candies += amount;
+                candyExchanges += amount;
+                saveData();
+                updateUI();
+                checkMultiExchange();
+            } else {
+                alertBox.style.display = 'block';
+                alertBox.innerText = 'Bạn không đủ xu để đổi kẹo, hãy chơi "Quay thú cưng ngẫu nhiên" để kiếm thêm xu!';
+            }
+        }
+
+        function checkMultiExchange() {
+            const multiExchange = document.getElementById('multi-exchange');
+            if (candyExchanges >= 5) {
+                multiExchange.style.display = 'block';
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('coin-count').innerText = coins;
+            document.getElementById('candy-count').innerText = candies;
+            document.getElementById('username-display').innerText = username;
+            document.getElementById('rank-display').innerText = `Rank: ${equippedRank} | Lv: ${level}`;
+        }
+
+        function saveData() {
+            localStorage.setItem('money', coins);
+            localStorage.setItem('candies', candies);
+            localStorage.setItem('candyExchanges', candyExchanges);
+            localStorage.setItem('level', level);
+        }
+
+        // safe external opener to add rel="noopener noreferrer" and target="_blank"
+        function openSafe(url) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }
+
+        setInterval(() => {
+            // only update UI if DOM elements are present (prevents null element errors)
+            if (document.getElementById('coin-count')) {
+                coins = parseInt(localStorage.getItem('money')) || 0;
+                candies = parseInt(localStorage.getItem('candies')) || 0;
+                level = parseInt(localStorage.getItem('level')) || 1;
+                updateUI();
+            }
+        }, 1000);
+
+        // ensure initial load runs once DOM is parsed
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedData();
+            checkMultiExchange();
+        });
+    </script>
+</head>
+<body>
+    <svg class="bg-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" role="img" aria-label="Mid-Autumn night sky with moon, lanterns, mooncakes and festive decorations" style="position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1;pointer-events:none;">
+      <!-- ...existing SVG content from background.svg... -->
+      <?xml version="1.0" encoding="UTF-8"?> <!-- note: xml declaration is preserved in source but browsers ignore inlined XML prolog; left here for clarity -->
+      <defs>
+        <linearGradient id="night" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0c1b35"/>
+          <stop offset="60%" stop-color="#0a1630"/>
+          <stop offset="100%" stop-color="#091327"/>
+        </linearGradient>
+        <radialGradient id="moonGlow" cx="50%" cy="30%" r="18%">
+          <stop offset="0%" stop-color="#fff7d6"/>
+          <stop offset="60%" stop-color="#ffe9a8"/>
+          <stop offset="100%" stop-color="rgba(255,233,168,0)"/>
+        </radialGradient>
+        <radialGradient id="moon" cx="45%" cy="40%" r="50%">
+          <stop offset="0%" stop-color="#fff6d1"/>
+          <stop offset="100%" stop-color="#f5dc95"/>
+        </radialGradient>
+        <linearGradient id="lanternBody" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ffbb55"/>
+          <stop offset="100%" stop-color="#ff8b38"/>
+        </linearGradient>
+        <linearGradient id="lanternTop" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#3b2e1f"/>
+          <stop offset="100%" stop-color="#231a12"/>
+        </linearGradient>
+        <linearGradient id="cakeGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ffd59a"/>
+          <stop offset="100%" stop-color="#ffb86b"/>
+        </linearGradient>
+        <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="18"/>
+        </filter>
+        <g id="simple-petal">
+          <path d="M0,0 C12,-8 30,-8 40,0 C30,14 12,14 0,0 Z" fill="#ffd9b3" opacity="0.9"/>
+        </g>
+        <g id="lantern">
+          <rect x="-32" y="-28" width="64" height="86" rx="16" fill="url(#lanternBody)"/>
+          <rect x="-28" y="-40" width="56" height="12" rx="3" fill="url(#lanternTop)"/>
+          <rect x="-22" y="58" width="44" height="10" rx="3" fill="url(#lanternTop)"/>
+          <line x1="0" y1="68" x2="0" y2="106" stroke="#ffce6b" stroke-width="3"/>
+          <circle cx="0" cy="112" r="6" fill="#ffce6b"/>
+          <path d="M-6,112 q6,14 12,0" stroke="#ffb24a" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <line x1="-8" y1="122" x2="8" y2="122" stroke="#ffb24a" stroke-width="2" opacity="0.7"/>
+        </g>
+        <g id="mooncake">
+          <circle cx="0" cy="0" r="34" fill="url(#cakeGrad)"/>
+          <circle cx="0" cy="0" r="28" fill="#fff2d8" opacity="0.12"/>
+          <g fill="#e9a75a" transform="translate(0,0)">
+            <circle cx="-10" cy="-6" r="3"/>
+            <circle cx="8" cy="-6" r="3"/>
+            <circle cx="-2" cy="8" r="3"/>
+          </g>
+          <circle cx="0" cy="0" r="2.5" fill="#f5d48a"/>
+        </g>
+        <symbol id="rabbit" viewBox="-50 -50 100 100">
+          <path d="M-18,10 C-32,-6 -8,-40 12,-26 C26,-18 32,-8 24,2 C40,8 42,36 14,42 C-6,46 -10,28 -18,22 C-30,12 -18,10 -18,10 Z" fill="#fffaf0" opacity="0.95"/>
+          <circle cx="2" cy="-10" r="2" fill="#e9c58a"/>
+        </symbol>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#night)"/>
+      <g fill="#f0f8ff" opacity="0.9">
+        <circle cx="150" cy="120" r="1.5"/><circle cx="300" cy="260" r="1.2"/>
+        <circle cx="520" cy="140" r="1.3"/><circle cx="760" cy="90" r="1.4"/>
+        <circle cx="980" cy="200" r="1.1"/><circle cx="1180" cy="80" r="1.6"/>
+        <circle cx="1400" cy="180" r="1.2"/><circle cx="1600" cy="140" r="1.3"/>
+        <circle cx="1800" cy="260" r="1.1"/><circle cx="200" cy="460" r="1.2"/>
+        <circle cx="430" cy="380" r="1.1"/><circle cx="870" cy="360" r="1.2"/>
+        <circle cx="1250" cy="320" r="1.1"/><circle cx="1650" cy="380" r="1.3"/>
+      </g>
+      <circle cx="1450" cy="260" r="260" fill="url(#moonGlow)" filter="url(#softGlow)" opacity="0.95"/>
+      <circle cx="1450" cy="260" r="120" fill="url(#moon)"/>
+      <g opacity="0.65" fill="#f1d78a">
+        <circle cx="1400" cy="250" r="8"/>
+        <circle cx="1478" cy="290" r="6"/>
+        <circle cx="1502" cy="235" r="5"/>
+      </g>
+      <g fill="#ffffff" opacity="0.08">
+        <ellipse cx="420" cy="240" rx="160" ry="38"/>
+        <ellipse cx="520" cy="230" rx="90" ry="28"/>
+        <ellipse cx="360" cy="260" rx="120" ry="30"/>
+      </g>
+      <g fill="#ffffff" opacity="0.06">
+        <ellipse cx="1080" cy="170" rx="140" ry="34"/>
+        <ellipse cx="1180" cy="160" rx="80" ry="24"/>
+      </g>
+      <g id="lanterns-group" opacity="0.98">
+        <g transform="translate(160,160)"><use href="#lantern"/></g>
+        <g transform="translate(260,200) scale(0.92)"><use href="#lantern"/></g>
+        <g transform="translate(360,140) scale(0.8)"><use href="#lantern"/></g>
+        <g transform="translate(1560,170) scale(1.05)"><use href="#lantern"/></g>
+        <g transform="translate(1660,210) scale(0.95)"><use href="#lantern"/></g>
+        <g transform="translate(720,220) scale(0.85) rotate(-6)"><use href="#lantern"/></g>
+        <g transform="translate(980,260) scale(0.9) rotate(8)"><use href="#lantern"/></g>
+        <g transform="translate(1280,220) scale(0.78) rotate(4)"><use href="#lantern"/></g>
+      </g>
+      <g stroke="#2e3a50" stroke-width="1.5" opacity="0.75">
+        <path d="M40,40 C200,60 400,20 620,48 C840,76 1080,20 1320,48 C1500,72 1720,36 1880,40" fill="none"/>
+        <g transform="translate(200,60)"><use href="#lantern" transform="scale(0.5) translate(0,-10)"/></g>
+        <g transform="translate(540,44)"><use href="#lantern" transform="scale(0.42) translate(0,-6)"/></g>
+        <g transform="translate(980,66)"><use href="#lantern" transform="scale(0.46) translate(0,-8)"/></g>
+      </g>
+      <g transform="translate(120,900) scale(1)">
+        <use href="#mooncake" transform="translate(0,0)"/>
+        <use href="#mooncake" transform="translate(84,12) scale(0.78)"/>
+      </g>
+      <g transform="translate(1760,920) scale(1)">
+        <use href="#mooncake" transform="translate(0,0)"/>
+        <use href="#mooncake" transform="translate(-70,8) scale(0.82)"/>
+      </g>
+      <g transform="translate(1420,330) scale(0.9) rotate(-6)" opacity="0.95">
+        <use href="#rabbit" />
+      </g>
+      <g transform="translate(1500,300) scale(0.55) rotate(12)" opacity="0.9">
+        <use href="#rabbit" />
+      </g>
+      <g id="petals" opacity="0.95">
+        <use href="#simple-petal" transform="translate(900,520) rotate(-20) scale(1.1)" opacity="0.85"/>
+        <use href="#simple-petal" transform="translate(1040,460) rotate(10) scale(0.8)" opacity="0.7"/>
+        <use href="#simple-petal" transform="translate(760,600) rotate(30) scale(0.6)" opacity="0.6"/>
+        <use href="#simple-petal" transform="translate(1320,520) rotate(-35) scale(0.75)" opacity="0.7"/>
+        <use href="#simple-petal" transform="translate(420,680) rotate(10) scale(0.9)" opacity="0.8"/>
+      </g>
+      <g fill="#071029" opacity="0.95">
+        <path d="M0,820 C220,740 420,780 700,760 C980,740 1200,820 1480,780 C1740,740 1920,820 1920,1080 L0,1080 Z"/>
+        <path d="M0,880 C260,820 540,860 820,840 C1100,820 1420,900 1700,860 C1920,820 1920,1080 0,1080 Z" opacity="0.85"/>
+      </g>
+      <g opacity="0.14" fill="#fff7d6">
+        <circle cx="1478" cy="220" r="2.2"/>
+        <circle cx="1508" cy="260" r="1.6"/>
+        <circle cx="1440" cy="300" r="1.8"/>
+      </g>
+    </svg>
+    <a href="indexf.html" class="back-button">
+        <i>🏠</i> Trang chính
+    </a>
+    <div class="user-info">
+        <div class="top-line">
+            <span id="username-display">Guest</span>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png" alt="User Image">
+        </div>
+        <span id="rank-display">Rank: No rank | Lv: 1</span>
+        <a href="Rank.html" rel="noopener noreferrer">Xem rank</a>
+    </div>
+
+    <div class="container">
+        <center><h1>Trung tâm trò chơi</h1></center>
+        <div id="alert-box" class="alert"></div>
+
+        <div class="currency-box">
+            <span>Số xu: <span id="coin-count">0</span></span>
+            <span>Số kẹo: <span id="candy-count">0</span></span>
+            <button onclick="exchangeCandy()">Đổi kẹo (100 xu = 1 kẹo)</button>
+        </div>
+
+        <div id="multi-exchange" class="multi-exchange">
+            <button onclick="exchangeCandy(5)">Đổi x5</button>
+            <button onclick="exchangeCandy(10)">Đổi x10</button>
+            <button onclick="exchangeCandy(50)">Đổi x50</button>
+            <button onclick="exchangeCandy(100)">Đổi x100</button>
+            <button onclick="exchangeCandy(1000)">Đổi x1000</button>
+            <button onclick="exchangeCandy(10000)">Đổi x10000</button>
+        </div>
+
+        <div class="section">
+            <h2>Danh sách trò chơi</h2>
+            <div class="game-item" id="game-breakblock">
+                <div style="display: flex; align-items: center; gap: 12px; z-index: 1;">
+                    <img src="Dancing_noob.webp" alt="Dancing Noob" style="width: 80px; height: 80px; object-fit: cover; margin-top: -15px; margin-left: 0; z-index: 999;">
+                    <span>Break Block</span>
+                </div>
+                <button onclick="openSafe('BreakBlock.html')">Chơi ngay</button>
+                <img class="pickaxe" src="Diamond_Pickaxe_JE3_BE3.png" alt="Pickaxe">
+                <div class="crack"></div>
+            </div>
+            <div class="game-item" id="game-lixi">
+                <span>Trò chơi 0: Khui Lì Xì</span>
+                <button onclick="openSafe('đào kim cương.html')">Chơi ngay</button>
+                <img class="lixi-effect" src="li_xi_envelope.png" alt="Li Xi Envelope">
+            </div>
+            <div class="game-item" id="game-gacha">
+                <span>Trò chơi 1: Quay thú cưng ngẫu nhiên</span>
+                <button onclick="openSafe('Gacha RNG 50.000!!!.html')">Chơi ngay</button>
+                <img class="cat" src="Cat.webp" alt="Cute Cat">
+            </div>
+            <div class="game-item">
+                <span>Trò chơi 2: Đoán số (Kiếm Kẹo Nhanh Nhất)</span>
+                <button onclick="openSafe('txiu.html')">Chơi ngay</button>
+            </div>
+            <div class="game-item">
+                <span>Trò chơi 3: Thả bóng! (Miễn phí)</span>
+                <button onclick="openSafe('Plinko.html')">Chơi ngay</button>
+            </div>
+            <div class="game-item">
+                <span>Trò chơi 4: Phá bóng bay!</span>
+                <button onclick="openSafe('https://plays.org/game/pop-the-balloons/')">Chơi ngay</button>
+            </div>
+            <div class="game-item">
+                <span>Trò chơi 5: Vẽ Nhanh!</span>
+                <button onclick="openSafe('https://quickdraw.withgoogle.com/?locale=en_US')">Chơi ngay</button>
+            </div>
+            <div class="game-item">
+                <span>Trò chơi đang trong quá trình thử nghiệm</span>
+                <button onclick="openSafe('indextest.html')">Chơi ngay</button>
+            </div>
+            <div class="game-item">
+                <span>Game mới? 500 năm nữa nhé</span>
+                <button onclick="openSafe('game2035.html')">Chơi ngay</button>
+            </div>
+           </small><div class="disclaimer" role="note" aria-live="polite">
+                Trang web chỉ mang tính chất giải trí và trải nghiệm — hoàn toàn không liên quan tới tiền thật, cờ bạc, giao dịch hay tệ nạn mạng,...
+            </div>
+        </div>
+    </div>
+    <small>Meowwww</small>
+</body>
+</html>
