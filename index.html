@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chill Home Page</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/openseadragon.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.5/dist/purify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/solarlunar@1.5.0/dist/index.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
@@ -77,6 +80,33 @@
       --shadow-color: rgba(0, 0, 0, 0.6);
       --backdrop-blur-value: blur(4px);
       --input-bg-color: rgba(0, 204, 0, 0.15);
+    }
+
+    /* Mid-Autumn (Trung Thu) theme */
+    body.theme-midautumn {
+      --primary-bg-color: #1b0a14;
+      --secondary-bg-color: rgba(255, 223, 117, 0.06);
+      --primary-text-color: #fff3d9;
+      --secondary-text-color: rgba(255, 210, 120, 0.85);
+      --accent-color: #ffb400; /* moon yellow */
+      --border-color: rgba(255, 180, 60, 0.18);
+      --shadow-color: rgba(0, 0, 0, 0.5);
+      --backdrop-blur-value: blur(6px);
+      --input-bg-color: rgba(255, 200, 80, 0.06);
+    }
+    .preview-midautumn { background: linear-gradient(135deg, #ffb400, #7a2b4a); }
+
+    /* Make Supermoon use the same warm Mid-Autumn palette */
+    body.theme-supermoon {
+      --primary-bg-color: #1b0a14;
+      --secondary-bg-color: rgba(255, 223, 117, 0.06);
+      --primary-text-color: #fff3d9;
+      --secondary-text-color: rgba(255, 210, 120, 0.85);
+      --accent-color: #ffb400;
+      --border-color: rgba(255, 180, 60, 0.18);
+      --shadow-color: rgba(0, 0, 0, 0.5);
+      --backdrop-blur-value: blur(6px);
+      --input-bg-color: rgba(255, 200, 80, 0.06);
     }
 
     body {
@@ -171,7 +201,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      z-index: -1;
+      z-index: -2;
     }
 
     .nav-buttons {
@@ -650,6 +680,110 @@
       text-shadow: none !important;
     }
 
+    /* Mid-Autumn decorations */
+    #midautumn-decor { position: fixed; pointer-events: none; inset: 0; z-index: 120; overflow: visible; }
+    .midautumn-decor { /* moved to keep placeholder context */ }
+    #midautumn-decor { position: fixed; pointer-events: none; inset: 0; z-index: -1; overflow: visible; }
+    .mid-moon {
+      position: fixed; right: 6vw; top: 6vh; width: 120px; height: 120px; border-radius: 50%;
+      background-image: url("GmBbExUXoAAvx4n.jpg");
+      background-size: cover;
+      background-position: center;
+      box-shadow: 0 8px 30px rgba(255,180,60,0.12), inset -8px -6px 18px rgba(0,0,0,0.06);
+      border: 1px solid rgba(255,200,80,0.12);
+      transform: translateZ(0);
+      opacity: 0; transition: opacity .6s ease, transform .6s ease;
+      filter: drop-shadow(0 0 20px rgba(255,200,80,0.45)) drop-shadow(0 0 60px rgba(255,180,60,0.25));
+      will-change: filter;
+    }
+    .mid-moon::after{
+      content:""; position:absolute; inset:-25%;
+      background: radial-gradient(closest-side, rgba(255,220,120,0.5), rgba(255,200,80,0.18) 40%, transparent 70%);
+      filter: blur(10px); border-radius:50%; pointer-events:none;
+    }
+    @keyframes slow-rotate-small {
+      from { transform: translateZ(0) rotate(0deg); }
+      to   { transform: translateZ(0) rotate(360deg); }
+    }
+    .mid-moon.rotating {
+      animation: slow-rotate-small 60s linear infinite;
+    }
+    /* Giant rotating moon for Mid-Autumn theme (hidden until activated) */
+    .big-moon {
+      position: fixed;
+      right: 50%;
+      top: 50%;
+      transform: translate(25%, -50%) rotate(0deg);
+      width: 60vmin;
+      height: 60vmin;
+      max-width: 1400px;
+      max-height: 1400px;
+      border-radius: 50%;
+      background-size: cover;
+      background-position: center;
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 1s ease, transform 1s ease;
+      filter: drop-shadow(0 0 40px rgba(255,210,120,0.35)) drop-shadow(0 0 120px rgba(255,180,60,0.2)) drop-shadow(0 30px 80px rgba(0,0,0,0.6));
+      will-change: filter;
+    }
+    body.theme-midautumn .big-moon {
+      z-index: -2; /* behind GUI but above page background */
+      opacity: 1;
+    }
+    @keyframes slow-rotate-moon {
+      from { transform: translate(25%, -50%) rotate(0deg); }
+      to   { transform: translate(25%, -50%) rotate(360deg); }
+    }
+    body.theme-midautumn .big-moon.rotating {
+      animation: slow-rotate-moon 120s linear infinite;
+    }
+    /* Ensure Supermoon theme also shows & slowly rotates the big moon */
+    body.theme-supermoon .big-moon {
+      z-index: -2;
+      opacity: 1;
+    }
+    body.theme-supermoon .big-moon.rotating {
+      animation: slow-rotate-moon 120s linear infinite;
+    }
+    /* Supermoon: oversized moon partially above viewport */
+    @keyframes slow-rotate-moon-top {
+      from { transform: translate(0, -35%) rotate(0deg); }
+      to   { transform: translate(0, -35%) rotate(360deg); }
+    }
+    body.theme-supermoon .big-moon {
+      width: 120vmin; height: 120vmin; top: 0; right: 8%; transform: translate(0, -35%);
+    }
+    body.theme-supermoon .big-moon.rotating { animation: slow-rotate-moon-top 120s linear infinite; }
+    body.theme-midautumn .mid-moon { opacity: 1; transform: translateY(0) scale(1); }
+
+    .lanterns { position: absolute; inset: 0; pointer-events: none; }
+    .lantern {
+      position: absolute;
+      width: 44px;
+      height: 60px;
+      background: linear-gradient(180deg,#ffdf9a,#ffb85a);
+      border-radius: 18px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.18), 0 0 14px rgba(255,160,40,0.12);
+      transform-origin: center bottom;
+      animation: floatLantern linear forwards;
+      display:flex;align-items:center;justify-content:center;
+      font-size:12px;color:#5b2b00;font-weight:700;
+      border:1px solid rgba(0,0,0,0.06);
+      opacity: 0.95;
+    }
+    .lantern::after { content: ""; position:absolute; bottom:-8px; left:50%; transform:translateX(-50%); width:6px;height:10px;background:#6b3e00;border-radius:2px; }
+    @keyframes floatLantern {
+      0% { transform: translateY(0) rotate(-6deg); opacity:0; }
+      10% { opacity:1; }
+      50% { transform: translateY(-30vh) rotate(6deg); }
+      100% { transform: translateY(-70vh) rotate(-8deg); opacity:0; }
+    }
+    /* subtle star/confetti */
+    .mid-star { position: absolute; width:6px;height:6px;border-radius:50%;background:rgba(255,230,160,0.95);box-shadow:0 0 6px rgba(255,200,80,0.8); opacity:0; animation: twinkle 2.8s infinite ease-in-out; }
+    @keyframes twinkle { 0%{opacity:0}50%{opacity:1}100%{opacity:0} }
+
     .quote-card{
       background:var(--secondary-bg-color); /* Themed */
       border:1px solid var(--border-color); /* Themed */
@@ -792,6 +926,7 @@
     .preview-sunset { background: linear-gradient(135deg, #ff8a65, #330d1a); }
     .preview-matrix { background: linear-gradient(135deg, #00ff41, #000); }
     .preview-dynamic { background: repeating-linear-gradient(45deg, #aaa, #aaa 10px, #bbb 10px, #bbb 20px); } /* placeholder pattern */
+    .preview-midautumn { background: linear-gradient(135deg, #ffb400, #7a2b4a); }
 
     /* Settings button (same style as nav-button, but distinct ID) */
     #settingsButton {
@@ -807,9 +942,71 @@
         visibility: hidden;
       }
     }
+
+    /* Preloader styles */
+    #preloader{
+      position:fixed;inset:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+      background:#000;z-index:2000;color:#fff;transition:opacity .5s ease,visibility .5s;opacity:1;visibility:visible;
+    }
+    #preloader.hidden{opacity:0;visibility:hidden;pointer-events:none;}
+    .preloader-inner{display:flex;flex-direction:column;align-items:center;gap:14px}
+    .spinner{width:48px;height:48px;border-radius:50%;border:4px solid rgba(255,255,255,0.08);border-top-color:var(--accent-color);animation:spin 1s linear infinite;box-shadow:0 6px 20px rgba(0,0,0,0.6)}
+    .preloader-text{font-family:Inter, sans-serif;font-size:1rem;opacity:.95}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* Luxurious preloader progress bar */
+    #preloader .loader-wrap{display:flex;flex-direction:column;gap:14px;align-items:center}
+    #preloader .progress-shell{width:min(720px,80vw);height:14px;border-radius:12px;background:rgba(255,255,255,0.06);padding:3px;box-shadow:inset 0 2px 6px rgba(0,0,0,0.6);}
+    #preloader .progress-bar{height:100%;width:0;border-radius:10px;background:linear-gradient(90deg,#ffd57a,#ffb400 60%,#fffccf);box-shadow:0 6px 30px rgba(255,180,60,0.12);}
+    #preloader .progress-meta{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:720px;color:rgba(255,255,255,0.9);font-weight:600;letter-spacing:0.6px;font-size:0.95rem}
+    #preloader .progress-percent{font-feature-settings:"tnum";font-variant-numeric:tabular-nums}
+    /* subtle shimmer */
+    #preloader .progress-bar::after{content:'';position:absolute;inset:0;border-radius:10px;background:linear-gradient(120deg,rgba(255,255,255,0.06),transparent 30%);mix-blend-mode:overlay;opacity:0.9;pointer-events:none}
   </style>
 </head>
 <body>
+  <div id="preloader" aria-hidden="true">
+    <div class="preloader-inner loader-wrap">
+      <div class="spinner" role="status" aria-hidden="true"></div>
+      <div class="preloader-text">Đang tải giao diện…</div>
+      <div class="progress-meta">
+        <div class="progress-label">Khởi tạo giao diện</div>
+        <div class="progress-percent" id="progressPercent">0%</div>
+      </div>
+      <div class="progress-shell" aria-hidden="true" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="progress-bar" id="progressBar" style="position:relative;width:0"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Circuit SVG overlay for elegant loading animation -->
+  <div id="circuitOverlay" aria-hidden="true" style="position:fixed;inset:0;pointer-events:none;z-index:2100;display:flex;align-items:center;justify-content:center;">
+    <svg id="circuitSVG" width="100vw" height="100vh" viewBox="-50 -50 1100 1100" preserveAspectRatio="xMidYMid meet" overflow="visible" role="img" aria-label="Loading circuit">
+      <defs>
+        <filter id="glow"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- center cluster -->
+      <g id="cluster-center" stroke="#bdbdbd" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" >
+        <path id="p0" d="M500 500 L540 420 L640 360" />
+        <path id="p1" d="M500 500 L460 420 L360 360" />
+        <path id="p2" d="M500 500 L580 500 L720 560" />
+      </g>
+      <!-- outer branches (separate clusters) -->
+      <g id="cluster-1" stroke="#bdbdbd" stroke-width="5" fill="none" stroke-linecap="round">
+        <path id="p3" d="M640 360 L760 260 L960 140" />
+        <path id="p4" d="M760 260 L880 180 L1000 120" />
+      </g>
+      <g id="cluster-2" stroke="#bdbdbd" stroke-width="5" fill="none" stroke-linecap="round">
+        <path id="p5" d="M360 360 L240 260 L40 140" />
+        <path id="p6" d="M240 260 L120 180 L0 120" />
+      </g>
+      <g id="cluster-3" stroke="#bdbdbd" stroke-width="5" fill="none" stroke-linecap="round">
+        <path id="p7" d="M720 560 L820 700 L940 900" />
+      </g>
+      <g id="cluster-4" stroke="#bdbdbd" stroke-width="5" fill="none" stroke-linecap="round">
+        <path id="p8" d="M280 560 L180 700 L60 900" />
+      </g>
+    </svg>
+  </div>
   <button id="toggleChatBtn" class="ai-toggle" aria-controls="chatbox" aria-expanded="false" aria-label="Toggle AI chat">
     <img class="icon" src="https://static.thenounproject.com/png/7262146-200.png" alt="AI" width="22" height="22" />
   </button>
@@ -825,7 +1022,6 @@
     <a href="https://hhuyer.github.io/indexa" class="nav-button">Home</a>
     <a href="https://hhuyer.github.io/tools" class="nav-button">Tools</a>
     <a href="https://hhuyer.github.io/indexgame" class="nav-button">Game</a>
-    <!-- Settings button will be inserted here by JS -->
   </div>
   <video id="bgVideo" autoplay loop muted playsinline crossorigin="anonymous"></video>
   <div class="audio-controls">
@@ -913,7 +1109,115 @@
   </div>
   <!-- Canvas for particle animation -->
   <canvas id="textParticleCanvas"></canvas>
+  <!-- Mid-Autumn decoration container -->
+  <div id="midautumn-decor" aria-hidden="true">
+    <div class="mid-moon" role="img" aria-label="Moon"></div>
+    <div id="bigMoon" class="big-moon" aria-hidden="true"></div>
+    <div class="lanterns" id="lanternContainer"></div>
+  </div>
 <script>
+  /* SVG line-draw / glow loader: orchestrates drawing clusters then glow + fade */
+  (function(){
+    const overlay = document.getElementById('circuitOverlay');
+    const svg = document.getElementById('circuitSVG');
+    // ensure overlay and svg allow strokes to extend to edges
+    overlay.style.overflow = 'visible';
+    svg.style.overflow = 'visible';
+    const allPaths = Array.from(svg.querySelectorAll('path'));
+    // prepare strokes (measure and hide)
+    allPaths.forEach(p=>{
+      const L = p.getTotalLength();
+      // Use rounded cap/join and a ceil'd dash length to avoid tiny rendering gaps.
+      p.style.strokeLinecap = 'round';
+      p.style.strokeLinejoin = 'round';
+      p.style.transition = 'stroke-dashoffset 0.9s linear, stroke 0.6s ease, filter 0.6s ease, opacity 0.6s ease';
+      const dashLen = Math.ceil(L) + 1;
+      p.style.strokeDasharray = dashLen;
+      p.style.strokeDashoffset = dashLen;
+      p.style.opacity = '1';
+    });
+
+    // clusters in drawing order (center clusters first)
+    const clusters = [
+      ['p0','p1','p2'],
+      ['p3','p4'],
+      ['p5','p6'],
+      ['p7'],
+      ['p8']
+    ];
+
+    // animate cluster-by-cluster, returns Promise when done
+    function drawClusters() {
+      let t = 0;
+      return new Promise(resolve=>{
+        (function nextCluster(i){
+          if(i>=clusters.length){ resolve(); return; }
+          const ids = clusters[i];
+          ids.forEach((id, idx)=>{
+            const p = document.getElementById(id);
+            const L = p.getTotalLength();
+            // stagger per-path within cluster
+            setTimeout(()=>{
+              p.style.strokeDashoffset = '0';
+              p.style.stroke = '#e6e6e6';
+            }, idx * 90);
+          });
+          // proceed to next cluster after a short delay (gives outward energy)
+          setTimeout(()=> nextCluster(i+1), 420);
+        })(0);
+      });
+    }
+
+    // glow + brighten
+    function finalizeGlow() {
+      return new Promise(resolve=>{
+        allPaths.forEach(p=>{
+          p.style.stroke = '#ffffff';
+          p.style.filter = 'url(#glow)';
+          p.style.opacity = '1';
+        });
+        // subtle pulse once
+        svg.style.transition = 'opacity 0.45s ease';
+        setTimeout(resolve, 900);
+      });
+    }
+
+    // fade out overlay to reveal page
+    function fadeOutOverlay() {
+      return new Promise(resolve=>{
+        overlay.style.transition = 'opacity 0.9s ease, visibility 0.9s';
+        overlay.style.opacity = '0';
+        setTimeout(()=>{ overlay.style.display = 'none'; resolve(); }, 1000);
+      });
+    }
+
+    // Start sequence as page begins loading (non-blocking)
+    // Tie to existing preloader lifecycle: attempt to run immediately and also when window.load finishes
+    let sequenceStarted = false;
+    async function runSequence() {
+      if(sequenceStarted) return; sequenceStarted = true;
+      overlay.style.opacity = '1';
+      overlay.style.display = 'flex';
+      // draw clusters (target ~2.0s total)
+      await drawClusters();
+      // glow and wait
+      await finalizeGlow();
+      // if preloader already hidden, just fade; otherwise wait a short moment to align with preloader
+      await fadeOutOverlay();
+    }
+
+    // start when JS parsed (gives immediate impression)
+    requestAnimationFrame(()=> setTimeout(runSequence, 210));
+
+    // If preloader ends later, ensure overlay removed (robustness)
+    window.addEventListener('load', ()=> {
+      // if overlay still visible and sequence not complete, let sequence continue but ensure it ends quickly
+      if(!sequenceStarted) { runSequence(); }
+      // in case preloader removed earlier, ensure overlay fades after a short grace
+      setTimeout(()=> { if(overlay.style.display !== 'none') fadeOutOverlay(); }, 2600);
+    });
+  })();
+
   // =========================
   // Phần xử lý UI (giữ nguyên logic gốc)
   // =========================
@@ -1954,6 +2258,63 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
   // =========================
   // Phần cài đặt Chủ đề (Theming)
   // =========================
+  // Mid-Autumn variants (different visual presets)
+  const MIDAUTUMN_VARIANTS = [
+    { name: 'classic', moonSize: 120, lanternCount: 6, bg: 'linear-gradient(180deg,#1b0a14 0%, #2a1220 100%)' },
+    { name: 'golden', moonSize: 160, lanternCount: 9, bg: 'radial-gradient(circle at 70% 20%, #fff8e1, #ffdd57 30%), linear-gradient(180deg,#2b1219 0%, #3b1f2a 100%)' },
+    { name: 'mist', moonSize: 100, lanternCount: 5, bg: 'radial-gradient(circle at 80% 12%, rgba(255,245,220,0.95), rgba(255,200,80,0.06)), linear-gradient(180deg,#151018 0%, #241624 100%)' },
+    { name: 'festive', moonSize: 140, lanternCount: 12, bg: 'radial-gradient(circle at 65% 18%, #fff7d6, #ffcf5a), linear-gradient(180deg,#2f0f1a 0%, #4b2131 100%)' }
+  ];
+
+  function applyMidautumnVariant(variant) {
+    // Moon sizing and background
+    const moonEl = document.querySelector('.mid-moon');
+    if (moonEl) {
+      moonEl.style.width = variant.moonSize + 'px';
+      moonEl.style.height = variant.moonSize + 'px';
+      moonEl.classList.add('rotating');
+      // ensure image element to sample: create Image from background
+      const bg = window.getComputedStyle(moonEl).backgroundImage || '';
+      const match = bg.match(/url\(["']?(.+?)["']?\)/);
+      if (match && match[1]) {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.src = match[1];
+        img.onload = () => {
+          const avg = computeAverageColorFromImage(img);
+          applyBloomToElement(moonEl, avg, 0.9);
+        };
+      } else {
+        // fallback: use small bundled asset
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.src = 'GmBbExUXoAAvx4n.jpg';
+        img.onload = () => {
+          const avg = computeAverageColorFromImage(img);
+          applyBloomToElement(moonEl, avg, 0.9);
+        };
+      }
+    }
+    document.body.style.background = variant.bg;
+    // spawn lanterns based on variant
+    spawnLanterns(variant.lanternCount || 6);
+    // show large rotating moon using high-res asset
+    showBigMoon(variant);
+    // update subtle flavor: add small occasional star clusters for 'festive'
+    if (variant.name === 'festive') {
+      for (let i = 0; i < 6; i++) {
+        const star = document.createElement('div');
+        star.className = 'mid-star';
+        star.style.left = (Math.random() * 90 + 2) + 'vw';
+        star.style.top = (Math.random() * 40 + 2) + 'vh';
+        star.style.animationDuration = (1.8 + Math.random()*2.5).toFixed(2) + 's';
+        star.style.zIndex = '-3';
+        document.getElementById('midautumn-decor').appendChild(star);
+        // Keep stars persistent for ambience (no timed removal)
+      }
+    }
+  }
+
   const settingsButton = document.createElement('button');
   settingsButton.id = 'settingsButton';
   settingsButton.className = 'nav-button'; // Reuse nav-button styles
@@ -1971,6 +2332,14 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
       <div id="settingsPanel" class="settings-panel">
         <h2>Tùy chỉnh Giao diện</h2>
         <div class="theme-options">
+          <div class="theme-option" data-theme="midautumn">
+            <div class="theme-preview preview-midautumn"></div>
+            <span>Trung Thu</span>
+          </div>
+          <div class="theme-option" data-theme="supermoon">
+            <div class="theme-preview preview-midautumn"></div>
+            <span>Supermoon</span>
+          </div>
           <div class="theme-option" data-theme="default">
             <div class="theme-preview preview-default"></div>
             <span>Mặc định</span>
@@ -2043,6 +2412,35 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
       applyDynamicTheme();
     }
     updateSelectedThemeUI(themeName);
+
+    // Mid-Autumn / Supermoon decorations activation (treat supermoon same as midautumn)
+    if (themeName === 'midautumn' || themeName === 'supermoon') {
+      const chosen = MIDAUTUMN_VARIANTS[Math.floor(Math.random() * MIDAUTUMN_VARIANTS.length)];
+      clearLanterns();
+      applyMidautumnVariant(chosen);
+    } else {
+      clearLanterns();
+    }
+    // --- Mid-Autumn / Supermoon: replace background video with themed static/bg gradients ---
+    try {
+      const bgVideoEl = document.getElementById('bgVideo');
+      if (themeName === 'midautumn' || themeName === 'supermoon') {
+        if (bgVideoEl) {
+          bgVideoEl.pause();
+          bgVideoEl.style.display = 'none';
+        }
+        // apply mid-autumn page background (keeps themed CSS variables) — radial removed
+        document.body.style.background = 'linear-gradient(180deg,#1b0a14 0%, #2a1220 100%)';
+      } else {
+        // restore video when leaving midautumn
+        document.body.style.background = '';
+        if (bgVideoEl) {
+          bgVideoEl.style.display = '';
+          // try to resume autoplay only if previously playing or if allowed
+          try { bgVideoEl.play().catch(()=>{}); } catch(e){}
+        }
+      }
+    } catch(e){ console.warn('Error toggling bgVideo for midautumn:', e); }
   }
 
   function updateSelectedThemeUI(themeName) {
@@ -2167,10 +2565,39 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
     }
   });
 
+  // Auto-detect Mid-Autumn (lunar 8/15) and apply midautumn theme within ±30 days
+  function checkAndApplyMidAutumnAutoTheme() {
+    try {
+      const today = dayjs();
+      const year = today.year();
+      // solarlunar.lunar2solar(year, month, day, isLeap) -> {cYear,cMonth,cDay,...}
+      // compute for current and neighboring lunar-year boundaries (handle lunar new year wrap)
+      const candidates = [];
+      // mid-autumn for this lunar year (8/15)
+      const solarThis = solarlunar.lunar2solar(year, 8, 15, false);
+      if (solarThis && solarThis.cYear) candidates.push(dayjs(`${solarThis.cYear}-${String(solarThis.cMonth).padStart(2,'0')}-${String(solarThis.cDay).padStart(2,'0')}`));
+      // also check previous and next Gregorian years (edge cases)
+      const solarPrev = solarlunar.lunar2solar(year - 1, 8, 15, false);
+      if (solarPrev && solarPrev.cYear) candidates.push(dayjs(`${solarPrev.cYear}-${String(solarPrev.cMonth).padStart(2,'0')}-${String(solarPrev.cDay).padStart(2,'0')}`));
+      const solarNext = solarlunar.lunar2solar(year + 1, 8, 15, false);
+      if (solarNext && solarNext.cYear) candidates.push(dayjs(`${solarNext.cYear}-${String(solarNext.cMonth).padStart(2,'0')}-${String(solarNext.cDay).padStart(2,'0')}`));
+      // check if any candidate is within ±30 days
+      const withinRange = candidates.some(d => Math.abs(today.diff(d, 'day')) <= 30);
+      if (withinRange) {
+        applyTheme('midautumn');
+      }
+    } catch (e) {
+      console.warn('Mid-Autumn auto-check failed', e);
+    }
+  }
+
   // Load saved theme on initial page load
   window.addEventListener('load', () => {
     const savedTheme = localStorage.getItem('selectedTheme') || 'default';
     applyTheme(savedTheme);
+
+    // Auto-apply Mid-Autumn theme if within ±30 days of lunar 8/15
+    checkAndApplyMidAutumnAutoTheme();
 
     // If dynamic theme, ensure video is playing before trying to get colors
     if (savedTheme === 'dynamic' && bgVideo) {
@@ -2192,6 +2619,241 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
               applyDynamicTheme();
           }
       }, { once: true });
+  }
+
+  // Spawn floating lanterns and subtle stars for Mid-Autumn
+  function spawnLanterns(count = 6) {
+    clearLanterns();
+    const container = document.getElementById('lanternContainer');
+    if (!container) return;
+    const decor = document.getElementById('midautumn-decor');
+    for (let i = 0; i < count; i++) {
+      const l = document.createElement('div');
+      l.className = 'lantern';
+      // random starting position near bottom
+      const startLeft = Math.random() * 80 + 5; // vw
+      const startBottom = Math.random() * 10 + 2; // vh
+      l.style.left = startLeft + 'vw';
+      l.style.bottom = startBottom + 'vh';
+      // random delay & duration for variety
+      const dur = (10 + Math.random() * 10).toFixed(1) + 's';
+      const delay = (Math.random() * 4).toFixed(2) + 's';
+      l.style.animationDuration = dur;
+      l.style.animationDelay = delay;
+      // small horizontal drift using transform during animation via inline random rotate
+      l.style.transform = `translateY(0) rotate(${(Math.random()-0.5)*12}deg)`;
+      l.textContent = '中秋';
+      container.appendChild(l);
+      // gentle remove after animation to keep DOM tidy
+      l.addEventListener('animationend', () => { l.remove(); });
+    }
+    // add a few twinkling stars beneath the big moon
+    for (let s = 0; s < 12; s++) {
+      const star = document.createElement('div');
+      star.className = 'mid-star';
+      star.style.left = (Math.random() * 90 + 2) + 'vw';
+      star.style.top = (Math.random() * 40 + 2) + 'vh';
+      star.style.animationDuration = (1.8 + Math.random()*2.5).toFixed(2) + 's';
+      star.style.animationDelay = (Math.random()*2).toFixed(2) + 's';
+      star.style.zIndex = '-3'; // ensure they don't overlay the big moon
+      decor.appendChild(star);
+      // persistent ambient stars (no timed removal)
+    }
+  }
+
+  function clearLanterns() {
+    const container = document.getElementById('lanternContainer');
+    if (container) container.innerHTML = '';
+    const decor = document.getElementById('midautumn-decor');
+    if (decor) {
+      // remove any leftover stars
+      Array.from(decor.querySelectorAll('.mid-star')).forEach(n => n.remove());
+      // remove big moon when clearing decorations
+      const big = document.getElementById('bigMoon');
+      if (big) { big.style.opacity = '0'; big.classList.remove('rotating'); setTimeout(()=> big.style.backgroundImage='none', 900); }
+      // stop small moon rotation
+      const small = document.querySelector('.mid-moon');
+      if (small) small.classList.remove('rotating');
+    }
+  }
+
+  // Show/hide and configure the giant rotating moon background for mid-autumn
+  function showBigMoon(variant) {
+    const big = document.getElementById('bigMoon');
+    if (!big) return;
+    big.innerHTML = '';
+    big.setAttribute('aria-hidden','false');
+    const lowResPlaceholder = 'GmBbExUXoAAvx4n.jpg';
+    const midResUrl = document.body.classList.contains('theme-midautumn') ? 'super-moon-1080p.png' : 'super-moon-1k.jpg';
+    const highResUrl = 'super-moon-8k-7680x7680-80_imgupscaler.ai_General_16K.jpg';
+    big.style.backgroundImage = `url("${lowResPlaceholder}")`;
+    big.style.backgroundSize = 'cover';
+    big.style.backgroundPosition = 'center';
+    big.style.opacity = '0.98';
+    const scale = (variant.moonSize || 120) / 120;
+    const sizeVMin = Math.min(60 * scale, 60);
+    big.style.width = `${sizeVMin}vmin`;
+    big.style.height = `${sizeVMin}vmin`;
+    big.style.position = 'fixed';
+    big.style.right = '50%';
+    big.style.top = '50%';
+    big.style.transform = 'translate(25%, -50%)';
+    big.style.overflow = 'hidden';
+    const urls = document.body.classList.contains('theme-midautumn')
+      ? [lowResPlaceholder, midResUrl]
+      : [lowResPlaceholder, midResUrl, highResUrl];
+    (function progressiveLoad(urls){
+      let i = 0;
+      function loadNext(){
+        if(i>=urls.length) return;
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.src = urls[i];
+        img.onload = () => {
+          const overlay = document.createElement('div');
+          overlay.style.position = 'absolute';
+          overlay.style.inset = '0';
+          overlay.style.backgroundImage = `url("${urls[i]}")`;
+          overlay.style.backgroundSize = 'cover';
+          overlay.style.backgroundPosition = 'center';
+          overlay.style.opacity = '0';
+          overlay.style.transition = 'opacity .6s ease';
+          overlay.style.pointerEvents = 'none';
+          big.appendChild(overlay);
+          requestAnimationFrame(()=> overlay.style.opacity = '1');
+          setTimeout(()=>{
+            big.style.backgroundImage = `url("${urls[i]}")`;
+            Array.from(big.children).forEach(c => c.remove());
+            // compute avg color from this loaded img and apply bloom
+            const avg = computeAverageColorFromImage(img);
+            applyBloomToElement(big, avg, i === urls.length - 1 ? 1.2 : 0.9);
+            window.__luxPreloader && window.__luxPreloader.inc(6);
+            i++;
+            setTimeout(loadNext, 450);
+          }, 620);
+        };
+        img.onerror = () => { i++; setTimeout(loadNext, 450); };
+      }
+      loadNext();
+    })(urls);
+    void big.offsetWidth;
+    big.classList.add('rotating');
+    // Supermoon: force oversized top position so only part is visible
+    if (document.body.classList.contains('theme-supermoon')) {
+      big.style.width = '120vmin';
+      big.style.height = '120vmin';
+      big.style.right = '8%';
+      big.style.top = '0';
+      big.style.transform = 'translate(0, -35%)';
+    }
+  }
+
+  // Helper: compute average RGB of an image element (samples to a small canvas)
+  function computeAverageColorFromImage(img, sampleSize = 40) {
+    try {
+      const c = document.createElement('canvas');
+      const ctx = c.getContext('2d', { willReadFrequently: true });
+      c.width = sampleSize;
+      c.height = sampleSize;
+      // draw centered and scaled to sample area
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      const d = ctx.getImageData(0, 0, c.width, c.height).data;
+      let r = 0, g = 0, b = 0, count = 0;
+      for (let i = 0; i < d.length; i += 4) {
+        const alpha = d[i+3];
+        if (alpha > 16) {
+          r += d[i]; g += d[i+1]; b += d[i+2]; count++;
+        }
+      }
+      if (!count) return { r: 200, g: 160, b: 80 }; // fallback warm
+      return { r: Math.round(r/count), g: Math.round(g/count), b: Math.round(b/count) };
+    } catch (e) { return { r: 200, g: 160, b: 80 }; }
+  }
+
+  // Helper: apply bloom/glow using computed color
+  function applyBloomToElement(el, rgb, intensity = 1) {
+    if (!el || !rgb) return;
+    const color = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.9)`;
+    // subtle multi-layered glow using filter and box-shadow for compatibility
+    el.style.filter = `drop-shadow(0 0 ${12 * intensity}px ${color})`;
+    el.style.boxShadow = `0 0 ${20 * intensity}px rgba(${rgb.r},${rgb.g},${rgb.b},0.16), 0 30px 80px rgba(0,0,0,0.6)`;
+    // Also set a soft radial overlay via CSS variable for pseudo glow layer if needed
+    el.style.setProperty('--moon-glow', `radial-gradient(circle at 50% 40%, rgba(${rgb.r},${rgb.g},${rgb.b},0.18), transparent 40%)`);
+    // create overlay element if not present to enhance bloom (keeps DOM tidy)
+    let overlay = el.querySelector('.moon-glow-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.className = 'moon-glow-overlay';
+      overlay.style.position = 'absolute';
+      overlay.style.inset = '0';
+      overlay.style.pointerEvents = 'none';
+      overlay.style.borderRadius = '50%';
+      overlay.style.mixBlendMode = 'screen';
+      overlay.style.opacity = '0.9';
+      el.appendChild(overlay);
+    }
+    overlay.style.background = `radial-gradient(circle at 50% 40%, rgba(${rgb.r},${rgb.g},${rgb.b},0.22), rgba(${rgb.r},${rgb.g},${rgb.b},0.08) 30%, transparent 50%)`;
+  }
+
+  // Preloader: hide once window load completes and allow a tiny fade for perceived smoothness
+  window.addEventListener('load', () => {
+    const pre = document.getElementById('preloader');
+    if (!pre) return;
+    // Slight extra delay so heavy assets (like the big moon viewer) get a head start
+    setTimeout(() => pre.classList.add('hidden'), 220);
+    // remove from DOM after transition to free nodes (optional)
+    setTimeout(() => pre.remove(), 900);
+  });
+
+  /* Luxurious preloader controller */
+  (function(){
+    const bar = document.getElementById('progressBar');
+    const pct = document.getElementById('progressPercent');
+    let value = 0;
+    let ticking = false;
+    // smooth pseudo-progress until window load (cap at 94%); on heavy asset signals push higher
+    function step() {
+      if (value < 94) {
+        value += Math.max(0.12, (94 - value) * 0.01); // decelerating increment
+        updateUI();
+        requestAnimationFrame(step);
+      } else {
+        ticking = false;
+      }
+    }
+    function updateUI(){ if(bar){ bar.style.width = value.toFixed(1) + '%'; bar.setAttribute('aria-valuenow', Math.round(value)); } if(pct) pct.textContent = Math.round(value) + '%'; }
+    // Kick off gentle progress
+    if(!ticking){ ticking = true; requestAnimationFrame(step); }
+    // If OpenSeadragon viewer reports tile-loaded events, boost progress
+    document.addEventListener('osd-tile-loaded', ()=>{ value = Math.min(98, value + 6); updateUI(); });
+    // On window load finalize progress and hide preloader smoothly
+    window.addEventListener('load', ()=> {
+      // quick ramp to 100%
+      value = 100;
+      updateUI();
+      const pre = document.getElementById('preloader');
+      if(pre){
+        pre.classList.add('hidden');
+        setTimeout(()=>{ try{ pre.remove(); }catch(e){} }, 700);
+      }
+    });
+    // Expose small API for other code to nudge progress
+    window.__luxPreloader = {
+      set(v){ value = Math.min(100, Math.max(value, v)); updateUI(); },
+      inc(delta=4){ value = Math.min(100, value + delta); updateUI(); }
+    };
+  })();
+
+  // Hook into showBigMoon success to nudge preloader when big image OSD viewer is ready
+  const originalShowBigMoon = window.showBigMoon;
+  if (typeof originalShowBigMoon === 'function') {
+    window.showBigMoon = function(variant){
+      originalShowBigMoon(variant);
+      // nudge progress after starting big-moon load
+      window.__luxPreloader && window.__luxPreloader.inc(8);
+      // when OSD viewer initializes, dispatch a custom event (handled above)
+      setTimeout(()=>{ document.dispatchEvent(new Event('osd-tile-loaded')); }, 600);
+    };
   }
 </script>
 </body>
