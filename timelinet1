@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Đã thay đổi tiêu đề -->
+    <title>Hhuyer — Selected Works</title>
+    
+    <!-- Fonts: Outfit (Geometric Modern) + Space Mono (Tech) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* 
+         * ——————————————————————————————————————————————
+         * 2025 DESIGN SYSTEM
+         * Atmosphere. Depth. Motion.
+         * ——————————————————————————————————————————————
+         */
+        :root {
+            --bg-color: #030304;
+            --text-main: #ededed;
+            --text-muted: #888888;
+            --accent: #5046e5; /* Deep Indigo */
+            --accent-glow: #7c3aed;
+            
+            --bar-bg: rgba(255, 255, 255, 0.08);
+            --bar-border: rgba(255, 255, 255, 0.1);
+            --glass: blur(12px);
+            
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            user-select: none;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Cinematic Noise Overlay */
+        .noise {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: overlay;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: fixed;
+            top: 32px; left: 32px;
+            z-index: 50;
+            pointer-events: none;
+            mix-blend-mode: difference;
+        }
+        .logo { font-weight: 800; letter-spacing: -0.02em; font-size: 1.2rem; display: block; text-transform: uppercase; }
+        .tagline { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-top: 4px; }
+
+        /* --- TOP SECTION (Project Detail) --- */
+        main {
+            height: 82vh;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 45% 55%;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Left: Info */
+        .info-panel {
+            padding: 0 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .meta-wrapper {
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .meta-line {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent-glow);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            transform: translateY(0);
+            transition: transform 0.5s var(--ease-out-expo);
+        }
+
+        .status-dot {
+            width: 6px; height: 6px; 
+            background: currentColor; 
+            border-radius: 50%;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .title-wrapper { overflow: hidden; margin-bottom: 24px; }
+        
+        h1 {
+            font-size: 4.5rem;
+            line-height: 0.95;
+            font-weight: 600;
+            letter-spacing: -0.04em;
+            background: linear-gradient(to right, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transform: translateY(0);
+            will-change: transform;
+        }
+
+        .desc-wrapper { overflow: hidden; margin-bottom: 32px; }
+        
+        p.description {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            color: var(--text-muted);
+            max-width: 480px;
+            transform: translateY(0);
+        }
+
+        .tech-stack {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            opacity: 1;
+            transition: opacity 0.5s;
+        }
+
+        .tech-tag {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            padding: 6px 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* Animation Classes for Text */
+        .anim-out { transform: translateY(-100%) skewY(2deg); opacity: 0; transition: transform 0.4s ease-in, opacity 0.4s; }
+        .anim-in { transform: translateY(100%) skewY(2deg); opacity: 0; }
+        .anim-reset { transform: translateY(0) skewY(0); opacity: 1; transition: transform 0.6s var(--ease-out-expo), opacity 0.6s; }
+
+        /* Right: Image */
+        .image-panel {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .img-container {
+            width: 100%; height: 100%;
+            position: absolute;
+            top: 0; left: 0;
+            transition: transform 1.2s var(--ease-out-expo), opacity 0.8s ease;
+        }
+
+        .img-container img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: grayscale(40%) contrast(110%);
+        }
+
+        .img-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, var(--bg-color) 0%, transparent 40%);
+        }
+
+        /* --- TIMELINE (Bottom 18%) --- */
+        #timeline-container {
+            position: fixed;
+            bottom: 0; left: 0;
+            width: 100%; height: 18vh;
+            background: rgba(10,10,12,0.6);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            z-index: 100;
+            cursor: grab;
+            overflow: hidden;
+            touch-action: none;
+        }
+        #timeline-container:active { cursor: grabbing; }
+
+        .center-guide {
+            position: absolute;
+            left: 50%; top: 0;
+            height: 100%; width: 1px;
+            background: linear-gradient(to bottom, transparent, var(--accent), transparent);
+            z-index: 50;
+            pointer-events: none;
+            opacity: 0.5;
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        .track {
+            position: absolute;
+            top: 0; left: 0;
+            height: 100%;
+            will-change: transform;
+            display: flex;
+            align-items: center; /* Vertical center alignment for items */
+        }
+
+        /* Project Bars */
+        .bar-wrapper {
+            position: absolute;
+            height: 30%; /* Base height */
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: height 0.3s var(--ease-elastic), top 0.3s, filter 0.3s;
+        }
+
+        .bar-inner {
+            width: 100%;
+            height: 100%;
+            background: var(--bar-bg);
+            border: 1px solid var(--bar-border);
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+        
+        /* The "Sacred" Stacking Visualization */
+        /* Shorter projects (Higher Z) get brighter/cleaner. 
+           Longer projects (Lower Z) get darker/muted. */
+        .bar-wrapper[data-duration="short"] .bar-inner { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.2); }
+        .bar-wrapper[data-duration="long"] .bar-inner { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05); }
+
+        /* Active State */
+        .bar-wrapper.active {
+            height: 45%; /* Grow */
+            z-index: 999 !important; /* Force top when active? Or keep stacking logic? Let's keep logic but glow. */
+        }
+
+        .bar-wrapper.active .bar-inner {
+            background: rgba(255,255,255,0.9);
+            border-color: #fff;
+            box-shadow: 0 0 30px rgba(255,255,255,0.15), 0 0 10px var(--accent);
+        }
+        
+        /* Label on Hover */
+        .bar-label {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            font-family: 'Space Mono';
+            font-size: 10px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s var(--ease-out-expo);
+            white-space: nowrap;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        .bar-wrapper:hover .bar-label {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .bar-wrapper:hover .bar-inner {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* --- RESPONSIVE MOBILE --- */
+        @media (max-width: 780px) {
+            header { top: 20px; left: 24px; }
+            main {
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+            }
+
+            .image-panel {
+                order: 1;
+                height: 50%;
+                mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+                -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            }
+            
+            .info-panel {
+                order: 2;
+                height: 50%;
+                padding: 0 24px 100px 24px; /* Space for timeline */
+                justify-content: flex-start;
+            }
+
+            h1 { font-size: 2.5rem; margin-bottom: 16px; }
+            p.description { font-size: 0.95rem; }
+
+            /* Vertical Timeline */
+            #timeline-container {
+                width: 70px;
+                height: 100vh;
+                left: auto; right: 0; top: 0;
+                border-top: none;
+                border-left: 1px solid rgba(255,255,255,0.05);
+                background: rgba(0,0,0,0.6);
+            }
+
+            .center-guide {
+                width: 100%; height: 1px;
+                left: 0; top: 50%;
+                background: linear-gradient(to right, transparent, var(--accent), transparent);
+            }
+
+            .bar-wrapper {
+                width: 30%; /* Base width */
+                height: auto; /* Height set by JS duration */
+                left: 50%; /* Centered horizontally */
+                transform: translateX(-50%);
+            }
+
+            .bar-wrapper.active { width: 50%; }
+            .bar-label { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="noise"></div>
+
+    <header>
+        <!-- Đã thay đổi Logo -->
+        <span class="logo">HHUYER</span>
+        <span class="tagline">Building things on the internet</span>
+    </header>
+
+    <main>
+        <div class="info-panel">
+            <div class="meta-wrapper">
+                <div class="meta-line" id="meta-line">
+                    <div class="status-dot"></div>
+                    <span id="p-year">2025</span>
+                    <span id="p-status">IN PROGRESS</span>
+                </div>
+            </div>
+
+            <div class="title-wrapper">
+                <h1 id="p-title">Project Title</h1>
+            </div>
+
+            <div class="desc-wrapper">
+                <p class="description" id="p-desc">
+                    Project description awaiting data.
+                </p>
+            </div>
+
+            <div class="tech-stack" id="p-tech">
+                <!-- Tags -->
+            </div>
+        </div>
+
+        <div class="image-panel">
+            <div class="img-overlay"></div>
+            <!-- Double buffer for smooth image transitions -->
+            <div class="img-container" id="img-c-1" style="opacity: 1; z-index: 2;"><img id="img-1" src=""></div>
+            <div class="img-container" id="img-c-2" style="opacity: 0; z-index: 1;"><img id="img-2" src=""></div>
+        </div>
+    </main>
+
+    <!-- Timeline -->
+    <div id="timeline-container">
+        <div class="center-guide"></div>
+        <div class="track" id="track">
+            <!-- Bars injected via JS -->
+        </div>
+    </div>
+
+    <script>
+        // ——————————————————————————————————————————————————————————
+        // 1. DATA (Overlap & Stacking Rules Apply)
+        // ——————————————————————————————————————————————————————————
+        const projects = [
+            {
+                id: 0,
+                title: "Sentient AI",
+                start: "2024-09",
+                end: "2025-06", // Ongoing
+                status: "Ongoing",
+                desc: "A latency-free voice interface for LLMs. Stripped away chat bubbles for a pure, fluid audio stream visualization.",
+                tech: ["WebSockets", "React", "OpenAI Realtime", "WebGL"],
+                img: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2500&auto=format&fit=crop"
+            },
+            {
+                id: 1,
+                title: "Vesper Protocol",
+                start: "2023-11",
+                end: "2024-12", // Overlaps with Sentient, Long
+                status: "Shipped",
+                desc: "DeFi dashboard aggregating yield data across 12 chains. Heavy focus on information density and keyboard navigation.",
+                tech: ["Next.js", "Tailwind", "Viem", "Postgres"],
+                img: "https://images.unsplash.com/photo-1642104704074-907c0698cbd9?q=80&w=2500&auto=format&fit=crop"
+            },
+            {
+                id: 2,
+                title: "Mono Systems",
+                start: "2024-01",
+                end: "2024-04", // Short, Nested inside Vesper
+                status: "Internal",
+                desc: "A brutalist design system built for internal data tools. Zero layout shift, 100% accessibility compliance.",
+                tech: ["Lit", "CSS Modules", "Storybook"],
+                img: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2500&auto=format&fit=crop"
+            },
+            {
+                id: 3,
+                title: "Oculi Portfolio",
+                start: "2023-01",
+                end: "2023-10", // Medium
+                status: "Shipped",
+                desc: "Infinite canvas portfolio for a Berlin photographer. Custom progressive image loader for instant LCP.",
+                tech: ["Nuxt 3", "GSAP", "Cloudinary"],
+                img: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2500&auto=format&fit=crop"
+            },
+            {
+                id: 4,
+                title: "Sonic Playground",
+                start: "2022-08",
+                end: "2022-12", // Short
+                status: "Experiment",
+                desc: "Browser-based spatial audio mixer. Drag sound sources in 3D space to manipulate panning and reverb.",
+                tech: ["Three.js", "Web Audio API", "Zustand"],
+                img: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=2500&auto=format&fit=crop"
+            },
+            {
+                id: 5,
+                title: "Hyperion Fleet",
+                start: "2021-06",
+                end: "2022-11", // Long overlap
+                status: "Archived",
+                desc: "Drone telemetry interface. High-contrast UI designed for readability under direct sunlight usage.",
+                tech: ["Svelte", "Mapbox GL", "MQTT"],
+                img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2500&auto=format&fit=crop"
+            },
+            {
+                id: 6,
+                title: "Type Foundry",
+                start: "2021-02",
+                end: "2021-08",
+                status: "Shipped",
+                desc: "E-commerce for custom typography. Built a custom font-renderer on canvas to prevent font piracy.",
+                tech: ["Gatsby", "Shopify API", "Canvas"],
+                img: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=2500&auto=format&fit=crop"
+            },
+            {
+                id: 7,
+                title: "CLI v1",
+                start: "2021-01",
+                end: "2021-03", // Very short
+                status: "Legacy",
+                desc: "My first portfolio. A command line interface in the browser. Functional but confusing for recruiters.",
+                tech: ["Vanilla JS", "HTML", "CSS"],
+                img: "https://images.unsplash.com/photo-1555099962-4199c345e5dd?q=80&w=2500&auto=format&fit=crop"
+            }
+        ];
+
+        // ——————————————————————————————————————————————————————————
+        // 2. LOGIC & MATH
+        // ——————————————————————————————————————————————————————————
+        
+        const track = document.getElementById('track');
+        const container = document.getElementById('timeline-container');
+        
+        // Time constants
+        const START_DATE = new Date("2021-01-01").getTime();
+        const END_DATE = new Date("2025-12-31").getTime();
+        const TOTAL_MS = END_DATE - START_DATE;
+
+        let isVertical = window.innerWidth <= 780;
+        let TRACK_LENGTH = isVertical ? 2000 : 3000; // Virtual px size
+        let OFFSET_PADDING = isVertical ? container.offsetHeight / 2 : container.offsetWidth / 2;
+
+        function getPct(dateStr) {
+            const d = new Date(dateStr + "-01").getTime();
+            return Math.max(0, Math.min(1, (d - START_DATE) / TOTAL_MS));
+        }
+
+        // Render Timeline
+        function initTimeline() {
+            track.innerHTML = '';
+            
+            projects.forEach((p, i) => {
+                const startPct = getPct(p.start);
+                const endPct = getPct(p.end);
+                const durationPct = Math.max(endPct - startPct, 0.02); // Min size
+
+                // Calculate Stacking Order (The Sacred Rule)
+                // Duration in ms
+                const dStart = new Date(p.start + "-01").getTime();
+                const dEnd = new Date(p.end + "-01").getTime();
+                const durationMs = dEnd - dStart;
+                
+                // Z-Index: Inverse to duration. 
+                // Max duration approx 4 years. 
+                // Smaller duration = Higher Z.
+                const zIndex = 100 - Math.floor(durationMs / (1000 * 60 * 60 * 24 * 30)); 
+
+                const bar = document.createElement('div');
+                bar.className = 'bar-wrapper';
+                bar.dataset.id = i;
+                
+                // Style attributes for duration visualization
+                bar.dataset.duration = durationPct < 0.1 ? 'short' : 'long';
+                
+                // Position logic
+                if (isVertical) {
+                    bar.style.top = `${startPct * 100}%`;
+                    bar.style.height = `${durationPct * 100}%`;
+                    bar.style.zIndex = zIndex;
+                    // Jitter X slightly to show overlap
+                    const jitter = (i % 3) * 10 - 10; // -10, 0, 10
+                    bar.style.transform = `translateX(calc(-50% + ${jitter}px))`;
+                } else {
+                    bar.style.left = `${startPct * 100}%`;
+                    bar.style.width = `${durationPct * 100}%`;
+                    bar.style.zIndex = zIndex;
+                    // Jitter Y slightly
+                    const jitter = (i % 3) * 15 - 15; // -15, 0, 15
+                    bar.style.top = `calc(50% + ${jitter}px)`;
+                }
+
+                // Inner content
+                bar.innerHTML = `
+                    <div class="bar-inner"></div>
+                    <span class="bar-label">${p.title}</span>
+                `;
+
+                // Calculate center point in Pixels relative to track start
+                p.centerPx = (startPct * TRACK_LENGTH) + ((durationPct * TRACK_LENGTH) / 2);
+
+                track.appendChild(bar);
+            });
+
+            // Set track dimensions
+            if(isVertical) {
+                track.style.height = `${TRACK_LENGTH}px`;
+                track.style.width = '100%';
+            } else {
+                track.style.width = `${TRACK_LENGTH}px`;
+                track.style.height = '100%';
+            }
+        }
+
+        // ——————————————————————————————————————————————————————————
+        // 3. PHYSICS ENGINE (Inertia + Spring Snap)
+        // ——————————————————————————————————————————————————————————
+
+        let currentPos = 0;
+        let velocity = 0;
+        let isDragging = false;
+        let lastPos = 0;
+        let activeIndex = -1;
+        
+        function updatePhysics() {
+            // Apply Friction
+            if (!isDragging) {
+                velocity *= 0.92;
+                currentPos += velocity;
+
+                // Spring Snap to Active Project Center when slow
+                if (Math.abs(velocity) < 0.5 && activeIndex !== -1) {
+                    const target = -projects[activeIndex].centerPx + OFFSET_PADDING;
+                    const delta = target - currentPos;
+                    
+                    // Spring force
+                    currentPos += delta * 0.08; 
+                }
+            }
+            
+            // Bounds (Soft limits)
+            const min = -TRACK_LENGTH + OFFSET_PADDING;
+            const max = OFFSET_PADDING;
+            
+            if (currentPos > max + 50) currentPos = max + 50; // Rubber band effect logic omitted for simplicity, hard clamp + buffer
+            if (currentPos < min - 50) currentPos = min - 50;
+
+            // Render
+            if (isVertical) {
+                track.style.transform = `translate3d(0, ${currentPos}px, 0)`;
+            } else {
+                track.style.transform = `translate3d(${currentPos}px, 0, 0)`;
+            }
+
+            // Live Selection
+            detectActiveProject();
+
+            requestAnimationFrame(updatePhysics);
+        }
+
+        function detectActiveProject() {
+            // Find closet project to the OFFSET_PADDING (Viewport Center)
+            let minDist = Infinity;
+            let closest = -1;
+            
+            projects.forEach((p, i) => {
+                const worldPos = p.centerPx + currentPos;
+                const dist = Math.abs(worldPos - OFFSET_PADDING);
+                if (dist < minDist) {
+                    minDist = dist;
+                    closest = i;
+                }
+            });
+
+            if (closest !== -1 && closest !== activeIndex) {
+                updateUI(closest);
+            }
+        }
+
+        // ——————————————————————————————————————————————————————————
+        // 4. UI TRANSITIONS
+        // ——————————————————————————————————————————————————————————
+        
+        const dom = {
+            title: document.getElementById('p-title'),
+            desc: document.getElementById('p-desc'),
+            tech: document.getElementById('p-tech'),
+            meta: document.getElementById('meta-line'),
+            year: document.getElementById('p-year'),
+            status: document.getElementById('p-status'),
+            imgC1: document.getElementById('img-c-1'),
+            imgC2: document.getElementById('img-c-2'),
+            img1: document.getElementById('img-1'),
+            img2: document.getElementById('img-2')
+        };
+        
+        let usingBuffer1 = true;
+
+        function updateUI(index) {
+            activeIndex = index;
+            const p = projects[index];
+
+            // 1. Highlight Bar
+            document.querySelectorAll('.bar-wrapper').forEach(b => b.classList.remove('active'));
+            const activeBar = document.querySelector(`.bar-wrapper[data-id="${index}"]`);
+            if(activeBar) activeBar.classList.add('active');
+
+            // 2. Animate Text Out
+            const elements = [dom.title, dom.desc, dom.tech, dom.meta];
+            elements.forEach(el => {
+                el.classList.remove('anim-reset');
+                el.classList.add('anim-out');
+            });
+
+            // 3. Swap Content & Animate In (Delay for "magic" feel)
+            setTimeout(() => {
+                // Update Text
+                dom.title.textContent = p.title;
+                dom.desc.textContent = p.desc;
+                dom.year.textContent = p.start.split('-')[0];
+                dom.status.textContent = p.status;
+                
+                // Tech Tags
+                dom.tech.innerHTML = p.tech.map(t => `<span class="tech-tag">${t}</span>`).join('');
+
+                // Trigger Anim In
+                elements.forEach(el => {
+                    el.classList.remove('anim-out');
+                    el.classList.add('anim-in');
+                    
+                    // Force reflow
+                    void el.offsetWidth;
+                    
+                    el.classList.remove('anim-in');
+                    el.classList.add('anim-reset');
+                });
+
+            }, 300);
+
+            // 4. Image Crossfade (Double Buffer)
+            const targetContainer = usingBuffer1 ? dom.imgC2 : dom.imgC1;
+            const targetImg = usingBuffer1 ? dom.img2 : dom.img1;
+            const prevContainer = usingBuffer1 ? dom.imgC1 : dom.imgC2;
+
+            targetImg.src = p.img;
+            
+            // Wait for load if possible, else just fade
+            targetContainer.style.zIndex = 2;
+            prevContainer.style.zIndex = 1;
+            
+            targetContainer.style.opacity = 1;
+            targetContainer.style.transform = 'scale(1)';
+            
+            prevContainer.style.opacity = 0;
+            prevContainer.style.transform = 'scale(1.1)'; // Subtle zoom out on exit
+
+            usingBuffer1 = !usingBuffer1;
+        }
+
+        // ——————————————————————————————————————————————————————————
+        // 5. INPUT HANDLING
+        // ——————————————————————————————————————————————————————————
+
+        function onPointerDown(e) {
+            isDragging = true;
+            lastPos = isVertical ? e.clientY : e.clientX;
+            velocity = 0;
+            container.setPointerCapture(e.pointerId);
+            container.style.cursor = 'grabbing';
+        }
+
+        function onPointerMove(e) {
+            if (!isDragging) return;
+            const client = isVertical ? e.clientY : e.clientX;
+            const delta = client - lastPos;
+            currentPos += delta;
+            velocity = delta; 
+            lastPos = client;
+        }
+
+        function onPointerUp(e) {
+            isDragging = false;
+            container.style.cursor = 'grab';
+        }
+
+        container.addEventListener('pointerdown', onPointerDown);
+        container.addEventListener('pointermove', onPointerMove);
+        container.addEventListener('pointerup', onPointerUp);
+        container.addEventListener('pointercancel', onPointerUp);
+        
+        window.addEventListener('wheel', (e) => {
+            if (isDragging) return;
+            let delta = isVertical ? e.deltaY : e.deltaX;
+            // Handle shift-scroll for horizontal on desktop
+            if (!isVertical && e.deltaY && !e.deltaX) delta = e.deltaY;
+            
+            velocity -= delta * 0.5;
+        }, { passive: true });
+
+        // Resize
+        window.addEventListener('resize', () => {
+            const newVertical = window.innerWidth <= 780;
+            if (newVertical !== isVertical) {
+                isVertical = newVertical;
+                TRACK_LENGTH = isVertical ? 2000 : 3000;
+                OFFSET_PADDING = isVertical ? container.offsetHeight / 2 : container.offsetWidth / 2;
+                initTimeline();
+            }
+        });
+
+        // ——————————————————————————————————————————————————————————
+        // INIT
+        // ——————————————————————————————————————————————————————————
+        initTimeline();
+        
+        // Initial Scroll to latest/first
+        setTimeout(() => {
+            const startIdx = 0;
+            updateUI(startIdx);
+            currentPos = -projects[startIdx].centerPx + OFFSET_PADDING;
+            updatePhysics();
+        }, 50);
+
+    </script>
+</body>
+</html>198
