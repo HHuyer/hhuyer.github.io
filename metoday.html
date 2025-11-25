@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Auto Journal & Lịch sử</title>
+    <!-- Supabase v2 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Styling tương tự bản cũ, thêm style cho Calendar */
+        :root {
+            --bg-color: #cd8e75; --card-bg: #eaddcf; --text-primary: #3e2723;
+            --text-secondary: #5d4037; --accent: #8d6e63;
+            --white-glass: rgba(255, 255, 255, 0.5);
+            --improvement-color: #bf360c; /* Cam cháy */
+            --success-color: #2e7d32;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Quicksand', sans-serif; background-color: var(--bg-color); color: var(--text-primary); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .app-container { width: 100%; max-width: 500px; background: transparent; position: relative; }
+        .main-card { background-color: var(--card-bg); border-radius: 24px; padding: 30px; box-shadow: 0 10px 30px rgba(62, 39, 35, 0.2); }
+        
+        /* Tabs */
+        .tabs { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
+        .tab-btn { background: rgba(62, 39, 35, 0.1); border: none; padding: 10px 20px; border-radius: 20px; color: #3e2723; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .tab-btn.active { background: #3e2723; color: #eaddcf; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: fadeIn 0.4s ease; }
+
+        h1 { font-family: 'Playfair Display', serif; font-size: 2rem; font-style: italic; text-align: center; color: var(--text-primary); margin-bottom: 5px; }
+        .date-display { text-align: center; opacity: 0.7; font-family: 'Playfair Display'; margin-bottom: 20px; }
+        
+        textarea { width: 100%; height: 150px; background: var(--white-glass); border: none; border-radius: 12px; padding: 15px; font-family: 'Quicksand', sans-serif; resize: none; outline: none; line-height: 1.6; color: var(--text-primary); font-size: 16px; margin-bottom: 15px; border: 1px solid rgba(62,39,35,0.1); }
+        textarea:focus { background: white; }
+
+        .btn-group { display: flex; gap: 10px; margin-bottom: 10px;}
+        .btn-magic, .btn-secondary { width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.95rem; }
+        
+        .btn-magic { background: var(--text-primary); color: #fff; }
+        .btn-magic:hover { background: #2c1b18; transform: translateY(-1px); }
+        .btn-magic:disabled { opacity: 0.7; cursor: wait; }
+
+        .btn-secondary { background: rgba(62, 39, 35, 0.1); color: var(--text-primary); }
+        .btn-secondary:hover { background: rgba(62, 39, 35, 0.2); }
+
+        /* Kết quả từ AI */
+        .ai-result { display: none; margin-top: 25px; border-top: 1px dashed rgba(62,39,35,0.3); padding-top: 20px; animation: fadeIn 0.5s ease; }
+        .result-row { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .badge { padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; }
+        .badge-mood { background: var(--accent); color: white; }
+        .badge-score { background: var(--improvement-color); color: white; }
+        
+        .ai-box { background: rgba(255,255,255,0.4); padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+        .ai-label { font-size: 0.75rem; text-transform: uppercase; font-weight: bold; opacity: 0.7; margin-bottom: 5px; letter-spacing: 1px; color: var(--text-secondary); }
+        .ai-text { font-style: italic; line-height: 1.5; font-size: 0.95rem; }
+
+        /* Sửa lại status-msg để dùng màu CSS trực tiếp */
+        .status-msg.success { color: var(--success-color); }
+        .status-msg.error { color: var(--improvement-color); }
+        .status-msg { text-align: center; margin-top: 10px; font-size: 0.8rem; height: 20px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Calendar Styles */
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .cal-nav { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-primary); }
+        .cal-month-title { font-family: 'Playfair Display', serif; font-weight: bold; font-size: 1.2rem; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 20px; }
+        .day-name { text-align: center; font-size: 0.7rem; font-weight: bold; opacity: 0.6; margin-bottom: 5px; }
+        
+        .cal-day {
+            aspect-ratio: 1; background: rgba(255,255,255,0.3); border-radius: 8px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 0.8rem; color: var(--text-secondary); position: relative; cursor: pointer;
+            transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .cal-day.has-data { color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        /* Map Mood to Color for Calendar */
+        .cal-day.mood-great { background-color: #38761d; } /* Xanh lá đậm */
+        .cal-day.mood-normal { background-color: #8d6e63; } /* Nâu sáng */
+        .cal-day.mood-tired { background-color: #d7ccc8; color: #5d4037;} /* Be nhạt */
+        .cal-day.mood-stress { background-color: #bf360c; } /* Cam cháy */
+        .cal-day.mood-sad { background-color: #546e7a; } /* Xanh xám */
+        .cal-day.today { border: 2px dashed var(--improvement-color); color: var(--text-primary); }
+        .cal-stat { font-size: 0.65rem; font-weight: bold; margin-top: 2px; }
+
+        .total-summary { text-align: center; padding-top: 20px; border-top: 1px dashed rgba(62,39,35,0.3); font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--text-primary); }
+        .highlight-percent { font-size: 1.4rem; font-weight: bold; color: var(--improvement-color); }
+
+        /* Thêm style cho box Giải pháp đề xuất */
+        #resSolutionBox { 
+            background: rgba(255,255,255,0.4); 
+            padding: 15px; 
+            border-radius: 12px; 
+            margin-bottom: 15px; 
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('input')">Viết Hôm Nay</button>
+        <button class="tab-btn" onclick="switchTab('calendar')">Lịch sử & Tổng kết</button>
+    </div>
+
+    <!-- VIEW 1: INPUT & AI ANALYSIS -->
+    <div id="view-input" class="view-section active main-card">
+        <div class="date-display" id="dateDisplay">...</div>
+        <h1>Nhật Ký Tự Động</h1>
+        
+        <textarea id="journalInput" oninput="saveDraft()" placeholder="Hôm nay bạn thế nào? Kể cho tôi nghe..."></textarea>
+        
+        <div class="btn-group">
+            <button class="btn-magic" onclick="processJournal()">
+                <span>✨ Phân Tích & Lưu Entry</span>
+            </button>
+            <button class="btn-secondary" onclick="clearEntry()">
+                <span>🗑️ Dọn sạch</span>
+            </button>
+        </div>
+        <!-- Thêm class để dễ dàng đổi màu trạng thái -->
+        <div id="status" class="status-msg"></div>
+
+        <!-- KẾT QUẢ AI TỰ ĐIỀN -->
+        <div id="aiResult" class="ai-result">
+            <div class="result-row">
+                <div>Mood: <span id="resMood" class="badge badge-mood">...</span></div>
+                <div>Điểm Cải thiện: <span id="resScore" class="badge badge-score">...</span></div>
+            </div>
+
+            <div class="ai-box">
+                <div class="ai-label">Tóm tắt nhanh</div>
+                <div id="resSummary" class="ai-text">...</div>
+            </div>
+            
+            <!-- Box Giải pháp đề xuất mới -->
+            <div id="resSolutionBox">
+                <div class="ai-label">Giải pháp đề xuất</div>
+                <!-- Hiển thị nội dung giải pháp từ trường AI Tâm sự -->
+                <div id="resSolution" class="ai-text">...</div>
+            </div>
+
+            <div class="ai-box" style="background: rgba(46, 125, 50, 0.1); border-left: 3px solid var(--success-color);">
+                <div class="ai-label">AI Tâm sự (Đồng cảm & Động viên)</div>
+                <div id="resOpinion" class="ai-text">...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW 2: CALENDAR & HISTORY -->
+    <div id="view-calendar" class="view-section main-card">
+        <div class="cal-header">
+            <button class="cal-nav" onclick="changeMonth(-1)">&#10094;</button>
+            <span class="cal-month-title" id="calMonthTitle">Tháng 11 2025</span>
+            <button class="cal-nav" onclick="changeMonth(1)">&#10095;</button>
+        </div>
+
+        <!-- Header days -->
+        <div class="calendar-grid" style="margin-bottom: 5px;">
+            <div class="day-name">CN</div><div class="day-name">T2</div><div class="day-name">T3</div>
+            <div class="day-name">T4</div><div class="day-name">T5</div><div class="day-name">T6</div><div class="day-name">T7</div>
+        </div>
+        
+        <!-- Calendar Days Generated Here -->
+        <div class="calendar-grid" id="calendarGrid"></div>
+
+        <div class="total-summary">
+            Bạn đã tốt lên tổng cộng: <span class="highlight-percent" id="totalPercent">...%</span>
+            <div style="font-size: 0.8rem; font-family: 'Quicksand'; opacity: 0.7; margin-top:5px">Số điểm này được tích lũy từ những hành động cải thiện bản thân của bạn.</div>
+        </div>
+        <div id="calendar-status" class="status-msg" style="color: var(--text-secondary); margin-top: 15px;"></div>
+    </div>
+</div>
+
+<script>
+    // --- 1. CẤU HÌNH SUPABASE & API ---
+    
+    // ĐIỀN OPENROUTER API KEY CỦA BẠN VÀO ĐÂY:
+    const OPENROUTER_API_KEY = "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"; 
+    const SUPABASE_URL = 'https://qfmtqtvxeancxlcmvtza.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmbXRxdHZ4ZWFuY3hsY212dHphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwMTY4NTQsImV4cCI6MjA3MTU5Mjg1NH0.kyPxSzMCb0P3B9YnVkLB1hkopbtXmef7fu1lL6GhyQQ';
+
+    // Khởi tạo Supabase Client
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+    // --- BIẾN TOÀN CỤC & SETUP NGÀY THÁNG ---
+    const DRAFT_KEY = 'journalDraft';
+    const today = new Date();
+    const entryDate = today.toISOString().split('T')[0]; // YYYY-MM-DD
+    
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+    let historyData = {}; // Cache dữ liệu lịch sử từ Supabase
+
+    // --- 2. XỬ LÝ NHẬP LIỆU & NHÁP (GLOBAL FUNCTIONS) ---
+
+    // Đặt các hàm này ở phạm vi toàn cục để HTML onclick có thể truy cập
+    function saveDraft() {
+        const text = document.getElementById('journalInput').value;
+        localStorage.setItem(DRAFT_KEY, text);
+    }
+
+    function loadDraft() {
+        const draft = localStorage.getItem(DRAFT_KEY);
+        if (draft) {
+            document.getElementById('journalInput').value = draft;
+            const statusEl = document.getElementById('status');
+            statusEl.innerText = "Đã khôi phục bản nháp chưa lưu.";
+            statusEl.classList.add('success');
+            statusEl.classList.remove('error');
+        }
+    }
+
+    function clearEntry() {
+        // Thay alert() bằng console.log hoặc modal tùy chỉnh nếu đây là ứng dụng thực tế
+        if (confirm("Bạn có chắc chắn muốn xóa bài viết đang dang dở không?")) {
+            document.getElementById('journalInput').value = '';
+            localStorage.removeItem(DRAFT_KEY);
+            document.getElementById('aiResult').style.display = 'none';
+            const statusEl = document.getElementById('status');
+            statusEl.innerText = "Đã dọn sạch. Bắt đầu entry mới!";
+            statusEl.classList.add('success');
+            statusEl.classList.remove('error');
+        }
+    }
+
+    function switchTab(tabName) {
+        document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById('view-' + tabName).classList.add('active');
+        document.querySelectorAll('.tab-btn')[tabName === 'input' ? 0 : 1].classList.add('active');
+
+        if (tabName === 'calendar') {
+            fetchHistoryAndRender();
+        }
+    }
+
+
+    // --- 3. XỬ LÝ CHÍNH: AI & LƯU SUPABASE (GLOBAL FUNCTION) ---
+    async function processJournal() {
+        const text = document.getElementById('journalInput').value;
+        const status = document.getElementById('status');
+        const btn = document.querySelector('.btn-magic');
+
+        if (!text.trim()) { 
+            status.innerText = "Viết gì đó đi bạn ơi!"; 
+            status.classList.add('error');
+            status.classList.remove('success');
+            return; 
+        }
+        // Thay alert() bằng console.error hoặc modal tùy chỉnh
+        if (OPENROUTER_API_KEY.includes("YOUR-KEY")) { 
+            console.error("Vui lòng điền OpenRouter API Key của bạn vào biến OPENROUTER_API_KEY trong thẻ <script>.");
+            status.innerText = "LỖI CẤU HÌNH: Chưa điền API Key.";
+            status.classList.add('error');
+            status.classList.remove('success');
+            return;
+        }
+
+        // UI Loading
+        btn.disabled = true;
+        btn.innerHTML = "🧠 AI đang đọc & suy nghĩ...";
+        status.innerText = "";
+        status.classList.remove('success', 'error');
+        
+        try {
+            // A. GỌI AI ĐỂ PHÂN TÍCH
+            const aiData = await callAI(text);
+            
+            // B. HIỂN THỊ KẾT QUẢ LÊN MÀN HÌNH
+            document.getElementById('resMood').innerText = aiData.mood;
+            // Dữ liệu từ AI vẫn là 'improvement'
+            document.getElementById('resScore').innerText = aiData.improvement + "%";
+            document.getElementById('resSummary').innerText = aiData.tomtat;
+            
+            // AI Tâm sự chứa cả phần đề xuất giải pháp (do đã gộp trong prompt)
+            document.getElementById('resSolution').innerText = aiData.tamsucuaAI; 
+            document.getElementById('resOpinion').innerText = aiData.tamsucuaAI;
+            document.getElementById('aiResult').style.display = 'block';
+
+            // C. LƯU VÀO SUPABASE
+            btn.innerHTML = "💾 Đang lưu vào Database...";
+            
+            // CHỈ GỬI CÁC CỘT CÓ SẴN TRONG BẢNG:
+            // Đã sửa 'improvement' thành 'improvements_count'
+            const { error } = await supabaseClient
+                .from('today')
+                .upsert({ 
+                    entry_date: entryDate,
+                    journal_entry: text,
+                    mood: aiData.mood,
+                    improvements_count: parseInt(aiData.improvement), // Đã sửa tên cột
+                    tomtat: aiData.tomtat,
+                    tamsucuaAI: aiData.tamsucuaAI
+                }, { onConflict: 'entry_date' });
+
+            if (error) throw error;
+
+            status.innerText = "✅ Đã lưu thành công vào Supabase! Tải lại trang sẽ xóa nháp.";
+            status.classList.add('success');
+            localStorage.removeItem(DRAFT_KEY); // Xóa nháp sau khi lưu thành công
+
+        } catch (err) {
+            console.error("Lỗi xử lý:", err);
+            status.innerText = "Lỗi: " + err.message;
+            status.classList.add('error');
+        } finally {
+            btn.innerHTML = "✨ Phân Tích & Lưu Entry";
+            btn.disabled = false;
+        }
+    }
+
+    // --- 4. HÀM GỌI OPENROUTER (JSON MODE) (GLOBAL FUNCTION) ---
+    async function callAI(journalText) {
+        const MAX_RETRIES = 3;
+        const BASE_DELAY = 1000;
+        let lastError = null;
+
+        for (let i = 0; i < MAX_RETRIES; i++) {
+            try {
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+                        "Content-Type": "application/json",
+                        "HTTP-Referer": window.location.href,
+                    },
+                    body: JSON.stringify({
+                        "model": "mistralai/mistral-7b-instruct:free", 
+                        "messages": [
+                            {
+                                "role": "system",
+                                "content": `Bạn là người bạn AI mang tên Sunny, có giọng điệu ấm áp, đồng cảm và luôn hướng đến giải pháp. Nhiệm vụ của bạn là đọc nhật ký của người dùng và trích xuất thông tin dưới dạng JSON chuẩn.
+                                
+                                Quy tắc giọng điệu: Tuyệt đối không châm biếm. Phải dùng từ ngữ tích cực, động viên, và đề xuất giải pháp nhẹ nhàng.
+                                
+                                Output Format JSON:
+                                {
+                                    "mood": "Chọn 1 trong: great / normal / tired / stress / sad",
+                                    "improvement": (số nguyên 0-100 đánh giá mức độ tích cực, năng suất hoặc điểm cho những việc tốt đã làm),
+                                    "tomtat": "Tóm tắt nội dung nhật ký trong 1 câu ngắn gọn, ấm áp.",
+                                    "tamsucuaAI": "Lời bình luận của bạn, thể hiện sự đồng cảm sâu sắc, lời động viên chân thành, và đề xuất một giải pháp hoặc hành động cụ thể để cải thiện tình hình (không quá 4 câu)."
+                                }` // Đã gộp solution_suggestion vào đây để khớp với DB
+                            },
+                            {
+                                "role": "user",
+                                "content": journalText
+                            }
+                        ],
+                        "response_format": { "type": "json_object" }
+                    })
+                });
+
+                const json = await response.json();
+                if (json.error) throw new Error(json.error.message || "Lỗi API OpenRouter.");
+                
+                return JSON.parse(json.choices[0].message.content);
+
+            } catch (e) {
+                lastError = e;
+                if (i < MAX_RETRIES - 1) {
+                    await new Promise(resolve => setTimeout(resolve, BASE_DELAY * Math.pow(2, i)));
+                }
+            }
+        }
+        throw new Error(`AI không phản hồi hoặc trả về định dạng sai sau ${MAX_RETRIES} lần thử. Chi tiết lỗi cuối: ${lastError.message}`);
+    }
+
+    // --- 5. LOGIC LỊCH VÀ LỊCH SỬ (GLOBAL FUNCTIONS) ---
+
+    function showHistoryDetail(data) {
+        // Thay alert() bằng console.log hoặc modal tùy chỉnh
+        
+        const solutionText = data.tamsucuaAI ? data.tamsucuaAI : "Không có đề xuất/tâm sự từ AI.";
+
+        if (confirm(`CHI TIẾT: Ngày ${data.entry_date}
+Mood: ${data.mood}
+Điểm Cải thiện: ${data.improvements_count}%
+Tóm tắt: ${data.tomtat}
+
+Giải pháp/Tâm sự AI: ${solutionText}
+
+Nhấn OK để xóa entry này.`)) {
+            deleteEntry(data.entry_date);
+            return;
+        }
+    }
+
+    async function deleteEntry(date) {
+        if (!confirm(`Bạn có chắc chắn muốn XÓA vĩnh viễn entry ngày ${date}?`)) return;
+
+        const statusEl = document.getElementById('calendar-status');
+        statusEl.innerText = `Đang xóa entry ngày ${date}...`;
+
+        try {
+            const { error } = await supabaseClient
+                .from('today')
+                .delete()
+                .eq('entry_date', date);
+
+            if (error) throw error;
+            
+            // Xóa khỏi cache và render lại lịch
+            delete historyData[date];
+            renderCalendar();
+            calculateTotalImprovement();
+            
+            statusEl.innerText = `✅ Đã xóa entry ngày ${date} thành công.`;
+        } catch (err) {
+            console.error("Lỗi xóa:", err);
+            statusEl.innerText = `Lỗi xóa entry: ${err.message}`;
+        }
+    }
+
+    async function fetchHistoryAndRender() {
+        const statusEl = document.getElementById('calendar-status');
+        statusEl.innerText = "Đang tải dữ liệu lịch sử từ Supabase...";
+        document.getElementById('calendarGrid').innerHTML = ''; // Clear old
+
+        try {
+            // Đã sửa 'improvement' thành 'improvements_count'
+            const { data, error } = await supabaseClient
+                .from('today')
+                .select('entry_date, mood, improvements_count, tomtat, tamsucuaAI, journal_entry');
+
+            if (error) {
+                // In lỗi ra console để dễ debug hơn
+                console.error("Lỗi chi tiết khi tải lịch sử:", error);
+                throw new Error(`Lỗi tải lịch sử: ${error.message}.`);
+            }
+            
+            historyData = data.reduce((acc, item) => {
+                acc[item.entry_date] = item;
+                return acc;
+            }, {});
+
+            statusEl.innerText = `Đã tải ${data.length} entries.`;
+            renderCalendar();
+            calculateTotalImprovement();
+
+        } catch (err) {
+            console.error(err);
+            statusEl.innerText = err.message;
+        }
+    }
+
+    function renderCalendar() {
+        const grid = document.getElementById('calendarGrid');
+        grid.innerHTML = ''; 
+        
+        document.getElementById('calMonthTitle').innerText = `Tháng ${currentMonth + 1} Năm ${currentYear}`;
+
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay(); // 0 là CN
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        // Tạo ô trống trước ngày mùng 1
+        for (let i = 0; i < firstDay; i++) {
+            grid.appendChild(document.createElement('div'));
+        }
+
+        // Tạo các ngày trong tháng
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayEl = document.createElement('div');
+            dayEl.classList.add('cal-day');
+            
+            const checkDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            
+            dayEl.innerHTML = `<span>${day}</span>`;
+
+            if (checkDate === entryDate) dayEl.classList.add('today');
+
+            if (historyData[checkDate]) {
+                const data = historyData[checkDate];
+                dayEl.classList.add('has-data');
+                // Chắc chắn mood tồn tại và là string hợp lệ
+                if (data.mood && typeof data.mood === 'string') dayEl.classList.add('mood-' + data.mood.toLowerCase()); 
+                
+                // Sử dụng data.improvements_count
+                if (data.improvements_count > 0) {
+                    dayEl.innerHTML += `<div class="cal-stat">${data.improvements_count}%</div>`;
+                }
+                
+                // Gắn sự kiện click để xem chi tiết
+                dayEl.onclick = () => showHistoryDetail(data);
+            } else {
+                // Ngày không có dữ liệu, không làm gì khi click
+                dayEl.onclick = () => {
+                    // console.log(`Ngày ${checkDate} chưa có dữ liệu.`);
+                };
+            }
+
+            grid.appendChild(dayEl);
+        }
+    }
+
+    function changeMonth(step) {
+        currentMonth += step;
+        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+        fetchHistoryAndRender();
+    }
+
+    function calculateTotalImprovement() {
+        let total = 0;
+        Object.values(historyData).forEach(dayData => {
+            // Đảm bảo improvements_count là số
+            if (dayData.improvements_count && !isNaN(parseInt(dayData.improvements_count))) total += parseInt(dayData.improvements_count);
+        });
+        document.getElementById('totalPercent').innerText = total + "%";
+    }
+
+    // --- 6. KHỞI TẠO (Sau khi DOM đã load) ---
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('dateDisplay').innerText = today.toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        loadDraft();
+        // Load lịch lần đầu
+        fetchHistoryAndRender();
+    });
+</script>
+</body>
+</html>
