@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8">
+    <title>Trang không tìm thấy - 404</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f4f4f4; color: #333; }
+      .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+      h1 { font-size: 100px; margin: 0; color: #e74c3c; }
+      a { color: #3498db; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>404</h1>
+      <h2>Ôi không! Trang bạn tìm không tồn tại :(</h2>
+      <p>Có thể đường link bị sai hoặc trang đã bị xóa.</p>
+      <p><a href="/">← Quay về trang chủ</a></p>
+    </div>
+
+    <!-- Tự động redirect về trang chủ sau 10 giây (tùy chọn) -->
+    <script>
+      setTimeout(function(){
+        window.location.href = "/";
+      }, 10000);
+    </script>
+  </body>
+</html>
