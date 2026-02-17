@@ -1,1066 +1,179 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Lost in the Cosmic Void</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            cursor: none;
-        }
-
-        body {
-            overflow: hidden;
-            background: #000;
-            font-family: 'Courier New', monospace;
-        }
-
-        #canvas-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 1;
-        }
-
-        .scene {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Cosmic Background Layers */
-        .space-bg {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(ellipse at center, #1a0033 0%, #000000 100%);
-            animation: pulseSpace 8s ease-in-out infinite;
-        }
-
-        @keyframes pulseSpace {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
-        }
-
-        .nebula {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(ellipse at 20% 30%, rgba(255, 0, 255, 0.3) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 70%, rgba(0, 255, 255, 0.3) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(138, 43, 226, 0.2) 0%, transparent 60%);
-            animation: nebulaDrift 20s ease-in-out infinite;
-            filter: blur(60px);
-        }
-
-        @keyframes nebulaDrift {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            25% { transform: translate(5%, -5%) scale(1.1); }
-            50% { transform: translate(-3%, 3%) scale(0.9); }
-            75% { transform: translate(3%, 5%) scale(1.05); }
-        }
-
-        /* Stars */
-        .stars {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
-
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle var(--duration) ease-in-out infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(0.8); }
-        }
-
-        /* Cosmic Cat Astronaut */
-        .cosmic-cat {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 600px;
-            height: 600px;
-            z-index: 10;
-            animation: floatCat 6s ease-in-out infinite;
-        }
-
-        @keyframes floatCat {
-            0%, 100% { transform: translate(-50%, -50%) rotate(-2deg); }
-            50% { transform: translate(-50%, -55%) rotate(2deg); }
-        }
-
-        .cat-head {
-            position: absolute;
-            top: 20%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 250px;
-            height: 250px;
-            background: linear-gradient(145deg, #ff00ff, #00ffff);
-            border-radius: 50% 50% 45% 45%;
-            box-shadow: 
-                0 0 60px rgba(255, 0, 255, 0.6),
-                0 0 100px rgba(0, 255, 255, 0.4),
-                inset 0 0 40px rgba(255, 255, 255, 0.3);
-            animation: glowPulse 3s ease-in-out infinite;
-        }
-
-        @keyframes glowPulse {
-            0%, 100% { 
-                box-shadow: 
-                    0 0 60px rgba(255, 0, 255, 0.6),
-                    0 0 100px rgba(0, 255, 255, 0.4),
-                    inset 0 0 40px rgba(255, 255, 255, 0.3);
-            }
-            50% { 
-                box-shadow: 
-                    0 0 80px rgba(255, 0, 255, 0.8),
-                    0 0 120px rgba(0, 255, 255, 0.6),
-                    inset 0 0 50px rgba(255, 255, 255, 0.5);
-            }
-        }
-
-        .cat-ear {
-            position: absolute;
-            width: 80px;
-            height: 120px;
-            background: linear-gradient(145deg, #ff00ff, #00ffff);
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-            filter: drop-shadow(0 0 20px rgba(255, 0, 255, 0.8));
-        }
-
-        .cat-ear.left {
-            top: -50px;
-            left: 20px;
-            transform: rotate(-20deg);
-            animation: earWiggle 2s ease-in-out infinite;
-        }
-
-        .cat-ear.right {
-            top: -50px;
-            right: 20px;
-            transform: rotate(20deg);
-            animation: earWiggle 2s ease-in-out infinite 0.5s;
-        }
-
-        @keyframes earWiggle {
-            0%, 100% { transform: rotate(var(--initial-rotation, 0deg)); }
-            50% { transform: rotate(calc(var(--initial-rotation, 0deg) + 10deg)); }
-        }
-
-        .cat-eye {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background: radial-gradient(circle, #00ff00 30%, #000 31%, #000 70%, transparent 71%);
-            border-radius: 50%;
-            top: 45%;
-            animation: blink 4s ease-in-out infinite;
-        }
-
-        .cat-eye.left { left: 25%; }
-        .cat-eye.right { right: 25%; }
-
-        @keyframes blink {
-            0%, 48%, 52%, 100% { transform: scaleY(1); }
-            50% { transform: scaleY(0.1); }
-        }
-
-        .cat-nose {
-            position: absolute;
-            width: 25px;
-            height: 20px;
-            background: #ff0080;
-            border-radius: 50% 50% 40% 40%;
-            top: 60%;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 0 20px rgba(255, 0, 128, 0.8);
-        }
-
-        .helmet {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            border: 8px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            top: 15%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
-            box-shadow: 
-                inset 0 0 60px rgba(255, 255, 255, 0.2),
-                0 0 40px rgba(0, 255, 255, 0.4);
-            animation: helmetGlow 2s ease-in-out infinite;
-        }
-
-        @keyframes helmetGlow {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 0.9; }
-        }
-
-        /* 404 Elements */
-        .giant-404 {
-            position: absolute;
-            top: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 200px;
-            font-weight: bold;
-            background: linear-gradient(45deg, #ff00ff, #00ffff, #ff0080, #00ff00);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradientShift 3s ease infinite, float404 4s ease-in-out infinite;
-            text-shadow: 
-                0 0 40px rgba(255, 0, 255, 0.8),
-                0 0 80px rgba(0, 255, 255, 0.6);
-            z-index: 20;
-            filter: drop-shadow(0 0 30px rgba(255, 0, 255, 0.8));
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes float404 {
-            0%, 100% { transform: translateX(-50%) translateY(0) rotate(0deg); }
-            50% { transform: translateX(-50%) translateY(-20px) rotate(5deg); }
-        }
-
-        .solar-flare-ring {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 800px;
-            height: 800px;
-            border: 4px solid transparent;
-            border-radius: 50%;
-            background: 
-                linear-gradient(#000, #000) padding-box,
-                linear-gradient(45deg, #ff0000, #ff00ff, #00ffff, #ffff00, #ff0000) border-box;
-            animation: rotateSolarRing 10s linear infinite;
-            box-shadow: 
-                0 0 60px rgba(255, 0, 0, 0.6),
-                0 0 120px rgba(255, 0, 255, 0.4),
-                inset 0 0 60px rgba(255, 200, 0, 0.3);
-            z-index: 5;
-        }
-
-        @keyframes rotateSolarRing {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        /* Shattered Planet */
-        .planet-fragment {
-            position: absolute;
-            background: linear-gradient(135deg, #4a0080, #1a0033);
-            border-radius: 40% 60% 70% 30%;
-            box-shadow: 
-                inset -30px -30px 60px rgba(0, 0, 0, 0.5),
-                0 0 40px rgba(138, 43, 226, 0.4);
-            animation: floatFragment var(--duration) ease-in-out infinite;
-        }
-
-        @keyframes floatFragment {
-            0%, 100% { transform: translate(var(--tx-start), var(--ty-start)) rotate(var(--rot-start)); }
-            50% { transform: translate(var(--tx-end), var(--ty-end)) rotate(var(--rot-end)); }
-        }
-
-        /* Cyberpunk Elements */
-        .neon-dragon {
-            position: absolute;
-            bottom: 10%;
-            right: 10%;
-            width: 400px;
-            height: 300px;
-            z-index: 15;
-            animation: dragonBreath 5s ease-in-out infinite;
-        }
-
-        @keyframes dragonBreath {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            50% { transform: scale(1.05) rotate(-2deg); }
-        }
-
-        .dragon-body {
-            position: absolute;
-            width: 150px;
-            height: 120px;
-            background: linear-gradient(135deg, #00ffff, #ff00ff);
-            border-radius: 50% 50% 60% 40%;
-            bottom: 0;
-            right: 0;
-            box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
-        }
-
-        .dragon-head {
-            position: absolute;
-            width: 100px;
-            height: 80px;
-            background: linear-gradient(135deg, #ff00ff, #00ffff);
-            border-radius: 60% 40% 50% 50%;
-            top: 20px;
-            right: 120px;
-            box-shadow: 0 0 30px rgba(255, 0, 255, 0.8);
-        }
-
-        .dragon-horn {
-            position: absolute;
-            width: 30px;
-            height: 50px;
-            background: linear-gradient(to top, #ff0080, #ffff00);
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-            top: -30px;
-            animation: hornGlow 1.5s ease-in-out infinite;
-        }
-
-        @keyframes hornGlow {
-            0%, 100% { filter: drop-shadow(0 0 10px rgba(255, 255, 0, 0.8)); }
-            50% { filter: drop-shadow(0 0 20px rgba(255, 0, 128, 0.8)); }
-        }
-
-        .dragon-fire {
-            position: absolute;
-            left: -200px;
-            top: 30px;
-            width: 200px;
-            height: 80px;
-            background: linear-gradient(90deg, 
-                rgba(255, 0, 0, 0.8) 0%,
-                rgba(255, 100, 0, 0.6) 30%,
-                rgba(255, 200, 0, 0.4) 60%,
-                transparent 100%);
-            border-radius: 50% 0 0 50%;
-            filter: blur(15px);
-            animation: breathFire 2s ease-in-out infinite;
-        }
-
-        @keyframes breathFire {
-            0%, 100% { 
-                opacity: 0.6;
-                transform: scaleX(1);
-            }
-            50% { 
-                opacity: 1;
-                transform: scaleX(1.3);
-            }
-        }
-
-        /* Underwater Elements */
-        .zen-shark {
-            position: absolute;
-            bottom: 20%;
-            left: 15%;
-            width: 200px;
-            height: 120px;
-            z-index: 12;
-            animation: meditateShark 8s ease-in-out infinite;
-        }
-
-        @keyframes meditateShark {
-            0%, 100% { transform: translateY(0) rotate(-5deg); }
-            50% { transform: translateY(-30px) rotate(5deg); }
-        }
-
-        .shark-body {
-            position: absolute;
-            width: 180px;
-            height: 80px;
-            background: linear-gradient(180deg, #00ddff, #0088ff);
-            border-radius: 50% 0 50% 50%;
-            box-shadow: 0 0 30px rgba(0, 200, 255, 0.6);
-        }
-
-        .conical-hat {
-            position: absolute;
-            width: 150px;
-            height: 80px;
-            background: linear-gradient(to bottom, #ffeb3b, #ffc107);
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-            top: -60px;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 0 20px rgba(255, 235, 59, 0.6);
-            animation: hatLevitate 3s ease-in-out infinite;
-        }
-
-        @keyframes hatLevitate {
-            0%, 100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(-10px); }
-        }
-
-        /* Bioluminescent Coral */
-        .coral {
-            position: absolute;
-            width: 60px;
-            height: 120px;
-            background: linear-gradient(to top, #ff00ff 0%, #00ffff 100%);
-            border-radius: 40% 40% 0 0;
-            animation: coralGlow var(--delay) ease-in-out infinite;
-        }
-
-        @keyframes coralGlow {
-            0%, 100% { 
-                opacity: 0.6;
-                box-shadow: 0 0 20px currentColor;
-            }
-            50% { 
-                opacity: 1;
-                box-shadow: 0 0 40px currentColor;
-            }
-        }
-
-        /* Disco Ghosts */
-        .disco-ghost {
-            position: absolute;
-            width: 80px;
-            height: 100px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50% 50% 0 0;
-            top: var(--top);
-            left: var(--left);
-            animation: ghostDance var(--duration) ease-in-out infinite;
-            z-index: 8;
-        }
-
-        @keyframes ghostDance {
-            0%, 100% { transform: translateY(0) rotate(-5deg); }
-            25% { transform: translateY(-20px) rotate(5deg); }
-            50% { transform: translateY(0) rotate(-5deg); }
-            75% { transform: translateY(-15px) rotate(5deg); }
-        }
-
-        .ghost-tail {
-            position: absolute;
-            bottom: -20px;
-            width: 100%;
-            height: 30px;
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), transparent);
-            clip-path: polygon(0 0, 20% 100%, 40% 0, 60% 100%, 80% 0, 100% 100%, 100% 0);
-        }
-
-        .disco-light {
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            opacity: 0.4;
-            animation: discoRotate 4s linear infinite;
-            z-index: 7;
-        }
-
-        @keyframes discoRotate {
-            0% { 
-                background: radial-gradient(circle, rgba(255, 0, 0, 0.6) 0%, transparent 70%);
-                transform: translate(-50%, -50%) rotate(0deg);
-            }
-            33% { 
-                background: radial-gradient(circle, rgba(0, 255, 0, 0.6) 0%, transparent 70%);
-                transform: translate(-50%, -50%) rotate(120deg);
-            }
-            66% { 
-                background: radial-gradient(circle, rgba(0, 0, 255, 0.6) 0%, transparent 70%);
-                transform: translate(-50%, -50%) rotate(240deg);
-            }
-            100% { 
-                background: radial-gradient(circle, rgba(255, 0, 0, 0.6) 0%, transparent 70%);
-                transform: translate(-50%, -50%) rotate(360deg);
-            }
-        }
-
-        /* Melting Robot */
-        .melting-robot {
-            position: absolute;
-            top: 60%;
-            left: 20%;
-            width: 150px;
-            height: 200px;
-            z-index: 11;
-        }
-
-        .robot-head {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #c0c0c0, #606060);
-            border-radius: 20% 20% 30% 30%;
-            top: 0;
-            left: 25px;
-            box-shadow: 0 0 30px rgba(192, 192, 192, 0.6);
-            animation: tiltHead 3s ease-in-out infinite;
-        }
-
-        @keyframes tiltHead {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(-10deg); }
-        }
-
-        .robot-tear {
-            position: absolute;
-            width: 15px;
-            height: 30px;
-            background: linear-gradient(to bottom, #00ffff, #0080ff);
-            border-radius: 50% 0 50% 50%;
-            animation: tearFall 2s ease-in infinite;
-        }
-
-        @keyframes tearFall {
-            0% { 
-                opacity: 1;
-                transform: translateY(0);
-            }
-            100% { 
-                opacity: 0;
-                transform: translateY(100px);
-            }
-        }
-
-        .melting-effect {
-            position: absolute;
-            bottom: -50px;
-            width: 150px;
-            height: 60px;
-            background: linear-gradient(to bottom, 
-                rgba(192, 192, 192, 0.8) 0%,
-                rgba(96, 96, 96, 0.4) 100%);
-            border-radius: 50%;
-            filter: blur(10px);
-            animation: meltPuddle 4s ease-in-out infinite;
-        }
-
-        @keyframes meltPuddle {
-            0%, 100% { transform: scaleX(1); opacity: 0.6; }
-            50% { transform: scaleX(1.3); opacity: 0.9; }
-        }
-
-        /* Glitch Text Effect */
-        .glitch-message {
-            position: absolute;
-            bottom: 15%;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 32px;
-            color: #00ffff;
-            text-shadow: 
-                0 0 10px #00ffff,
-                0 0 20px #ff00ff,
-                2px 2px 0 #ff0000,
-                -2px -2px 0 #00ff00;
-            animation: glitch 1s infinite;
-            z-index: 20;
-        }
-
-        @keyframes glitch {
-            0% { 
-                transform: translateX(-50%);
-                text-shadow: 
-                    0 0 10px #00ffff,
-                    0 0 20px #ff00ff,
-                    2px 2px 0 #ff0000,
-                    -2px -2px 0 #00ff00;
-            }
-            25% { 
-                transform: translateX(-50%) skew(-2deg);
-                text-shadow: 
-                    0 0 10px #ff00ff,
-                    0 0 20px #00ffff,
-                    -2px 2px 0 #00ff00,
-                    2px -2px 0 #ff0000;
-            }
-            50% { 
-                transform: translateX(-50%);
-            }
-            75% { 
-                transform: translateX(-50%) skew(2deg);
-                text-shadow: 
-                    0 0 10px #ffff00,
-                    0 0 20px #ff00ff,
-                    2px -2px 0 #00ffff,
-                    -2px 2px 0 #ff0000;
-            }
-            100% { 
-                transform: translateX(-50%);
-            }
-        }
-
-        /* Custom Cursor */
-        .custom-cursor {
-            position: fixed;
-            width: 30px;
-            height: 30px;
-            border: 2px solid #00ffff;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transition: transform 0.1s ease;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
-            animation: cursorPulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes cursorPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        .cursor-trail {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            background: radial-gradient(circle, #ff00ff, transparent);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9998;
-            animation: fadeTrail 1s ease-out forwards;
-        }
-
-        @keyframes fadeTrail {
-            to {
-                opacity: 0;
-                transform: scale(2);
-            }
-        }
-
-        /* Server Racks */
-        .server-rack {
-            position: absolute;
-            width: 80px;
-            height: 120px;
-            background: linear-gradient(135deg, #1a1a1a, #3a3a3a);
-            border: 2px solid #00ffff;
-            border-radius: 5px;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
-        }
-
-        .server-light {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            animation: blinkLight 0.5s ease-in-out infinite;
-        }
-
-        @keyframes blinkLight {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        /* Holographic Balloons */
-        .holographic-balloon {
-            position: absolute;
-            width: 60px;
-            height: 80px;
-            background: linear-gradient(135deg, 
-                rgba(255, 0, 255, 0.4),
-                rgba(0, 255, 255, 0.4));
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-            animation: floatBalloon var(--duration) ease-in-out infinite;
-            box-shadow: 
-                0 0 30px rgba(255, 0, 255, 0.6),
-                inset 0 0 20px rgba(255, 255, 255, 0.3);
-        }
-
-        @keyframes floatBalloon {
-            0%, 100% { transform: translateY(0) rotate(-5deg); }
-            50% { transform: translateY(-50px) rotate(5deg); }
-        }
-
-        /* Psychedelic Waves */
-        .psychedelic-wave {
-            position: absolute;
-            width: 100%;
-            height: 200px;
-            bottom: 0;
-            background: linear-gradient(90deg,
-                rgba(255, 0, 255, 0.3) 0%,
-                rgba(0, 255, 255, 0.3) 25%,
-                rgba(255, 255, 0, 0.3) 50%,
-                rgba(0, 255, 255, 0.3) 75%,
-                rgba(255, 0, 255, 0.3) 100%);
-            background-size: 200% 100%;
-            animation: waveMove 8s linear infinite;
-            opacity: 0.4;
-        }
-
-        @keyframes waveMove {
-            0% { background-position: 0% 0%; }
-            100% { background-position: 200% 0%; }
-        }
-    </style>
-</head>
-<body>
-    <!-- Canvas for Particles -->
-    <canvas id="canvas-container"></canvas>
-
-    <!-- Main Scene -->
-    <div class="scene">
-        <!-- Space Background -->
-        <div class="space-bg"></div>
-        <div class="nebula"></div>
-        
-        <!-- Stars Layer -->
-        <div class="stars" id="stars-container"></div>
-
-        <!-- Giant 404 -->
-        <div class="giant-404">404</div>
-
-        <!-- Solar Flare Ring -->
-        <div class="solar-flare-ring"></div>
-
-        <!-- Cosmic Cat Astronaut -->
-        <div class="cosmic-cat">
-            <div class="helmet"></div>
-            <div class="cat-head">
-                <div class="cat-ear left" style="--initial-rotation: -20deg;"></div>
-                <div class="cat-ear right" style="--initial-rotation: 20deg;"></div>
-                <div class="cat-eye left"></div>
-                <div class="cat-eye right"></div>
-                <div class="cat-nose"></div>
+import { useState, useEffect, useCallback, useRef } from "react";
+import { StarField } from "./components/StarField";
+import { FloatingAstronaut } from "./components/FloatingAstronaut";
+import { GlitchText } from "./components/GlitchText";
+import { Portal } from "./components/Portal";
+import { Particles } from "./components/Particles";
+import Gate from "./components/Gate";
+
+const funnyMessages = [
+  "Looks like this page took a wrong turn at the Milky Way 🌌",
+  "Houston, we have a problem... this page doesn't exist 🚀",
+  "This page is on vacation in another dimension 🌀",
+  "404: Page not found, but you found something cool! ✨",
+  "The page you're looking for is in another castle 🏰",
+  "This page went to get milk and never came back 🥛",
+  "Even Google can't find this page 🔍",
+  "This page has been abducted by aliens 👽",
+  "Error 404: Page went to space without a helmet 🪐",
+  "The internet hamster powering this page fell asleep 🐹",
+];
+
+export function App() {
+  const [messageIndex, setMessageIndex] = useState(0);
+  const [showPortal, setShowPortal] = useState(false);
+  const [clickCount, setClickCount] = useState(0);
+  const [easterEgg, setEasterEgg] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [showGate, setShowGate] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMessageIndex((i) => (i + 1) % funnyMessages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    setMousePos({ x: e.clientX, y: e.clientY });
+  }, []);
+
+  const handle404Click = () => {
+    setClickCount((c) => c + 1);
+    if (clickCount >= 9) {
+      setEasterEgg(true);
+      setTimeout(() => setEasterEgg(false), 3000);
+      setClickCount(0);
+    }
+  };
+
+  const handleShowGate = () => {
+    setShowGate(true);
+  };
+
+  const handleGateEnter = () => {
+    // Start the warp animation
+    setIsNavigating(true);
+    
+    // After animation, redirect to /index
+    setTimeout(() => {
+      window.location.href = "/index";
+    }, 2500);
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#0a0a2e] via-[#16163a] to-[#0d0d2b] text-white select-none"
+    >
+      {/* Animated Star Background */}
+      <StarField isWarping={isNavigating} />
+
+      {/* Mouse trail particles */}
+      <Particles mousePos={mousePos} />
+
+      {/* Gate overlay - shows when user wants to go home */}
+      {showGate && !isNavigating && (
+        <Gate onEnter={handleGateEnter} />
+      )}
+
+      {/* 404 Content Container - fades out on navigate */}
+      <div 
+        className={`transition-all duration-1000 ease-in-out ${
+          isNavigating ? "opacity-0 scale-150 blur-sm" : showGate ? "opacity-30 blur-sm pointer-events-none" : "opacity-100 scale-100"
+        }`}
+      >
+        {/* Floating gradient orbs */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -left-32 top-1/4 h-64 w-64 animate-pulse rounded-full bg-purple-600/20 blur-3xl" />
+          <div className="absolute -right-32 top-1/2 h-96 w-96 rounded-full bg-blue-600/15 blur-3xl" style={{ animation: "pulse 4s ease-in-out infinite" }} />
+          <div className="absolute bottom-1/4 left-1/3 h-72 w-72 rounded-full bg-pink-600/10 blur-3xl" style={{ animation: "pulse 6s ease-in-out infinite" }} />
+        </div>
+
+        {/* Main Content */}
+        <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 py-12">
+          {/* Astronaut */}
+          <FloatingAstronaut />
+
+          {/* 404 Number */}
+          <div className="mb-2 mt-4 cursor-pointer" onClick={handle404Click}>
+            <GlitchText text="404" />
+          </div>
+
+          {easterEgg && (
+            <div className="mb-4 animate-bounce rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 px-6 py-2 text-sm font-bold text-black shadow-lg shadow-yellow-500/30">
+              🎉 You found the easter egg! You're persistent! 🥚
             </div>
-        </div>
+          )}
 
-        <!-- Planet Fragments -->
-        <div id="planet-fragments"></div>
+          {/* Rotating funny message */}
+          <div className="mb-8 h-8 overflow-hidden">
+            <p
+              key={messageIndex}
+              className="text-center text-lg font-medium text-purple-200/90 md:text-xl"
+              style={{
+                animation: "fadeSlideIn 0.5s ease-out",
+              }}
+            >
+              {funnyMessages[messageIndex]}
+            </p>
+          </div>
 
-        <!-- Cyberpunk Dragon -->
-        <div class="neon-dragon">
-            <div class="dragon-head">
-                <div class="dragon-horn" style="left: 20px;"></div>
-                <div class="dragon-horn" style="right: 20px;"></div>
-                <div class="dragon-fire"></div>
+          {/* Buttons */}
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <button
+              onClick={handleShowGate}
+              disabled={showGate}
+              className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-8 py-3 font-semibold text-white shadow-lg shadow-purple-500/25 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-purple-500/40 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <span className="relative z-10">🏠 Take Me Home</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-600 to-purple-600 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            </button>
+
+            <button
+              onClick={() => setShowPortal(!showPortal)}
+              disabled={showGate}
+              className="group relative overflow-hidden rounded-xl border-2 border-cyan-500/50 bg-cyan-950/30 px-8 py-3 font-semibold text-cyan-300 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-cyan-400 hover:bg-cyan-900/40 hover:text-white hover:shadow-lg hover:shadow-cyan-500/25 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <span className="relative z-10">{showPortal ? "🌀 Close Portal" : "🌀 Show Me a Portal"}</span>
+            </button>
+          </div>
+
+          {/* Portal Animation */}
+          {showPortal && <Portal onNavigate={handleShowGate} />}
+
+          {/* Fun counter */}
+          <div className="mt-8 text-center text-xs text-white/30">
+            <p>Click the 404 text {10 - clickCount} more times for a surprise 👀</p>
+          </div>
+
+          {/* Keyboard/drag hint */}
+          <div className="mt-4 flex flex-col items-center gap-2 text-xs text-white/20">
+            <div className="flex items-center gap-2">
+              <kbd className="rounded border border-white/10 bg-white/5 px-2 py-0.5 font-mono">↑</kbd>
+              <kbd className="rounded border border-white/10 bg-white/5 px-2 py-0.5 font-mono">↓</kbd>
+              <kbd className="rounded border border-white/10 bg-white/5 px-2 py-0.5 font-mono">←</kbd>
+              <kbd className="rounded border border-white/10 bg-white/5 px-2 py-0.5 font-mono">→</kbd>
+              <span>or</span>
+              <kbd className="rounded border border-white/10 bg-white/5 px-2 py-0.5 font-mono">W</kbd>
+              <kbd className="rounded border border-white/10 bg-white/5 px-2 py-0.5 font-mono">A</kbd>
+              <kbd className="rounded border border-white/10 bg-white/5 px-2 py-0.5 font-mono">S</kbd>
+              <kbd className="rounded border border-white/10 bg-white/5 px-2 py-0.5 font-mono">D</kbd>
             </div>
-            <div class="dragon-body"></div>
+            <span>Move the astronaut with keys or drag it around! 🚀</span>
+          </div>
         </div>
-
-        <!-- Server Racks -->
-        <div id="server-racks"></div>
-
-        <!-- Zen Shark -->
-        <div class="zen-shark">
-            <div class="conical-hat"></div>
-            <div class="shark-body"></div>
-        </div>
-
-        <!-- Bioluminescent Coral -->
-        <div id="coral-garden"></div>
-
-        <!-- Melting Robot -->
-        <div class="melting-robot">
-            <div class="robot-head">
-                <div id="tears-container"></div>
-            </div>
-            <div class="melting-effect"></div>
-        </div>
-
-        <!-- Disco Ghosts -->
-        <div id="disco-ghosts"></div>
-
-        <!-- Disco Lights -->
-        <div id="disco-lights"></div>
-
-        <!-- Holographic Balloons -->
-        <div id="holographic-balloons"></div>
-
-        <!-- Psychedelic Wave -->
-        <div class="psychedelic-wave"></div>
-
-        <!-- Glitch Message -->
-        <div class="glitch-message">YOU'VE DRIFTED INTO THE COSMIC VOID</div>
-
-        <!-- Custom Cursor -->
-        <div class="custom-cursor" id="cursor"></div>
+      </div>
+      
+      {/* Hyperdrive Flash Overlay */}
+      <div 
+        className={`pointer-events-none fixed inset-0 z-[100] bg-white transition-opacity duration-500 ease-in ${
+          isNavigating ? "opacity-100 delay-[1.5s]" : "opacity-0"
+        }`} 
+      />
     </div>
-
-    <script>
-        // Custom Cursor
-        const cursor = document.getElementById('cursor');
-        let mouseX = 0, mouseY = 0;
-        let cursorX = 0, cursorY = 0;
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            
-            // Create trail
-            if (Math.random() > 0.7) {
-                const trail = document.createElement('div');
-                trail.className = 'cursor-trail';
-                trail.style.left = e.clientX + 'px';
-                trail.style.top = e.clientY + 'px';
-                document.body.appendChild(trail);
-                setTimeout(() => trail.remove(), 1000);
-            }
-        });
-
-        function updateCursor() {
-            cursorX += (mouseX - cursorX) * 0.2;
-            cursorY += (mouseY - cursorY) * 0.2;
-            cursor.style.left = cursorX + 'px';
-            cursor.style.top = cursorY + 'px';
-            requestAnimationFrame(updateCursor);
-        }
-        updateCursor();
-
-        // Generate Stars
-        const starsContainer = document.getElementById('stars-container');
-        for (let i = 0; i < 200; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            const size = Math.random() * 3 + 1;
-            star.style.width = size + 'px';
-            star.style.height = size + 'px';
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
-            star.style.animationDelay = Math.random() * 3 + 's';
-            starsContainer.appendChild(star);
-        }
-
-        // Generate Planet Fragments
-        const fragmentsContainer = document.getElementById('planet-fragments');
-        const fragmentConfigs = [
-            { width: 150, height: 150, bottom: '35%', left: '30%' },
-            { width: 120, height: 120, bottom: '32%', left: '50%' },
-            { width: 100, height: 100, bottom: '40%', left: '40%' },
-            { width: 130, height: 130, bottom: '28%', left: '60%' },
-            { width: 90, height: 90, bottom: '45%', left: '35%' }
-        ];
-
-        fragmentConfigs.forEach((config, i) => {
-            const fragment = document.createElement('div');
-            fragment.className = 'planet-fragment';
-            fragment.style.width = config.width + 'px';
-            fragment.style.height = config.height + 'px';
-            fragment.style.bottom = config.bottom;
-            fragment.style.left = config.left;
-            fragment.style.setProperty('--duration', (Math.random() * 4 + 6) + 's');
-            fragment.style.setProperty('--tx-start', '0px');
-            fragment.style.setProperty('--ty-start', '0px');
-            fragment.style.setProperty('--tx-end', (Math.random() * 40 - 20) + 'px');
-            fragment.style.setProperty('--ty-end', (Math.random() * 40 - 20) + 'px');
-            fragment.style.setProperty('--rot-start', (Math.random() * 360) + 'deg');
-            fragment.style.setProperty('--rot-end', (Math.random() * 360 + 360) + 'deg');
-            fragment.style.animationDelay = (Math.random() * 2) + 's';
-            fragmentsContainer.appendChild(fragment);
-        });
-
-        // Generate Server Racks
-        const serverRacksContainer = document.getElementById('server-racks');
-        const rackPositions = [
-            { bottom: '15%', right: '5%' },
-            { bottom: '10%', right: '12%' },
-            { bottom: '20%', right: '8%' }
-        ];
-
-        rackPositions.forEach(pos => {
-            const rack = document.createElement('div');
-            rack.className = 'server-rack';
-            rack.style.bottom = pos.bottom;
-            rack.style.right = pos.right;
-            
-            // Add lights to rack
-            for (let i = 0; i < 5; i++) {
-                const light = document.createElement('div');
-                light.className = 'server-light';
-                light.style.top = (20 + i * 20) + 'px';
-                light.style.left = '10px';
-                light.style.background = Math.random() > 0.5 ? '#00ff00' : '#ff0000';
-                light.style.animationDelay = (Math.random() * 0.5) + 's';
-                rack.appendChild(light);
-            }
-            
-            serverRacksContainer.appendChild(rack);
-        });
-
-        // Generate Coral Garden
-        const coralGarden = document.getElementById('coral-garden');
-        const coralPositions = [
-            { bottom: '0%', left: '10%', color: '#ff00ff' },
-            { bottom: '0%', left: '15%', color: '#00ffff' },
-            { bottom: '0%', left: '85%', color: '#ff00ff' },
-            { bottom: '0%', left: '90%', color: '#00ffff' },
-            { bottom: '0%', left: '12%', color: '#ffff00' }
-        ];
-
-        coralPositions.forEach((pos, i) => {
-            const coral = document.createElement('div');
-            coral.className = 'coral';
-            coral.style.bottom = pos.bottom;
-            coral.style.left = pos.left;
-            coral.style.color = pos.color;
-            coral.style.setProperty('--delay', (Math.random() * 3 + 2) + 's');
-            coral.style.animationDelay = (Math.random() * 2) + 's';
-            coralGarden.appendChild(coral);
-        });
-
-        // Generate Disco Ghosts
-        const discoGhostsContainer = document.getElementById('disco-ghosts');
-        for (let i = 0; i < 6; i++) {
-            const ghost = document.createElement('div');
-            ghost.className = 'disco-ghost';
-            ghost.style.setProperty('--top', (Math.random() * 40 + 20) + '%');
-            ghost.style.setProperty('--left', (Math.random() * 80 + 10) + '%');
-            ghost.style.setProperty('--duration', (Math.random() * 3 + 3) + 's');
-            ghost.style.animationDelay = (Math.random() * 2) + 's';
-            
-            const tail = document.createElement('div');
-            tail.className = 'ghost-tail';
-            ghost.appendChild(tail);
-            
-            discoGhostsContainer.appendChild(ghost);
-        }
-
-        // Generate Disco Lights
-        const discoLightsContainer = document.getElementById('disco-lights');
-        for (let i = 0; i < 5; i++) {
-            const light = document.createElement('div');
-            light.className = 'disco-light';
-            light.style.left = (Math.random() * 80 + 10) + '%';
-            light.style.top = (Math.random() * 80 + 10) + '%';
-            light.style.animationDelay = (Math.random() * 2) + 's';
-            discoLightsContainer.appendChild(light);
-        }
-
-        // Generate Holographic Balloons
-        const balloonsContainer = document.getElementById('holographic-balloons');
-        for (let i = 0; i < 8; i++) {
-            const balloon = document.createElement('div');
-            balloon.className = 'holographic-balloon';
-            balloon.style.left = (Math.random() * 90 + 5) + '%';
-            balloon.style.top = (Math.random() * 60 + 20) + '%';
-            balloon.style.setProperty('--duration', (Math.random() * 4 + 4) + 's');
-            balloon.style.animationDelay = (Math.random() * 3) + 's';
-            balloonsContainer.appendChild(balloon);
-        }
-
-        // Generate Robot Tears
-        const tearsContainer = document.getElementById('tears-container');
-        setInterval(() => {
-            const tear = document.createElement('div');
-            tear.className = 'robot-tear';
-            tear.style.left = (Math.random() * 60 + 20) + 'px';
-            tear.style.top = '80px';
-            tearsContainer.appendChild(tear);
-            setTimeout(() => tear.remove(), 2000);
-        }, 1500);
-
-        // Particle System
-        const canvas = document.getElementById('canvas-container');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 3 + 1;
-                this.speedX = Math.random() * 2 - 1;
-                this.speedY = Math.random() * 2 - 1;
-                this.color = this.randomColor();
-                this.life = Math.random() * 100 + 100;
-                this.decay = Math.random() * 0.5 + 0.5;
-            }
-
-            randomColor() {
-                const colors = [
-                    'rgba(255, 0, 255, ',
-                    'rgba(0, 255, 255, ',
-                    'rgba(255, 255, 0, ',
-                    'rgba(0, 255, 0, '
-                ];
-                return colors[Math.floor(Math.random() * colors.length)];
-            }
-
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                this.life -= this.decay;
-
-                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-            }
-
-            draw() {
-                const opacity = Math.max(0, this.life / 100);
-                ctx.fillStyle = this.color + opacity + ')';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Glow effect
-                ctx.shadowBlur = 20;
-                ctx.shadowColor = this.color + opacity + ')';
-            }
-        }
-
-        let particles = [];
-        for (let i = 0; i < 100; i++) {
-            particles.push(new Particle());
-        }
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            particles.forEach((particle, index) => {
-                particle.update();
-                particle.draw();
-
-                if (particle.life <= 0) {
-                    particles[index] = new Particle();
-                }
-            });
-
-            requestAnimationFrame(animateParticles);
-        }
-        animateParticles();
-
-        // Resize Handler
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-
-        // Parallax Effect
-        document.addEventListener('mousemove', (e) => {
-            const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
-            const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
-
-            document.querySelector('.cosmic-cat').style.transform = 
-                `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
-            
-            document.querySelector('.nebula').style.transform = 
-                `translate(${moveX * 2}px, ${moveY * 2}px) scale(1)`;
-        });
-
-        // Easter Egg: Click on 404 for explosion effect
-        document.querySelector('.giant-404').addEventListener('click', () => {
-            for (let i = 0; i < 50; i++) {
-                particles.push(new Particle());
-            }
-        });
-    </script>
-</body>
-</html>
+  );
+}
