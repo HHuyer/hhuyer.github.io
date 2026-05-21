@@ -5,17 +5,33 @@ on:
     branches:
       - main
 
+# Cấp quyền đầy đủ cho GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Ép hệ thống dùng Node.js 24 theo khuyến nghị mới của GitHub
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.' # Thư mục chứa file index.html của bạn
+          path: '.' # Đường dẫn đến thư mục chứa file index.html của bạn
 
       - name: Deploy to GitHub Pages
         id: deployment
