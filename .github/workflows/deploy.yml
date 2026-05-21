@@ -1,11 +1,22 @@
 name: Deploy Website
 
-# Phần này chính là "on" mà hệ thống báo lỗi
 on:
   push:
     branches:
-      - main  # Hoặc tên nhánh chính của bạn (ví dụ: master)
+      - main
 
 jobs:
-  # Các cấu hình build và deploy phía dưới giữ nguyên...
-  
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.' # Thư mục chứa file index.html của bạn
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
