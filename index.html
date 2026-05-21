@@ -1896,23 +1896,24 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
   let particles =[];
   let animationFrameId;
 
-  // =================================================================
+    // =================================================================
   // KHU VỰC KHỞI TẠO SUPABASE (ĐÃ BỌC LÓT AN TOÀN - KHÔNG LO TREO WEB)
   // =================================================================
   const SUPABASE_URL = 'https://qfmtqtvxeancxlcmvtza.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmbXRxdHZ4ZWFuY3hsY212dHphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwMTY4NTQsImV4cCI6MjA3MTU5Mjg1NH0.kyPxSzMCb0P3B9YnVkLB1hkopbtXmef7fu1lL6GhyQQ';
   
-  let supabase;
+  // ĐỔI TÊN THÀNH appSupabase ĐỂ TRÁNH XUNG ĐỘT TÊN VỚI THƯ VIỆN GỐC
+  let appSupabase;
   try {
     if (window.supabase) {
-      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      appSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     } else {
       throw new Error("Không tìm thấy thư viện window.supabase");
     }
   } catch (err) {
     console.warn("Đã kích hoạt chế độ ẩn Supabase ẩn để cứu web:", err.message);
     // Tạo bộ khung giả lập để các tính năng khác gọi hàm không bị báo lỗi sập luồng
-    supabase = {
+    appSupabase = {
       from: () => ({ insert: () => Promise.resolve({ error: { message: "Supabase đang bảo trì" } }) }),
       rpc: () => Promise.resolve({ data: [], error: null })
     };
@@ -1936,7 +1937,7 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
     let quotes = [];
     try {
       // Gọi lệnh an toàn từ Supabase giả lập/thật
-      const { data, error } = await supabase.rpc('get_active_quotes');
+      const { data, error } = await appSupabase.rpc('get_active_quotes');
       if (error) {
         console.warn("Lỗi lấy dữ liệu Supabase, sử dụng danh sách trống:", error.message);
       } else if (data && Array.isArray(data)) {
@@ -2297,7 +2298,7 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
     if(!content){formFeedback.textContent='Vui lòng nhập nội dung trích dẫn.';formFeedback.className='feedback error';return;}
     submitBtn.disabled=true;submitBtn.textContent='Đang lưu...';formFeedback.textContent='';
     const userIP = await getUserIP(); // Get user's IP
-    const {error}=await supabase.from('Quote').insert([{content: content, ip_address: userIP}]);
+    const {error}=await appSupabase.from('Quote').insert([{content: content, ip_address: userIP}]);
     if(error){console.error('Lỗi khi thêm quote:', error);formFeedback.textContent='Đã xảy ra lỗi. Vui lòng thử lại.';formFeedback.className='feedback error';}
     else{formFeedback.textContent='Lưu trích dẫn thành công!';formFeedback.className='feedback success';quoteInput.value='';}
     submitBtn.disabled=false;submitBtn.textContent='Lưu Quote';
@@ -2305,7 +2306,7 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
 
   async function getRandomQuote(){
     randomBtn.disabled=true;randomBtn.textContent='Đang tìm...';randomDisplay.innerHTML='<p>Vui lòng chờ...</p>';
-    const {data,error}=await supabase.rpc('get_random_quote');
+    const {data,error}=await appSupabase.rpc('get_random_quote');
     if(error){randomDisplay.innerHTML='<p style="color:#e74c3c">Lỗi: Không thể lấy dữ liệu.</p>';}
     else if(data&&data.length>0){
       const q=data[0];
@@ -2336,7 +2337,7 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
   // Periodically fetch a random quote and float it across the screen (optional, gentle cadence)
   setInterval(async () => {
     try {
-      const { data } = await supabase.rpc('get_random_quote');
+      const { data } = await appSupabase.rpc('get_random_quote');
       if (data && data.length) spawnFloatingQuote(data[0].content);
     } catch (e) { /* ignore periodic failures */ }
   }, 15000);
@@ -2359,7 +2360,7 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
     qFb.textContent = '';
     
     const userIP = await getUserIP(); // Get user's IP
-    const { error } = await supabase.from('Quote').insert([{ content: content, ip_address: userIP }]);
+    const { error } = await appSupabase.from('Quote').insert([{ content: content, ip_address: userIP }]);
     
     if (error) {
       console.error('Lỗi khi thêm quote từ footer:', error);
