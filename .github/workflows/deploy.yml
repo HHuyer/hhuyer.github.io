@@ -1,0 +1,11 @@
+name: Deploy Website
+
+# Phần này chính là "on" mà hệ thống báo lỗi
+on:
+  push:
+    branches:
+      - main  # Hoặc tên nhánh chính của bạn (ví dụ: master)
+
+jobs:
+  # Các cấu hình build và deploy phía dưới giữ nguyên...
+  
