@@ -1896,26 +1896,29 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
   let particles =[];
   let animationFrameId;
 
-  const SUPABASE_URL='https://qfmtqtvxeancxlcmvtza.supabase.co';
-  const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmbXRxdHZ4ZWFuY3hsY212dHphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwMTY4NTQsImV4cCI6MjA3MTU5Mjg1NH0.kyPxSzMCb0P3B9YnVkLB1hkopbtXmef7fu1lL6GhyQQ';
+  // =================================================================
+  // KHU VỰC KHỞI TẠO SUPABASE (ĐÃ BỌC LÓT AN TOÀN - KHÔNG LO TREO WEB)
+  // =================================================================
+  const SUPABASE_URL = 'https://qfmtqtvxeancxlcmvtza.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmbXRxdHZ4ZWFuY3hsY212dHphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwMTY4NTQsImV4cCI6MjA3MTU5Mjg1NH0.kyPxSzMCb0P3B9YnVkLB1hkopbtXmef7fu1lL6GhyQQ';
   
   let supabase;
   try {
     if (window.supabase) {
       supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     } else {
-      throw new Error("Không tải được thư viện Supabase");
+      throw new Error("Không tìm thấy thư viện window.supabase");
     }
   } catch (err) {
-    console.warn("Đã áp dụng chế độ ẩn Supabase do lỗi:", err.message);
-    // Tạo đối tượng ảo để tránh sập các hàm insert/rpc ở nơi khác trong code
+    console.warn("Đã kích hoạt chế độ ẩn Supabase ẩn để cứu web:", err.message);
+    // Tạo bộ khung giả lập để các tính năng khác gọi hàm không bị báo lỗi sập luồng
     supabase = {
-      from: () => ({ insert: () => Promise.resolve({ error: { message: "Đang ngoại tuyến" } }) }),
+      from: () => ({ insert: () => Promise.resolve({ error: { message: "Supabase đang bảo trì" } }) }),
       rpc: () => Promise.resolve({ data: [], error: null })
     };
   }
 
-  // Helper function to get user's IP address
+  // Hàm lấy địa chỉ IP của người dùng công khai
   async function getUserIP() {
     try {
       const response = await fetch('https://api.ipify.org?format=json');
