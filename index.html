@@ -1901,37 +1901,75 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
   
   let supabase;
   try {
-    // Thử kết nối bình thường
     if (window.supabase) {
       supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     } else {
       throw new Error("Không tải được thư viện Supabase");
     }
   } catch (err) {
-    console.warn("Đã skip Supabase do lỗi:", err.message);
-    // TẠO DỮ LIỆU GIẢ (MOCK) ĐỂ CODE KHÔNG BỊ SẬP
-    // Khi Supabase lỗi, các hàm insert hay lấy quote sẽ tự động báo lỗi nhẹ nhàng mà không làm treo web
+    console.warn("Đã áp dụng chế độ ẩn Supabase do lỗi:", err.message);
+    // Tạo đối tượng ảo để tránh sập các hàm insert/rpc ở nơi khác trong code
     supabase = {
-      from: () => ({ insert: () => Promise.resolve({ error: { message: "Supabase đang bảo trì" } }) }),
-      rpc: () => Promise.resolve({ data: null, error: { message: "Supabase đang bảo trì" } })
+      from: () => ({ insert: () => Promise.resolve({ error: { message: "Đang ngoại tuyến" } }) }),
+      rpc: () => Promise.resolve({ data: [], error: null })
     };
   }
-  
+
   // Helper function to get user's IP address
   async function getUserIP() {
     try {
-      // Use a reliable service to get the IP in JSON format
       const response = await fetch('https://api.ipify.org?format=json');
-      if (!response.ok) {
-          console.error('Could not fetch IP, response not ok.');
-          return null; // Return null if the request fails
-      }
+      if (!response.ok) return null;
       const data = await response.json();
-      return data.ip; // Return the IP address string
+      return data.ip;
     } catch (error) {
       console.error('Failed to get IP address:', error);
-      return null; // Return null on any error
+      return null;
     }
+  }
+
+  // HÀM LOAD QUOTES ĐÃ ĐƯỢC BỌC LÓT AN TOÀN TUYỆT ĐỐI
+  async function loadQuotes() {
+    let quotes = [];
+    try {
+      // Gọi lệnh an toàn từ Supabase giả lập/thật
+      const { data, error } = await supabase.rpc('get_active_quotes');
+      if (error) {
+        console.warn("Lỗi lấy dữ liệu Supabase, sử dụng danh sách trống:", error.message);
+      } else if (data && Array.isArray(data)) {
+        quotes = data;
+      }
+    } catch (err) {
+      console.error("Hệ thống nạp quote lỗi, tự động bỏ qua:", err);
+    }
+
+    // Nếu không có quote nào (hoặc Supabase sập), web vẫn chạy tiếp mượt mà với mảng rỗng
+    const shuffled = [...quotes].sort(() => 0.5 - Math.random());
+    const container = document.getElementById('quotesContainer');
+    if (!container) return;
+    container.innerHTML = '';
+
+    if (shuffled.length === 0) {
+      container.innerHTML = '<p style="text-align:center; opacity:0.6; font-style:italic;">Danh sách trích dẫn tạm thời trống.</p>';
+      return;
+    }
+
+    shuffled.forEach(q => {
+      const card = document.createElement('div');
+      card.className = 'quote-card';
+      
+      const txt = document.createElement('p');
+      txt.className = 'quote-text';
+      txt.textContent = q.content || '';
+      
+      const auth = document.createElement('p');
+      auth.className = 'quote-author';
+      auth.textContent = q.author ? `— ${q.author}` : '— Khuyết danh';
+      
+      card.appendChild(txt);
+      card.appendChild(auth);
+      container.appendChild(card);
+    });
   }
 
   function animateTextToParticles(text, inputElement) {
