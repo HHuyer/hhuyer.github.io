@@ -1898,8 +1898,25 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
 
   const SUPABASE_URL='https://qfmtqtvxeancxlcmvtza.supabase.co';
   const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmbXRxdHZ4ZWFuY3hsY212dHphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwMTY4NTQsImV4cCI6MjA3MTU5Mjg1NH0.kyPxSzMCb0P3B9YnVkLB1hkopbtXmef7fu1lL6GhyQQ';
-  const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-
+  
+  let supabase;
+  try {
+    // Thử kết nối bình thường
+    if (window.supabase) {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } else {
+      throw new Error("Không tải được thư viện Supabase");
+    }
+  } catch (err) {
+    console.warn("Đã skip Supabase do lỗi:", err.message);
+    // TẠO DỮ LIỆU GIẢ (MOCK) ĐỂ CODE KHÔNG BỊ SẬP
+    // Khi Supabase lỗi, các hàm insert hay lấy quote sẽ tự động báo lỗi nhẹ nhàng mà không làm treo web
+    supabase = {
+      from: () => ({ insert: () => Promise.resolve({ error: { message: "Supabase đang bảo trì" } }) }),
+      rpc: () => Promise.resolve({ data: null, error: { message: "Supabase đang bảo trì" } })
+    };
+  }
+  
   // Helper function to get user's IP address
   async function getUserIP() {
     try {
