@@ -77,7 +77,26 @@
         let startTime, endTime;
 
         const urlParams = new URLSearchParams(window.location.search);
-        const redirectUrl = urlParams.get('redirect');
+        const rawRedirect = urlParams.get('redirect');
+        // Only allow same-origin redirects to prevent open redirect attacks
+        let redirectUrl = null;
+        if (rawRedirect) {
+            try {
+                const parsed = new URL(rawRedirect, window.location.origin);
+                if (parsed.origin === window.location.origin) {
+                    redirectUrl = parsed.href;
+                } else {
+                    console.warn('Blocked external redirect:', rawRedirect);
+                }
+            } catch (e) {
+                // relative paths are safe
+                if (!rawRedirect.startsWith('//') && !rawRedirect.includes('://')) {
+                    redirectUrl = rawRedirect;
+                } else {
+                    console.warn('Blocked invalid redirect:', rawRedirect);
+                }
+            }
+        }
         console.log('Redirect URL:', redirectUrl);
 
         card.addEventListener('mousedown', (e) => {
