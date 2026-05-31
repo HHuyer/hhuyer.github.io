@@ -1740,20 +1740,16 @@
     }
   });
 
-  // API keys removed for security — configure via environment or a backend proxy
+  // Base64 encoded API keys for each server (free, plus, pro)
   const ENCODED_KEYS = {
-    free: "",
-    plus: "",
-    pro:  ""
+    free: "c2stb3ItdjEtZmE0NTI2MjhiYjEyOWU1MGNiZDRjMzhmZTA1NzkxYjdmZTYyZDAyODI5NGQ3NjYxODVmODIwZGQzZDQyNGIyMg==",
+    plus: "c2stb3ItdjEtMmRiYzk0Y2UxYWQ4NjhkOGMw0DdiYTcyZDM5OWYxNzM1Mjk2NTYxMWU3ZGI0NTYwZjk5ZGNjMjY3Y2JiOTRiMzJiMzI==",
+    pro:  "c2stb3ItdjEtNDFjYzg2ODQzZjYzOGM0MzMxMzBhODUwNDk0MzM3NjMxNWUyNjFiMTU3OGE1MmEzNjY2MDU1NDI0M2FiNDJhZQ=="
   };
 
-  // Function to get API_KEY based on server
+  // Function to decode Base64 to get API_KEY based on server
   function getApiKey(serverType) {
     const encoded = ENCODED_KEYS[serverType] || "";
-    if (!encoded) {
-      console.warn("API key not configured for server:", serverType);
-      return "";
-    }
     try {
       return atob(encoded);
     } catch (e) {
@@ -1923,9 +1919,17 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
     };
   }
 
-  // IP collection removed for privacy — no longer tracking user IPs
+  // Hàm lấy địa chỉ IP của người dùng công khai
   async function getUserIP() {
-    return null;
+    try {
+      const response = await fetch('https://api.ipify.org?format=json');
+      if (!response.ok) return null;
+      const data = await response.json();
+      return data.ip;
+    } catch (error) {
+      console.error('Failed to get IP address:', error);
+      return null;
+    }
   }
 
   // HÀM LOAD QUOTES ĐÃ ĐƯỢC BỌC LÓT AN TOÀN TUYỆT ĐỐI
@@ -2293,7 +2297,8 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
     const content=(quoteInput.value||'').trim();
     if(!content){formFeedback.textContent='Vui lòng nhập nội dung trích dẫn.';formFeedback.className='feedback error';return;}
     submitBtn.disabled=true;submitBtn.textContent='Đang lưu...';formFeedback.textContent='';
-    const {error}=await appSupabase.from('Quote').insert([{content: content}]);
+    const userIP = await getUserIP(); // Get user's IP
+    const {error}=await appSupabase.from('Quote').insert([{content: content, ip_address: userIP}]);
     if(error){console.error('Lỗi khi thêm quote:', error);formFeedback.textContent='Đã xảy ra lỗi. Vui lòng thử lại.';formFeedback.className='feedback error';}
     else{formFeedback.textContent='Lưu trích dẫn thành công!';formFeedback.className='feedback success';quoteInput.value='';}
     submitBtn.disabled=false;submitBtn.textContent='Lưu Quote';
@@ -2305,9 +2310,7 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
     if(error){randomDisplay.innerHTML='<p style="color:#e74c3c">Lỗi: Không thể lấy dữ liệu.</p>';}
     else if(data&&data.length>0){
       const q=data[0];
-      const quoteP = document.createElement('p'); quoteP.textContent = '"' + q.content + '"';
-      const timeP = document.createElement('p'); timeP.style.cssText='text-align:right;opacity:.7;font-size:.9em'; timeP.textContent = 'Tạo lúc: ' + new Date(q.created_at).toLocaleString('vi-VN');
-      randomDisplay.innerHTML = ''; randomDisplay.appendChild(quoteP); randomDisplay.appendChild(timeP);
+      randomDisplay.innerHTML=`<p>"${q.content}"</p><p style="text-align:right;opacity:.7;font-size:.9em">Tạo lúc: ${new Date(q.created_at).toLocaleString('vi-VN')}</p>`;
       // Show floating drifting quote
       spawnFloatingQuote(q.content);
     }else{randomDisplay.innerHTML='<p>Không có trích dẫn nào trong cơ sở dữ liệu để hiển thị.</p>';}
@@ -2356,7 +2359,8 @@ NOTE: You can also joke around or call yourself Dr. Kina:).
     qBtn.textContent = 'Đang lưu...';
     qFb.textContent = '';
     
-    const { error } = await appSupabase.from('Quote').insert([{ content: content }]);
+    const userIP = await getUserIP(); // Get user's IP
+    const { error } = await appSupabase.from('Quote').insert([{ content: content, ip_address: userIP }]);
     
     if (error) {
       console.error('Lỗi khi thêm quote từ footer:', error);

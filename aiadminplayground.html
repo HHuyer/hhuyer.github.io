@@ -85,11 +85,11 @@
   </div>  <script>
     const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
-    // API keys removed for security — configure via environment or a backend proxy
+    // Base64 encoded API keys (copy từ file gốc)
     const ENCODED_KEYS = {
-      free: "",
-      plus: "",
-      pro:  ""
+      free: "c2stb3ItdjEtZmE0NTI2MjhiYjEyOWU1MGNiZDRjMzhmZTA1NzkxYjdmZTYyZDAyODI5NGQ3NjYxODVmODIwZGQzZDQyNGIyMg==",
+      plus: "c2stb3ItdjEtMmRiYzk0Y2UxYWQ4NjhkOGMw0DdiYTcyZDM5OWYxNzM1Mjk2NTYxMWU3ZGI0NTYwZjk5ZGNjMjY3Y2JiOTRiMzJiMzI==",
+      pro:  "c2stb3ItdjEtNDFjYzg2ODQzZjYzOGM0MzMxMzBhODUwNDk0MzM3NjMxNWUyNjFiMTU3OGE1MmEzNjY2MDU1NDI0M2FiNDJhZQ=="
     };
 
     function getApiKey(serverType) {
