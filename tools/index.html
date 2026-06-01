@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thông tin — HHuyer</title>
+    <title>Tools — HHuyer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -67,9 +67,9 @@
             z-index: 0;
             animation: float 20s ease-in-out infinite;
         }
-        .orb-1 { width: 400px; height: 400px; background: #667eea; top: -100px; right: -100px; }
-        .orb-2 { width: 300px; height: 300px; background: #764ba2; bottom: -80px; left: -80px; animation-delay: -7s; }
-        .orb-3 { width: 200px; height: 200px; background: #4facfe; top: 50%; left: 50%; animation-delay: -14s; }
+        .orb-1 { width: 400px; height: 400px; background: #667eea; top: -100px; left: -100px; }
+        .orb-2 { width: 300px; height: 300px; background: #764ba2; bottom: -80px; right: -80px; animation-delay: -7s; }
+        .orb-3 { width: 200px; height: 200px; background: #f093fb; top: 40%; right: 20%; animation-delay: -14s; }
         @keyframes float {
             0%, 100% { transform: translate(0, 0); }
             33% { transform: translate(30px, -30px); }
@@ -99,6 +99,11 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+        nav .logo a {
+            text-decoration: none;
+            color: inherit;
+            -webkit-text-fill-color: inherit;
+        }
         nav .nav-links a {
             color: var(--text-muted);
             text-decoration: none;
@@ -112,7 +117,7 @@
         main {
             position: relative;
             z-index: 10;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 120px 24px 80px;
         }
@@ -120,7 +125,7 @@
         /* Hero */
         .hero {
             text-align: center;
-            margin-bottom: 64px;
+            margin-bottom: 56px;
         }
         .hero .badge {
             display: inline-block;
@@ -140,7 +145,7 @@
             font-weight: 700;
             letter-spacing: -0.03em;
             line-height: 1.2;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         .hero h1 span {
             background: linear-gradient(135deg, var(--accent), var(--accent2), #f093fb);
@@ -150,105 +155,84 @@
         }
         .hero p {
             color: var(--text-muted);
-            font-size: 1.05rem;
-            line-height: 1.7;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Sections */
-        .section {
-            margin-bottom: 40px;
-        }
-        .section-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .section-title .icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            display: flex;
-            align-items: center;
-            justify-content: center;
             font-size: 1rem;
-            flex-shrink: 0;
-        }
-        .section-title h2 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            letter-spacing: -0.01em;
+            line-height: 1.7;
         }
 
-        /* Cards */
-        .card {
+        /* Tools grid */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .tool-card {
             background: var(--card);
             border: 1px solid var(--card-border);
             border-radius: 16px;
             padding: 28px;
             -webkit-backdrop-filter: blur(12px);
             backdrop-filter: blur(12px);
-            transition: border-color 0.3s, transform 0.3s;
-        }
-        .card:hover {
-            border-color: rgba(102,126,234,0.2);
-            transform: translateY(-2px);
-        }
-
-        .card-list {
-            list-style: none;
-        }
-        .card-list li {
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-        .card-list li:last-child { border-bottom: none; }
-        .card-list li::before {
-            content: '→';
-            color: var(--accent);
-            font-weight: 600;
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-
-        /* Contact card */
-        .contact-card {
-            background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1));
-            border: 1px solid rgba(102,126,234,0.2);
-            border-radius: 16px;
-            padding: 28px;
-            text-align: center;
-        }
-        .contact-card p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 16px;
-        }
-        .contact-card a {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 24px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            color: #fff;
+            transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
             text-decoration: none;
-            font-weight: 500;
-            font-size: 0.9rem;
-            transition: opacity 0.3s, transform 0.3s;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            cursor: pointer;
         }
-        .contact-card a:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
+        .tool-card:hover {
+            border-color: rgba(102,126,234,0.25);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .tool-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+        .tool-icon.code { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .tool-icon.timer { background: linear-gradient(135deg, #e94560, #c23616); }
+        .tool-icon.counter { background: linear-gradient(135deg, #00b894, #00cec9); }
+
+        .tool-card h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+        .tool-card p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            flex: 1;
+        }
+        .tool-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.06);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            align-self: flex-start;
+        }
+
+        /* Coming soon card */
+        .tool-card.coming-soon {
+            opacity: 0.5;
+            cursor: default;
+        }
+        .tool-card.coming-soon:hover {
+            transform: none;
+            box-shadow: none;
+            border-color: var(--card-border);
         }
 
         /* Footer */
@@ -265,25 +249,26 @@
             text-decoration: none;
         }
 
-        /* Responsive */
-        @media (max-width: 640px) {
-            nav { padding: 16px 20px; }
-            main { padding: 100px 16px 60px; }
-            .card { padding: 20px; }
-        }
-
-        /* Fade-in animations */
+        /* Fade-in */
         .fade-up {
             opacity: 0;
             transform: translateY(20px);
             animation: fadeUp 0.6s ease forwards;
         }
-        .fade-up:nth-child(2) { animation-delay: 0.1s; }
-        .fade-up:nth-child(3) { animation-delay: 0.2s; }
-        .fade-up:nth-child(4) { animation-delay: 0.3s; }
-        .fade-up:nth-child(5) { animation-delay: 0.4s; }
         @keyframes fadeUp {
             to { opacity: 1; transform: translateY(0); }
+        }
+        .tools-grid .tool-card:nth-child(1) { animation-delay: 0.1s; }
+        .tools-grid .tool-card:nth-child(2) { animation-delay: 0.2s; }
+        .tools-grid .tool-card:nth-child(3) { animation-delay: 0.3s; }
+        .tools-grid .tool-card:nth-child(4) { animation-delay: 0.4s; }
+        .tools-grid .tool-card:nth-child(5) { animation-delay: 0.5s; }
+        .tools-grid .tool-card:nth-child(6) { animation-delay: 0.6s; }
+
+        @media (max-width: 640px) {
+            nav { padding: 16px 20px; }
+            main { padding: 100px 16px 60px; }
+            .tools-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -295,7 +280,7 @@
     <div class="orb orb-3"></div>
 
     <nav>
-        <div class="logo">HHuyer</div>
+        <div class="logo"><a href="/">HHuyer</a></div>
         <div class="nav-links">
             <a href="/">Trang chủ</a>
             <a href="/tools">Tools</a>
@@ -305,58 +290,52 @@
 
     <main>
         <div class="hero fade-up">
-            <div class="badge">About</div>
-            <h1>Thông tin về <span>trang web này</span></h1>
-            <p>Trang web được tạo ra với mục đích cung cấp thông tin hữu ích, giải trí và kết nối cộng đồng.</p>
+            <div class="badge">Toolkit</div>
+            <h1>Công cụ <span>tiện ích</span></h1>
+            <p>Bộ sưu tập các công cụ hữu ích cho developer và người dùng.</p>
         </div>
 
-        <div class="section fade-up">
-            <div class="section-title">
-                <div class="icon">🎯</div>
-                <h2>Mục tiêu</h2>
-            </div>
-            <div class="card">
-                <ul class="card-list">
-                    <li>Cung cấp thông tin chính xác và đáng tin cậy.</li>
-                    <li>Mang lại những trải nghiệm giải trí thú vị.</li>
-                    <li>Tạo một không gian kết nối cho những người có cùng sở thích.</li>
-                </ul>
-            </div>
-        </div>
+        <div class="tools-grid">
+            <a href="/tc.html" class="tool-card fade-up">
+                <div class="tool-icon code">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                </div>
+                <h3>HTML Live Editor</h3>
+                <p>Viết HTML, CSS, JavaScript và xem kết quả ngay lập tức. Hỗ trợ preview realtime.</p>
+                <span class="tool-tag">Editor</span>
+            </a>
 
-        <div class="section fade-up">
-            <div class="section-title">
-                <div class="icon">⚡</div>
-                <h2>Các tính năng chính</h2>
-            </div>
-            <div class="card">
-                <ul class="card-list">
-                    <li>Triết lý ngày mới: Những câu nói truyền cảm hứng hàng ngày.</li>
-                    <li>Danh sách liên kết hữu ích: Tổng hợp các trang web thú vị.</li>
-                    <li>Phát nhạc: Thưởng thức âm nhạc trong khi duyệt web.</li>
-                    <li>AI Chatbot: Trò chuyện với Kina — trợ lý AI thông minh.</li>
-                    <li>Công cụ tiện ích: HTML Editor, Countdown, và nhiều hơn nữa.</li>
-                </ul>
-            </div>
-        </div>
+            <a href="/Count.html" class="tool-card fade-up">
+                <div class="tool-icon counter">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <h3>AI Typing Counter</h3>
+                <p>AI đếm số tự động với hiệu ứng terminal. Có thể bị hack bằng DevTools!</p>
+                <span class="tool-tag">Fun</span>
+            </a>
 
-        <div class="section fade-up">
-            <div class="section-title">
-                <div class="icon">💬</div>
-                <h2>Liên hệ</h2>
-            </div>
-            <div class="contact-card">
-                <p>Nếu bạn có bất kỳ câu hỏi hoặc góp ý nào, hãy liên hệ qua email.</p>
-                <a href="mailto:huydiamond123456@gmail.com">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>
-                    huydiamond123456@gmail.com
-                </a>
+            <a href="/Time.html" class="tool-card fade-up">
+                <div class="tool-icon timer">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <h3>10 Year Countdown</h3>
+                <p>Đếm ngược 10 năm với giao diện đẹp mắt. Thời gian không chờ đợi ai!</p>
+                <span class="tool-tag">Countdown</span>
+            </a>
+
+            <div class="tool-card coming-soon fade-up">
+                <div class="tool-icon code" style="opacity: 0.5;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                </div>
+                <h3>Sắp ra mắt...</h3>
+                <p>Thêm công cụ mới đang được phát triển. Hãy quay lại sau!</p>
+                <span class="tool-tag">Coming Soon</span>
             </div>
         </div>
     </main>
 
     <footer>
-        <p>Cảm ơn bạn đã ghé thăm! · <a href="/">Về trang chủ</a></p>
+        <p>HHuyer Tools · <a href="/">Về trang chủ</a></p>
     </footer>
 </body>
 </html>
