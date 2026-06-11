@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Trang Ngẫu Nhiên</title>
+</head>
+<body>
+
+    <button id="randomBtn">Đến trang ngẫu nhiên</button>
+
+    <script>
+        document.getElementById('randomBtn').addEventListener('click', function() {
+            // Đọc file json chứa danh sách link
+            fetch('links.json')
+                .then(response => response.json())
+                .then(links => {
+                    if (links.length > 0) {
+                        // Chọn ngẫu nhiên 1 link trong mảng
+                        const randomIndex = Math.floor(Math.random() * links.length);
+                        const randomLink = links[randomIndex];
+                        
+                        // Chuyển hướng người dùng
+                        window.location.href = randomLink;
+                    } else {
+                        alert('Danh sách trang đang trống!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi khi đọc danh sách trang:', error);
+                });
+        });
+    </script>
+
+</body>
+</html>
