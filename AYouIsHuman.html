@@ -11,8 +11,59 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             background-color: #f0f0f0;
+            padding: 20px;
+        }
+        #captcha-title {
+            margin: 0 0 20px 0;
+            font-size: 20px;
+            color: #333;
+        }
+        #game-title {
+            margin: 0 0 20px 0;
+            font-size: 20px;
+            color: #333;
+        }
+        #cute-animal-img {
+            width: 100%;
+            max-width: 300px;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-no {
+            background-color: #6c757d;
+        }
+        .btn-no:hover {
+            background-color: #5a6268;
+        }
+        #captcha-status {
+            margin-top: 15px;
+            font-size: 16px;
+            color: #28a745;
+            font-weight: bold;
         }
         #game-container {
             width: 300px;
@@ -36,17 +87,87 @@
             font-size: 18px;
             color: #ff0000;
         }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
-<big>Bạn có phải con người không?</big>
-<br>
-    <div id="game-container">
-        <div id="card"></div>
+    <div id="captcha-section">
+        <h2 id="captcha-title">Is this cute?</h2>
+        <img id="cute-animal-img" src="" alt="Random animal">
+        <div class="button-group">
+            <button class="btn" id="btn-yes">Yes</button>
+            <button class="btn btn-no" id="btn-no">No</button>
+        </div>
+        <div id="captcha-status"></div>
     </div>
-    <div id="message">Kéo để kiểm tra</div>
+
+    <div id="game-section" class="hidden">
+        <h2 id="game-title">Bạn có phải con người không?</h2>
+        <div id="game-container">
+            <div id="card"></div>
+        </div>
+        <div id="message">Kéo để kiểm tra</div>
+    </div>
 
     <script>
+        // Cute Animal CAPTCHA
+        const cuteAnimalImg = document.getElementById('cute-animal-img');
+        const btnYes = document.getElementById('btn-yes');
+        const btnNo = document.getElementById('btn-no');
+        const captchaStatus = document.getElementById('captcha-status');
+        const captchaSection = document.getElementById('captcha-section');
+        const gameSection = document.getElementById('game-section');
+        let captchaPassed = false;
+
+        async function loadRandomAnimal() {
+            try {
+                const type = Math.random() > 0.5 ? 'dog' : 'cat';
+                const url = type === 'dog' 
+                    ? 'https://dog.ceo/api/breeds/image/random' 
+                    : 'https://api.thecatapi.com/v1/images/search';
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                let imageUrl;
+                if (type === 'dog') {
+                    imageUrl = data.message;
+                } else {
+                    imageUrl = data[0].url;
+                }
+                
+                cuteAnimalImg.src = imageUrl;
+            } catch (error) {
+                console.error('Error loading animal image:', error);
+                // Fallback image
+                cuteAnimalImg.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="250"%3E%3Crect fill="%23ddd" width="300" height="250"/%3E%3Ctext x="50%" y="50%" text-anchor="middle" dy=".3em" fill="%23999" font-size="20"%3EFailed to load image%3C/text%3E%3C/svg%3E';
+            }
+        }
+
+        btnYes.addEventListener('click', () => {
+            captchaPassed = true;
+            captchaStatus.textContent = '✓ Captcha passed!';
+            captchaStatus.style.color = '#28a745';
+            btnYes.disabled = true;
+            btnNo.disabled = true;
+            
+            setTimeout(() => {
+                captchaSection.classList.add('hidden');
+                gameSection.classList.remove('hidden');
+            }, 1000);
+        });
+
+        btnNo.addEventListener('click', () => {
+            captchaStatus.textContent = 'Try again...';
+            captchaStatus.style.color = '#dc3545';
+            loadRandomAnimal();
+        });
+
+        // Load initial animal
+        loadRandomAnimal();
+
         const trollMessages = [
             "Mạng kém, vui lòng thử lại",
             "Tay bạn dính mồ hôi, vui lòng thử lại",
