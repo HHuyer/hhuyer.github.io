@@ -1,0 +1,228 @@
+/* ==========================================================================
+   components.css — các khối UI có cấu trúc riêng (chat, settings, quote-footer)
+   ========================================================================== */
+
+/* ---------- Chat container ---------- */
+.chat-container {
+  background: var(--secondary-bg-color);
+  padding: 20px;
+  border-radius: 15px;
+  backdrop-filter: var(--backdrop-blur-value);
+  box-shadow: 0 0 10px var(--shadow-color);
+  width: 90%;
+  max-width: 600px;
+  margin: 40px auto;
+}
+
+.messages-box {
+  max-height: 250px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  padding-right: 10px;
+}
+
+.input-row { display: flex; gap: 10px; }
+
+#userInput {
+  flex: 1;
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  background: var(--input-bg-color);
+  color: var(--primary-text-color);
+}
+#userInput::placeholder { color: var(--secondary-text-color); }
+
+.chat-header { display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; }
+.select-group { display: flex; align-items: center; gap: 8px; }
+.select-group label { font-weight: 600; font-size: 1rem; min-width: 80px; }
+.chat-select {
+  padding: 6px 12px;
+  border-radius: 5px;
+  border: none;
+  background: var(--input-bg-color);
+  color: var(--primary-text-color);
+  font-size: 1rem;
+  outline: none;
+  flex: 1;
+}
+.chat-select option:disabled { color: var(--secondary-text-color); font-style: italic; }
+
+@media (min-width: 480px) {
+  .chat-header { flex-direction: row; justify-content: space-between; }
+  .select-group { flex: 1; }
+}
+
+/* ---------- Chat message formatting (markdown render) ---------- */
+.msg { white-space: pre-wrap; word-wrap: break-word; margin-bottom: 12px; line-height: 1.5; }
+.msg.user { color: var(--primary-text-color); opacity: 0.9; }
+.msg.bot { color: var(--primary-text-color); }
+.msg.bot strong { font-weight: 700; opacity: 1; }
+.msg.bot em { font-style: italic; opacity: 0.9; }
+.msg.bot del { text-decoration: line-through; opacity: 0.7; }
+.msg h1, .msg h2, .msg h3, .msg h4, .msg h5, .msg h6 { margin: 1em 0 0.5em; font-weight: 600; line-height: 1.3; }
+.msg h1 { font-size: 2em; } .msg h2 { font-size: 1.8em; } .msg h3 { font-size: 1.6em; }
+.msg h4 { font-size: 1.4em; } .msg h5 { font-size: 1.2em; } .msg h6 { font-size: 1.1em; }
+.msg ul, .msg ol { margin: 0.5em 0; padding-left: 2em; }
+.msg blockquote { border-left: 3px solid var(--border-color); margin: 0.5em 0; padding-left: 1em; color: var(--secondary-text-color); }
+.msg code { background: var(--input-bg-color); padding: 0.2em 0.4em; border-radius: 3px; font-family: monospace; }
+.msg pre { background: var(--secondary-bg-color); padding: 1em; border-radius: 5px; overflow-x: auto; }
+.msg pre code { background: transparent; padding: 0; }
+.msg hr { border: none; border-top: 1px solid var(--border-color); margin: 1em 0; }
+.msg img { max-width: 100%; height: auto; border-radius: 5px; margin: 0.5em 0; }
+.msg a { color: var(--accent-color); text-decoration: none; }
+.msg a:hover { text-decoration: underline; }
+.msg input[type="checkbox"] { margin-right: 0.5em; }
+
+.typing-indicator::after {
+  content: '▋';
+  animation: blink 1s step-end infinite;
+  margin-left: 0.25em;
+}
+@keyframes blink { from, to { opacity: 1; } 50% { opacity: 0; } }
+
+/* ---------- Quote footer panel ---------- */
+.prompt-bubble {
+  position: fixed; left: 50%; bottom: 10vh; transform: translateX(-50%);
+  z-index: var(--z-prompt-bubble);
+  padding: 10px 14px; border-radius: 999px;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid var(--border-color);
+  color: var(--primary-text-color);
+  font-size: 0.95rem;
+  backdrop-filter: var(--backdrop-blur-value);
+  opacity: 0;
+  transition: opacity .4s ease;
+}
+.prompt-bubble.show { opacity: 1; }
+
+.quote-footer-panel {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  transform: translateY(100%);
+  transition: transform .35s ease;
+  z-index: var(--z-quote-footer);
+  background: rgba(0,0,0,.7);
+  backdrop-filter: var(--backdrop-blur-value);
+  border-top: 1px solid var(--border-color);
+  padding: 14px;
+}
+.quote-footer-panel.open { transform: translateY(0); }
+.quote-footer-panel .inner { max-width: 720px; margin: 0 auto; display: flex; gap: 10px; align-items: flex-start; }
+.quote-footer-panel textarea {
+  flex: 1; min-height: 72px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--input-bg-color);
+  color: var(--primary-text-color);
+  padding: 10px;
+  outline: none;
+}
+.quote-footer-panel button { white-space: nowrap; border-radius: 10px; }
+#form-feedback-footer { font-size: .9rem; opacity: .85; margin-top: 6px; }
+.quote-footer-head { max-width: 720px; margin: 0 auto 8px; color: var(--primary-text-color); opacity: .9; font-weight: 600; }
+.quote-close-btn {
+  float: right;
+  background: var(--input-bg-color);
+  border: 1px solid var(--border-color);
+  color: var(--primary-text-color);
+  padding: 6px 10px; border-radius: 8px; cursor: pointer;
+}
+
+.floating-quote {
+  position: fixed;
+  z-index: var(--z-floating-quote);
+  pointer-events: none;
+  color: var(--primary-text-color);
+  opacity: .9;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 10px 14px;
+  max-width: 60vw;
+  backdrop-filter: var(--backdrop-blur-value);
+}
+@keyframes floatUp { from { transform: translateY(0); opacity: .95; } to { transform: translateY(-40vh); opacity: 0; } }
+@keyframes drift { from { transform: translateX(0); opacity: .95; } to { transform: translateX(35vw); opacity: 0; } }
+
+/* ---------- Settings panel ---------- */
+.settings-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  z-index: var(--z-settings);
+  display: flex; justify-content: center; align-items: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.settings-overlay.show { opacity: 1; pointer-events: all; }
+
+.settings-panel {
+  background: var(--secondary-bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 15px;
+  padding: 30px;
+  width: 90%; max-width: 400px;
+  box-shadow: 0 10px 30px var(--shadow-color);
+  transform: translateY(-20px);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.settings-overlay.show .settings-panel { transform: translateY(0); opacity: 1; }
+.settings-panel h2 {
+  color: var(--primary-text-color);
+  margin: 0 0 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.theme-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+.theme-option {
+  display: flex; flex-direction: column; align-items: center;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--input-bg-color);
+  transition: all 0.2s ease;
+}
+.theme-option:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.4); }
+.theme-option.selected {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px var(--accent-color);
+  background: rgba(255, 255, 255, 0.2);
+}
+.theme-preview {
+  width: 60px; height: 40px;
+  border-radius: 5px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.theme-option span { font-size: 0.9rem; color: var(--primary-text-color); }
+
+.settings-close-btn {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  float: right;
+}
+
+#settingsButton { padding: 10px 15px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+
+/* ---------- Quote cards (dùng nếu theme/plugin cần hiển thị quote tĩnh) ---------- */
+.quote-card {
+  background: var(--secondary-bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 18px;
+  margin: 16px 0;
+}
