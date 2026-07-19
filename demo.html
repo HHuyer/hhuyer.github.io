@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Lab — Effects & Components</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #FAFAFA;
+            color: #1a1a1a;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── NAV ── */
+        .site-nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: rgba(250,250,250,0.82);
+            backdrop-filter: blur(14px) saturate(1.6);
+            -webkit-backdrop-filter: blur(14px) saturate(1.6);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        .nav-inner {
+            max-width: 1120px; margin: 0 auto; padding: 0 32px; height: 56px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-logo {
+            font-weight: 700; font-size: 15px; letter-spacing: -0.02em; color: #111;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .nav-logo .dot {
+            width: 7px; height: 7px; border-radius: 50%; background: #22c55e;
+            animation: pulse-dot 2.4s ease-in-out infinite;
+        }
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.35} }
+        .nav-badge {
+            font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
+            text-transform: uppercase; color: #888; background: rgba(0,0,0,0.05);
+            padding: 3px 8px; border-radius: 4px;
+        }
+
+        /* ── HERO ── */
+        .hero { max-width: 1120px; margin: 0 auto; padding: 140px 32px 80px; }
+        .hero h1 {
+            font-size: clamp(36px,5vw,56px); font-weight: 700;
+            letter-spacing: -0.035em; line-height: 1.08; color: #0a0a0a;
+        }
+        .hero p { margin-top: 16px; font-size: 17px; color: #777; max-width: 520px; line-height: 1.6; }
+
+        /* ── EFFECT SECTION ── */
+        .effect-section { max-width: 1120px; margin: 0 auto; padding: 0 32px 120px; }
+        .effect-header {
+            display: flex; align-items: baseline; gap: 14px; margin-bottom: 12px; flex-wrap: wrap;
+        }
+        .effect-number {
+            font-size: 13px; font-weight: 600; color: #bbb;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .effect-title { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; color: #111; }
+        .effect-status {
+            font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+            text-transform: uppercase; color: #e09a22; background: #fef6e6;
+            padding: 3px 10px; border-radius: 4px; position: relative; top: -2px;
+        }
+        .effect-desc {
+            font-size: 15px; color: #888; line-height: 1.65; max-width: 640px; margin-bottom: 40px;
+        }
+
+        /* ── DEMO CANVAS ── */
+        .demo-canvas {
+            background: #fff; border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 16px; overflow: hidden; margin-bottom: 32px;
+        }
+        .demo-toolbar {
+            padding: 12px 20px; border-bottom: 1px solid rgba(0,0,0,0.06);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .demo-toolbar-dots { display: flex; gap: 6px; }
+        .demo-toolbar-dots span { width: 10px; height: 10px; border-radius: 50%; background: rgba(0,0,0,0.08); }
+        .demo-toolbar-label {
+            font-size: 12px; font-weight: 500; color: #aaa;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* ── CONTROLS ── */
+        .controls-bar {
+            display: flex; gap: 20px; flex-wrap: wrap; padding: 14px 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.06); background: #fafafa;
+        }
+        .control-group { display: flex; align-items: center; gap: 8px; }
+        .control-label {
+            font-size: 12px; font-weight: 500; color: #999;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .control-slider {
+            -webkit-appearance: none; appearance: none; width: 100px; height: 4px;
+            background: #e5e5e5; border-radius: 2px; outline: none;
+        }
+        .control-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 14px; height: 14px;
+            border-radius: 50%; background: #111; cursor: pointer;
+        }
+        .control-value {
+            font-size: 12px; font-family: 'JetBrains Mono', monospace;
+            color: #666; min-width: 38px;
+        }
+
+        /* ── SCROLL CONTAINER ── */
+        .scroll-demo-wrapper {
+            height: 420px; overflow-y: auto; position: relative;
+        }
+        .scroll-demo-wrapper::-webkit-scrollbar { width: 6px; }
+        .scroll-demo-wrapper::-webkit-scrollbar-track { background: transparent; }
+        .scroll-demo-wrapper::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 3px; }
+        .scroll-demo-content { padding: 40px 48px 60px; }
+        .scroll-hint {
+            position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+            font-size: 12px; color: #bbb; display: flex; align-items: center; gap: 6px;
+            pointer-events: none; z-index: 20; background: rgba(255,255,255,0.85);
+            padding: 5px 14px; border-radius: 20px;
+            animation: hint-bounce 2s ease-in-out infinite; transition: opacity 0.5s;
+        }
+        @keyframes hint-bounce {
+            0%,100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-4px); }
+        }
+        .scroll-hint.hidden { opacity: 0; pointer-events: none; }
+
+        /* ── PARAGRAPHS ── */
+        .paragraph-block { margin-bottom: 28px; }
+        .paragraph-block h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: #111; }
+        .paragraph-block p { font-size: 14.5px; line-height: 1.75; color: #444; }
+
+        /* ════════════════════════════════════════════ */
+        /*   MOVING BLUR — THE EFFECT                  */
+        /* ════════════════════════════════════════════ */
+
+        .blur-target-block {
+            position: relative;
+        }
+
+        /*
+         * The sensitive text zone — the mask must always cover this.
+         * Filler/padding above & below gives the mask room to "float"
+         * without exposing these lines.
+         */
+        .blur-secret {
+            font-size: 14px;
+            line-height: 1.55;
+            color: #444;
+            display: inline;
+        }
+        .blur-secret strong { color: #111; }
+
+        .moving-blur-mask {
+            position: absolute;
+            z-index: 10;
+            cursor: none;
+
+            /* SQUARE — sharp corners */
+            border-radius: 0;
+
+            /* frosted glass */
+            background: rgba(250, 250, 250, 0.12);
+            backdrop-filter: blur(12px) saturate(1.4);
+            -webkit-backdrop-filter: blur(12px) saturate(1.4);
+
+            /* hard mechanical edges */
+            border: 1px solid rgba(190,190,190,0.4);
+            box-shadow: 0 0 0 0.5px rgba(0,0,0,0.04);
+
+            animation: none;
+            transition: none;
+        }
+
+        .moving-blur-mask::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: rgba(255,255,255,0.35);
+        }
+
+        /* ── GHOST CURSOR ── */
+        .ghost-cursor {
+            position: fixed;
+            width: 22px; height: 22px;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.06s step-end;
+        }
+        .ghost-cursor.visible { opacity: 1; }
+        .ghost-cursor-shape {
+            width: 100%; height: 100%;
+            filter: blur(4px);
+            opacity: 0.65;
+        }
+        .cursor-hidden { cursor: none !important; }
+        .cursor-hidden * { cursor: none !important; }
+
+        /* ── CODE BLOCK ── */
+        .code-section { margin-top: 8px; }
+        .code-toggle {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 13px; font-weight: 500; color: #888;
+            cursor: pointer; padding: 8px 0; border: none; background: none;
+            font-family: 'Inter', sans-serif; transition: color 0.2s;
+        }
+        .code-toggle:hover { color: #555; }
+        .code-toggle svg { transition: transform 0.3s ease; }
+        .code-toggle.open svg { transform: rotate(90deg); }
+        .code-block {
+            display: none; background: #18181b; border-radius: 12px;
+            padding: 24px 28px; margin-top: 12px; overflow-x: auto;
+        }
+        .code-block.visible { display: block; }
+        .code-block pre {
+            font-family: 'JetBrains Mono', monospace; font-size: 13px;
+            line-height: 1.7; color: #d4d4d8; margin: 0;
+        }
+        .code-block .cm { color: #6b7280; }
+        .code-block .tg { color: #7dd3fc; }
+        .code-block .at { color: #c4b5fd; }
+        .code-block .st { color: #86efac; }
+        .code-block .kw { color: #f9a8d4; }
+        .code-block .fn { color: #fcd34d; }
+
+        /* ── PARAMS TABLE ── */
+        .params-table {
+            width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px;
+        }
+        .params-table th {
+            text-align: left; font-weight: 600; color: #888; font-size: 11px;
+            text-transform: uppercase; letter-spacing: 0.06em;
+            padding: 0 16px 10px 0; border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        .params-table td {
+            padding: 12px 16px 12px 0; border-bottom: 1px solid rgba(0,0,0,0.04);
+            vertical-align: top;
+        }
+        .params-table td:first-child {
+            font-family: 'JetBrains Mono', monospace; font-size: 13px;
+            font-weight: 500; color: #6366f1; white-space: nowrap;
+        }
+        .params-table td:nth-child(2) { color: #555; }
+        .params-table td:last-child {
+            font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #999;
+        }
+
+        /* ── FOOTER ── */
+        .site-footer {
+            max-width: 1120px; margin: 0 auto; padding: 40px 32px 60px;
+            border-top: 1px solid rgba(0,0,0,0.06);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .footer-text { font-size: 13px; color: #bbb; }
+    </style>
+</head>
+<body>
+
+    <!-- GHOST CURSOR -->
+    <div class="ghost-cursor" id="ghost-cursor">
+        <svg class="ghost-cursor-shape" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 2L3 16L7.5 12L12 18L14.5 16.5L10 10.5L15 9L3 2Z" fill="#111" stroke="#fff" stroke-width="0.8"/>
+        </svg>
+    </div>
+
+    <!-- NAV -->
+    <nav class="site-nav">
+        <div class="nav-inner">
+            <div class="nav-logo"><span class="dot"></span> UI Lab</div>
+            <span class="nav-badge">Preview Build</span>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <h1>Effects &<br>Components</h1>
+        <p>Experimental UI primitives currently in development. Each effect is documented with interactive demos and usage examples.</p>
+    </section>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!--  EFFECT 01 — MOVING BLUR                       -->
+    <!-- ══════════════════════════════════════════════ -->
+    <section class="effect-section" id="moving-blur">
+        <div class="effect-header">
+            <span class="effect-number">01</span>
+            <h2 class="effect-title">Moving Blur</h2>
+            <span class="effect-status">In Progress</span>
+        </div>
+        <p class="effect-desc">
+            A Gaussian blur mask that stays completely still while text scrolls behind it — frozen in place, as if glued to the screen.
+            It only moves when the hidden content is about to escape, at which point it snaps hard back to the center of the text.
+            Try hovering your cursor over it.
+        </p>
+
+        <!-- ── DEMO 1 ── -->
+        <div class="demo-canvas">
+            <div class="demo-toolbar">
+                <div class="demo-toolbar-dots"><span></span><span></span><span></span></div>
+                <span class="demo-toolbar-label">interactive — scroll inside</span>
+            </div>
+
+            <div class="controls-bar" id="controls-1">
+                <div class="control-group">
+                    <span class="control-label">blur</span>
+                    <input type="range" class="control-slider" min="4" max="24" value="12" data-control="blur">
+                    <span class="control-value" id="val-blur-1">12px</span>
+                </div>
+                <div class="control-group">
+                    <span class="control-label">padding</span>
+                    <input type="range" class="control-slider" min="2" max="20" value="6" data-control="padding">
+                    <span class="control-value" id="val-padding-1">6px</span>
+                </div>
+            </div>
+
+            <div class="scroll-demo-wrapper" id="scroll-container-1">
+                <div class="scroll-demo-content">
+                    <div style="height: 80px;"></div>
+
+                    <div class="paragraph-block">
+                        <h3>The Vanishing</h3>
+                        <p>There is a sentence here that you are not supposed to read. It contains something important — an address, maybe, or a name. But the glass keeps it away from you. It doesn't move. It just sits there. Scroll past it and nothing happens. The square stays exactly where it was.</p>
+                    </div>
+
+                    <div class="paragraph-block">
+                        <p>Until it has to move.</p>
+                    </div>
+
+                    <!-- TARGET BLOCK 1 -->
+                    <div class="paragraph-block">
+                        <p style="font-size:14.5px; line-height:1.75; color:#444;">
+                            Classified Entry #0041 — Clearance: Level 7 Obsidian.
+                            <span class="blur-target-block" id="blur-target-1" style="display:inline;position:relative;"><span class="blur-secret" id="blur-secret-1">Access code: <strong style="color:#111">RHINO-7742-VELVET</strong></span><span class="moving-blur-mask" id="blur-mask-1"></span></span>.
+                            Drop point confirmed. Do not acknowledge. Do not redistribute. Signal ends.
+                        </p>
+                    </div>
+
+                    <div class="paragraph-block" style="margin-top: 36px;">
+                        <h3>After the Redaction</h3>
+                        <p>You scrolled. The text moved. The square did not — it sat frozen in place, indifferent, until the very last moment when the words were about to escape. Then it snapped. Back to the center of the text, in one hard jump. Then it froze again, as if nothing had happened.</p>
+                    </div>
+
+                    <div class="paragraph-block">
+                        <p>It doesn't follow you. It doesn't drift. It just watches the edges, and when something tries to leak out it re-centers in a single, abrupt movement. Try moving your cursor over it — even that gets swallowed.</p>
+                    </div>
+
+                    <div style="height: 120px;"></div>
+                </div>
+
+                <div class="scroll-hint" id="hint-1">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 5v14m0 0l-4-4m4 4l4-4"/></svg>
+                    scroll to interact
+                </div>
+            </div>
+        </div>
+
+        <!-- ── DEMO 2 — Multiple ── -->
+        <div class="demo-canvas">
+            <div class="demo-toolbar">
+                <div class="demo-toolbar-dots"><span></span><span></span><span></span></div>
+                <span class="demo-toolbar-label">multiple instances</span>
+            </div>
+
+            <div class="scroll-demo-wrapper" id="scroll-container-2">
+                <div class="scroll-demo-content">
+                    <div style="height: 60px;"></div>
+
+                    <div class="paragraph-block">
+                        <h3>Field Report — Sector 9</h3>
+                        <p>The perimeter was secured at 0300 hours. No anomalies were detected during the initial sweep. Personnel reported normal readings across all monitoring stations.</p>
+                    </div>
+
+                    <!-- TARGET 2A -->
+                    <div class="paragraph-block">
+                        <p style="font-size:14.5px; line-height:1.75; color:#444;">
+                            Incident Log — 0347 UTC. Sensor array B-12 detected unidentified signal at grid reference
+                            <span class="blur-target-block" id="blur-target-2a" style="display:inline;position:relative;"><span class="blur-secret" id="blur-secret-2a"><strong style="color:#111">KR-4419-NNW</strong></span><span class="moving-blur-mask" id="blur-mask-2a"></span></span>.
+                            Duration: 14.2s. Pattern matches no known transmission protocol. Classification pending.
+                        </p>
+                    </div>
+
+                    <div class="paragraph-block" style="margin-top: 28px;">
+                        <p>The responding unit was dispatched immediately. Standard containment protocol was initiated per Directive 7-Alpha.</p>
+                    </div>
+
+                    <!-- TARGET 2B -->
+                    <div class="paragraph-block">
+                        <p style="font-size:14.5px; line-height:1.75; color:#444;">
+                            Witness Statement — Civilian #7, debriefed 0412 UTC. "I saw something move across the sky. Then the lights went out for exactly
+                            <span class="blur-target-block" id="blur-target-2b" style="display:inline;position:relative;"><span class="blur-secret" id="blur-secret-2b"><strong style="color:#111">eleven seconds at 03:51</strong></span><span class="moving-blur-mask" id="blur-mask-2b"></span></span>.
+                            When they came back, it was gone." Statement classified under Protocol Indigo.
+                        </p>
+                    </div>
+
+                    <div class="paragraph-block" style="margin-top: 28px;">
+                        <p>All evidence was cataloged and transferred to central archives. Further distribution restricted.</p>
+                    </div>
+
+                    <div style="height: 100px;"></div>
+                </div>
+
+                <div class="scroll-hint" id="hint-2">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 5v14m0 0l-4-4m4 4l4-4"/></svg>
+                    scroll to interact
+                </div>
+            </div>
+        </div>
+
+        <!-- ── USAGE CODE ── -->
+        <div class="code-section">
+            <button class="code-toggle" id="code-toggle-1" onclick="toggleCode('code-1','code-toggle-1')">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+                View usage code
+            </button>
+            <div class="code-block" id="code-1">
+<pre><span class="cm">/* 1. HTML structure */</span>
+
+<span class="tg">&lt;div</span> <span class="at">class</span>=<span class="st">"blur-target-block"</span> <span class="at">id</span>=<span class="st">"my-target"</span><span class="tg">&gt;</span>
+  <span class="tg">&lt;p</span> <span class="at">class</span>=<span class="st">"blur-context top"</span><span class="tg">&gt;</span>Non-sensitive label...<span class="tg">&lt;/p&gt;</span>
+
+  <span class="tg">&lt;div</span> <span class="at">class</span>=<span class="st">"blur-secret"</span> <span class="at">id</span>=<span class="st">"my-secret"</span><span class="tg">&gt;</span>
+    <span class="tg">&lt;p&gt;</span>Sensitive content here<span class="tg">&lt;/p&gt;</span>
+  <span class="tg">&lt;/div&gt;</span>
+
+  <span class="tg">&lt;p</span> <span class="at">class</span>=<span class="st">"blur-context bottom"</span><span class="tg">&gt;</span>Non-sensitive note...<span class="tg">&lt;/p&gt;</span>
+  <span class="tg">&lt;div</span> <span class="at">class</span>=<span class="st">"moving-blur-mask"</span> <span class="at">id</span>=<span class="st">"my-mask"</span><span class="tg">&gt;&lt;/div&gt;</span>
+<span class="tg">&lt;/div&gt;</span>
+
+<span class="cm">/* 2. Initialize */</span>
+
+<span class="kw">new</span> <span class="fn">MovingBlur</span>({
+  <span class="at">scrollContainer</span>: <span class="st">'#scroll-wrapper'</span>,
+  <span class="at">target</span>:          <span class="st">'#my-target'</span>,
+  <span class="at">secret</span>:          <span class="st">'#my-secret'</span>,
+  <span class="at">mask</span>:            <span class="st">'#my-mask'</span>,
+  <span class="at">blurAmount</span>:      <span class="st">12</span>,     <span class="cm">// Gaussian radius (px)</span>
+  <span class="at">padding</span>:         <span class="st">6</span>,      <span class="cm">// safety margin (px)</span>
+  <span class="at">cursorBlur</span>:      <span class="st">true</span>,
+});</pre>
+            </div>
+        </div>
+
+        <!-- PARAMS -->
+        <table class="params-table" style="margin-top: 32px;">
+            <thead>
+                <tr><th>Parameter</th><th>Description</th><th>Default</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>blurAmount</td>
+                    <td>Gaussian blur radius in pixels</td>
+                    <td>12</td>
+                </tr>
+                <tr>
+                    <td>padding</td>
+                    <td>Safety margin (px) — how close the text can get to the mask edge before a snap triggers</td>
+                    <td>6</td>
+                </tr>
+                <tr>
+                    <td>cursorBlur</td>
+                    <td>Blur the mouse cursor when it hovers over the mask</td>
+                    <td>true</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <span class="footer-text">UI Lab — Experimental effects, not yet production-ready.</span>
+        <span class="footer-text">v0.1.0</span>
+    </footer>
+
+    <script>
+    (function () {
+        'use strict';
+
+        /* ────────────────────────────────────────────
+         *  Ghost Cursor
+         * ──────────────────────────────────────────── */
+        const ghost = document.getElementById('ghost-cursor');
+        let overMask = false, mx = 0, my = 0;
+
+        document.addEventListener('mousemove', e => {
+            mx = e.clientX; my = e.clientY;
+            if (overMask) {
+                ghost.style.left = (mx - 2) + 'px';
+                ghost.style.top  = (my - 2) + 'px';
+            }
+        });
+
+        function showGhost() {
+            if (overMask) return;
+            overMask = true;
+            ghost.classList.add('visible');
+            ghost.style.left = (mx - 2) + 'px';
+            ghost.style.top  = (my - 2) + 'px';
+            document.body.classList.add('cursor-hidden');
+        }
+        function hideGhost() {
+            overMask = false;
+            ghost.classList.remove('visible');
+            document.body.classList.remove('cursor-hidden');
+        }
+
+
+        /* ────────────────────────────────────────────
+         *  MovingBlur
+         *
+         *  The mask sits still. It does not follow scroll.
+         *  It only snaps — in hard, quantized steps — when
+         *  the secret content is about to be exposed.
+         *
+         *  How it works:
+         *  - The mask is a child of the target block,
+         *    so it scrolls with the page naturally.
+         *  - We counteract scroll by applying an opposite
+         *    translateY, making the mask appear frozen
+         *    in the viewport.
+         *  - This counter-offset is clamped so the mask
+         *    never slides off the secret zone.
+         *  - When clamped, the mask is forced to move
+         *    with the content — in stepped increments.
+         * ──────────────────────────────────────────── */
+        class MovingBlur {
+            constructor(opts) {
+                this.container = document.querySelector(opts.scrollContainer);
+                this.target    = document.querySelector(opts.target);
+                this.secret    = document.querySelector(opts.secret);
+                this.mask      = document.querySelector(opts.mask);
+                if (!this.container || !this.target || !this.secret || !this.mask) return;
+
+                this.blurAmount = opts.blurAmount ?? 12;
+                this.padding    = opts.padding     ?? 6;
+                this.cursorBlur = opts.cursorBlur  ?? true;
+
+                this._offset    = 0;   // current counter-scroll offset
+                this._displayY  = 0;   // last rendered quantized value
+                this._lastScroll = this.container.scrollTop;
+
+                this._sizeMask();
+                this._applyBlur();
+
+                this.container.addEventListener('scroll', () => this._onScroll(), { passive: true });
+                window.addEventListener('resize', () => this._sizeMask());
+
+                if (this.cursorBlur) {
+                    this.mask.style.pointerEvents = 'auto';
+                    this.mask.addEventListener('mouseenter', showGhost);
+                    this.mask.addEventListener('mouseleave', hideGhost);
+                }
+            }
+
+            /*
+             * Size the mask to tightly cover the secret zone.
+             * Uses getClientRects() for accurate inline span measurement.
+             */
+            _sizeMask() {
+                // For inline spans, getClientRects gives per-line boxes.
+                // We union them into one tight bounding box.
+                const rects = this.secret.getClientRects();
+                const tRect = this.target.getBoundingClientRect();
+
+                if (!rects.length) return;
+
+                let minT = Infinity, maxB = -Infinity;
+                let minL = Infinity, maxR = -Infinity;
+                for (const r of rects) {
+                    minT = Math.min(minT, r.top);
+                    maxB = Math.max(maxB, r.bottom);
+                    minL = Math.min(minL, r.left);
+                    maxR = Math.max(maxR, r.right);
+                }
+
+                const sTop  = minT - tRect.top;
+                const sLeft = minL - tRect.left;
+                const sW    = maxR - minL;
+                const sH    = maxB - minT;
+
+                const pad = this.padding;
+
+                this.mask.style.top    = (sTop  - pad) + 'px';
+                this.mask.style.left   = (sLeft - pad) + 'px';
+                this.mask.style.width  = (sW + pad * 2) + 'px';
+                this.mask.style.height = (sH + pad * 2) + 'px';
+
+                this._restTop = sTop - pad;
+                this._maskH   = sH + pad * 2;
+
+                this._offset   = 0;
+                this._displayY = 0;
+                this.mask.style.transform = 'translateY(0)';
+            }
+
+            _applyBlur() {
+                const f = `blur(${this.blurAmount}px) saturate(1.5)`;
+                this.mask.style.backdropFilter = f;
+                this.mask.style.webkitBackdropFilter = f;
+            }
+
+            _onScroll() {
+                const st = this.container.scrollTop;
+                const delta = st - this._lastScroll;
+                this._lastScroll = st;
+
+                // Counter-scroll: cancel the scroll motion so the mask
+                // appears frozen in the viewport. We apply the raw offset
+                // (no quantization) so the mask is truly, perfectly still.
+                this._offset -= delta;
+
+                /*
+                 * Exposure check:
+                 * At offset 0 the mask is dead-center on the secret with
+                 * `padding` px of safety margin on each side. As |offset|
+                 * grows, one edge of the secret drifts toward exposure.
+                 *
+                 * The moment |offset| > padding, the secret is about to
+                 * leak out. Instead of nudging the mask a little, we snap
+                 * it fully back to center (= offset 0).
+                 *
+                 * Visually this reads as: the mask sat perfectly still
+                 * during the whole scroll, then suddenly jumped to
+                 * re-center on the text.
+                 */
+                if (Math.abs(this._offset) > this.padding) {
+                    // Hard snap to center of the secret
+                    this._offset   = 0;
+                    this._displayY = 0;
+                    this.mask.style.transform = 'translateY(0)';
+                    return;
+                }
+
+                // While |offset| is within padding, render the raw offset.
+                // The mask moves exactly with the counter-scroll, which
+                // from the user's perspective means it does not move at all.
+                if (this._offset !== this._displayY) {
+                    this._displayY = this._offset;
+                    this.mask.style.transform = `translateY(${this._offset}px)`;
+                }
+            }
+
+            /* public */
+            setBlur(v)    { this.blurAmount = v; this._applyBlur(); }
+            setPadding(v) { this.padding = v; }
+        }
+
+
+        /* ── Instances ── */
+
+        const blur1 = new MovingBlur({
+            scrollContainer: '#scroll-container-1',
+            target:  '#blur-target-1',
+            secret:  '#blur-secret-1',
+            mask:    '#blur-mask-1',
+            blurAmount: 12,
+            padding: 6,
+        });
+
+        const blur2a = new MovingBlur({
+            scrollContainer: '#scroll-container-2',
+            target:  '#blur-target-2a',
+            secret:  '#blur-secret-2a',
+            mask:    '#blur-mask-2a',
+            blurAmount: 12,
+            padding: 6,
+        });
+
+        const blur2b = new MovingBlur({
+            scrollContainer: '#scroll-container-2',
+            target:  '#blur-target-2b',
+            secret:  '#blur-secret-2b',
+            mask:    '#blur-mask-2b',
+            blurAmount: 12,
+            padding: 6,
+        });
+
+
+        /* ── Controls (demo 1) ── */
+        document.querySelectorAll('#controls-1 .control-slider').forEach(s => {
+            s.addEventListener('input', e => {
+                const c = e.target.dataset.control;
+                const v = parseFloat(e.target.value);
+                if (c === 'blur') {
+                    blur1.setBlur(v);
+                    document.getElementById('val-blur-1').textContent = v + 'px';
+                }
+                if (c === 'padding') {
+                    blur1.setPadding(v);
+                    document.getElementById('val-padding-1').textContent = v + 'px';
+                }
+            });
+        });
+
+        /* ── Scroll-hint auto-hide ── */
+        ['scroll-container-1','scroll-container-2'].forEach((id,i) => {
+            const el = document.getElementById(id);
+            const hint = document.getElementById('hint-'+(i+1));
+            if (!el||!hint) return;
+            let hidden = false;
+            el.addEventListener('scroll', () => {
+                if (!hidden && el.scrollTop > 20) { hint.classList.add('hidden'); hidden = true; }
+            }, { passive: true });
+        });
+
+        /* ── Code toggle ── */
+        window.toggleCode = function(bId, tId) {
+            document.getElementById(bId).classList.toggle('visible');
+            document.getElementById(tId).classList.toggle('open');
+        };
+
+    })();
+    </script>
+</body>
+</html>
