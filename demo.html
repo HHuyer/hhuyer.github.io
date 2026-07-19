@@ -610,36 +610,32 @@
                 const delta = st - this._lastScroll;
                 this._lastScroll = st;
 
-                // Counter-scroll: cancel the scroll motion so the mask
-                // appears frozen in the viewport. We apply the raw offset
-                // (no quantization) so the mask is truly, perfectly still.
-                this._offset -= delta;
+                // Drift WITH scroll direction: the mask slides away from
+                // the text in the direction of scroll. Scroll down → mask
+                // drifts down, leaving the top edge of the secret exposed.
+                // Scroll up → mask drifts up, exposing the bottom.
+                this._offset += delta;
 
                 /*
                  * Exposure check:
-                 * At offset 0 the mask is dead-center on the secret with
-                 * `padding` px of safety margin on each side. As |offset|
-                 * grows, one edge of the secret drifts toward exposure.
+                 * At offset 0 the mask is dead-center on the secret.
+                 * As |offset| grows the mask drifts further away from
+                 * center and the opposite edge of the secret starts
+                 * leaking out.
                  *
-                 * The moment |offset| > padding, the secret is about to
-                 * leak out. Instead of nudging the mask a little, we snap
-                 * it fully back to center (= offset 0).
-                 *
-                 * Visually this reads as: the mask sat perfectly still
-                 * during the whole scroll, then suddenly jumped to
-                 * re-center on the text.
+                 * The moment |offset| > padding → snap the mask hard
+                 * back to dead-center (offset 0).
                  */
                 if (Math.abs(this._offset) > this.padding) {
-                    // Hard snap to center of the secret
                     this._offset   = 0;
                     this._displayY = 0;
                     this.mask.style.transform = 'translateY(0)';
                     return;
                 }
 
-                // While |offset| is within padding, render the raw offset.
-                // The mask moves exactly with the counter-scroll, which
-                // from the user's perspective means it does not move at all.
+                // Render the drift offset. From the user's perspective
+                // the mask visibly slides away from the text, then
+                // teleports back to center.
                 if (this._offset !== this._displayY) {
                     this._displayY = this._offset;
                     this.mask.style.transform = `translateY(${this._offset}px)`;
