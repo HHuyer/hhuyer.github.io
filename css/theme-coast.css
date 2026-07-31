@@ -1,0 +1,6 @@
+/* theme-coast.css — chỉ cần cho khung xem trước trong Settings.
+   Mọi CSS thật của theme nằm trong themes/coast-frame.html (chạy độc lập
+   trong iframe) nên không ảnh hưởng tới stylesheet chính của trang. */
+.preview-coast {
+  background: linear-gradient(180deg, #1b75a0 0%, #68d2da 55%, #f8fdfe 100%);
+}
