@@ -11,6 +11,10 @@
  */
 import { ThemeEngine } from './theme-engine.js';
 
+/** Theme mặc định của trang khi người dùng chưa từng chọn theme nào
+ *  (chưa có 'selectedTheme' trong localStorage). */
+export const DEFAULT_THEME_ID = 'summer';
+
 const MANIFEST = [
   { id: 'default', group: 'flat-themes', js: '../themes/flat-themes.js' },
   { id: 'cyberpunk', group: 'flat-themes', js: '../themes/flat-themes.js' },
@@ -19,6 +23,7 @@ const MANIFEST = [
   { id: 'matrix', group: 'flat-themes', js: '../themes/flat-themes.js' },
   { id: 'midautumn', group: 'midautumn', js: '../themes/midautumn.js', css: '../../css/theme-midautumn.css' },
   { id: 'dynamic', group: 'dynamic', js: '../themes/dynamic.js' },
+  { id: 'summer', group: 'summer', js: '../themes/summer.js', css: '../../css/theme-summer.css' },
 ];
 
 const loadedGroups = new Set();
