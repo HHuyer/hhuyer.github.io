@@ -2093,11 +2093,15 @@
 
             const geoRes = await fetch('https://get.geojs.io/v1/ip/geo.json');
 
+            if (!geoRes.ok) throw new Error(`GeoJS HTTP ${geoRes.status}`);
+
             const geoData = await geoRes.json();
 
             lat = geoData.latitude; lon = geoData.longitude;
 
             city = geoData.city || geoData.region || "Unknown"; country = geoData.country;
+
+            if (lat == null || lon == null) throw new Error('GeoJS: thiếu toạ độ');
 
         } catch(errGeo) {
 
@@ -2105,11 +2109,15 @@
 
                 const geoRes2 = await fetch('https://ipapi.co/json/');
 
+                if (!geoRes2.ok) throw new Error(`ipapi.co HTTP ${geoRes2.status}`);
+
                 const geoData2 = await geoRes2.json();
 
                 lat = geoData2.latitude; lon = geoData2.longitude;
 
                 city = geoData2.city; country = geoData2.country_name;
+
+                if (lat == null || lon == null) throw new Error('ipapi.co: thiếu toạ độ');
 
             } catch(errIpapi) {
 
@@ -2135,17 +2143,27 @@
 
         
 
+        if (lat == null || lon == null) {
+
+          throw new Error('Không xác định được vị trí (mọi nguồn định vị đều thất bại)');
+
+        }
+
         setLocationInfo(`${isRandomFallback ? '🎲' : '📍'} ${city} - Lấy dữ liệu...`);
 
         
 
         const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
 
+        if (!weatherRes.ok) throw new Error(`Open-Meteo HTTP ${weatherRes.status}`);
+
         const weatherData = await weatherRes.json();
 
         
 
         const current = weatherData.current_weather;
+
+        if (!current) throw new Error('Open-Meteo: phản hồi thiếu current_weather');
 
         const code = current.weathercode;
 
