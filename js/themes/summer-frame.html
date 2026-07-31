@@ -1478,14 +1478,25 @@
     }
 
     // Âm thanh mặc định BẬT: thử phát ngay khi trang tải (lệnh gọi thực tế nằm ở cuối script, sau khi
-
     // toàn bộ biến trạng thái thời tiết đã được khởi tạo, để tránh lỗi truy cập biến quá sớm).
-
-    // Hầu hết trình duyệt sẽ chặn autoplay có âm thanh nếu chưa có tương tác người dùng — trong
-
-    // trường hợp đó, tự động phát ngay khi người dùng có bất kỳ tương tác đầu tiên nào
-
-    // (click/gõ phím/chạm) ở bất cứ đâu trên trang.
+    // Hầu hết trình duyệt sẽ chặn autoplay có âm thanh nếu chưa có tương tác người dùng.
+    //
+    // QUAN TRỌNG: theme này chạy trong 1 <iframe> lồng trong index.html, và mặc định gần như
+    // "trong suốt" với chuột (pointer-events: none) để không chặn UI chính (nav, chat, settings...)
+    // — nghĩa là click/gõ phím của người dùng hầu như luôn xảy ra trên index.html (document CHA),
+    // KHÔNG bao giờ trực tiếp trong iframe này. "User activation" của trình duyệt là theo từng
+    // document riêng biệt, nên chỉ lắng nghe click nội bộ ở đây gần như sẽ không bao giờ kích hoạt.
+    //
+    // Giải pháp: index.html (nơi thực sự nhận được tương tác) gửi postMessage báo hiệu cho iframe
+    // này biết "người dùng vừa tương tác", để chủ động gọi startAudio() luôn — không cần chờ sự
+    // kiện nội bộ nữa. Vẫn giữ lại lắng nghe nội bộ bên dưới làm phương án dự phòng (ví dụ khi
+    // người dùng mở thẳng file này, không qua index.html).
+    window.addEventListener('message', (e) => {
+      if (e.data === 'coast-theme:unlock-audio' && !audioUnlocked) startAudio();
+    });
+    // Báo cho document cha biết iframe đã sẵn sàng nhận tín hiệu — để index.html có thể gửi lại
+    // ngay nếu người dùng đã tương tác từ TRƯỚC khi iframe này load xong.
+    try { window.parent.postMessage('coast-theme:ready', window.location.origin); } catch (e) {}
 
     function unlockAudioOnFirstInteraction() {
 

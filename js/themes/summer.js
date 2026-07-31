@@ -67,6 +67,50 @@ ThemeEngine.register({
 
     host.addLayer(frame);
 
+    // --- Chuyển tiếp "người dùng đã tương tác" cho iframe (xem giải thích
+    // chi tiết trong summer-frame.html, đoạn unlockAudioOnFirstInteraction).
+    // Vì pointer-events:none, gần như mọi click/gõ phím/chạm của người dùng
+    // xảy ra trên document CHÍNH (index.html) chứ không lọt vào iframe, nên
+    // iframe không tự "nghe" được các sự kiện đó để tự unlock audio theo
+    // cơ chế autoplay-policy chuẩn của trình duyệt. Ta lắng nghe ở đây rồi
+    // báo cho iframe biết bằng postMessage.
+    let userInteracted = false;
+    let frameReady = false;
+
+    function sendUnlockSignal() {
+      frame.contentWindow?.postMessage('coast-theme:unlock-audio', window.location.origin);
+    }
+
+    function onFirstInteraction() {
+      userInteracted = true;
+      if (frameReady) sendUnlockSignal();
+      document.removeEventListener('click', onFirstInteraction);
+      document.removeEventListener('keydown', onFirstInteraction);
+      document.removeEventListener('touchstart', onFirstInteraction);
+    }
+    document.addEventListener('click', onFirstInteraction);
+    document.addEventListener('keydown', onFirstInteraction);
+    document.addEventListener('touchstart', onFirstInteraction);
+
+    // iframe có thể load xong SAU khi người dùng đã click (thứ tự không
+    // đảm bảo) — lắng nghe tín hiệu "ready" nó tự gửi lên khi khởi tạo
+    // xong, để không bỏ lỡ trường hợp interaction đến trước.
+    function onFrameMessage(e) {
+      if (e.source !== frame.contentWindow || e.origin !== window.location.origin) return;
+      if (e.data === 'coast-theme:ready') {
+        frameReady = true;
+        if (userInteracted) sendUnlockSignal();
+      }
+    }
+    window.addEventListener('message', onFrameMessage);
+
+    host._coastCleanupInteraction = () => {
+      document.removeEventListener('click', onFirstInteraction);
+      document.removeEventListener('keydown', onFirstInteraction);
+      document.removeEventListener('touchstart', onFirstInteraction);
+      window.removeEventListener('message', onFrameMessage);
+    };
+
     // Cho phép tương tác (mở bảng điều khiển ẩn, unlock audio) chỉ khi
     // người dùng chủ động rê chuột vào góc dưới-phải, nơi huy hiệu nằm —
     // bật lại pointer-events cho riêng iframe trong vùng đó bằng cách bật
@@ -86,6 +130,7 @@ ThemeEngine.register({
 
   deactivate(host) {
     host._coastCleanupMove?.();
+    host._coastCleanupInteraction?.();
     document.body.style.background = '';
     const bgVideo = document.getElementById('bgVideo');
     if (bgVideo) { bgVideo.style.display = ''; bgVideo.play?.().catch(() => {}); }
